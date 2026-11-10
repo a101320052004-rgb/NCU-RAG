@@ -1,6 +1,6 @@
 # NCU RAG 修復摘要
 
-本機 Git CLI 已確認基準 main `164083292fa518e85ee2073a198dbb7ecbde9d7c` 與診斷快照的關鍵程式一致（只差 CRLF/LF），修復位於 `fix/rag-reliability`、Draft PR #1。未修改正式 Supabase、未合併 main、未執行 Vercel 部署。
+本機 Git CLI 已確認基準 main `164083292fa518e85ee2073a198dbb7ecbde9d7c` 與診斷快照的關鍵程式一致（只差 CRLF/LF），修復位於 `fix/rag-reliability`。第一版 PR #1 已由儲存庫擁有者合併為 c91ef22，本輪透過後續 Draft PR 交付；我未把修復分支合併進 main。未修改正式 Supabase、未合併 main、未執行 Vercel 部署。
 
 ## 工程修改
 

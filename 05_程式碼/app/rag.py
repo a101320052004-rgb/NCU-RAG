@@ -115,7 +115,7 @@ def expand_query(q: str) -> str:
     # Only a generic Chinese fee question gets a canonical English expansion.
     # Questions with room/year/payment conditions keep their original wording.
     if re.fullmatch(r'(?:請問)?宿舍(?:費用|收費)(?:是多少|多少錢|多少)?[？?]?', q.strip()):
-        search = 'What are the dormitory fees?'
+        return 'What are the dormitory fees?'
     return f"{search} {' '.join(extra)}" if extra else search
 
 

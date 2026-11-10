@@ -37,6 +37,6 @@ test_negated_distress_does_not_hide_later_request (test_safety_regression.Workbo
 test_ordinary_mental_health_mentions_do_not_add_handoff (test_safety_regression.WorkbookSafetyRegression.test_ordinary_mental_health_mentions_do_not_add_handoff) ... ok
 
 ----------------------------------------------------------------------
-Ran 35 tests in 0.092s
+Ran 35 tests in 0.129s
 
 OK

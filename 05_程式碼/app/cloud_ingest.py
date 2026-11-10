@@ -9,7 +9,7 @@
 需要 .env 裡有：SUPABASE_URL、SUPABASE_KEY、SUPABASE_INGEST_SECRET
 
 算過的向量會存起來（store/<模型>_cache.jsonl），下次只算新增或內容有變的段落。
-全部都算完的那一次，才會刪掉雲端上這次沒出現的舊段落（網站上已下架、或已過期的）。
+全部都算完的那一次，才會封存這次沒出現的舊段落；保留歷史內容供查證。
 （備用：.env 設 CLOUD_EMBEDDER=gemini 會改用 Gemini，那時雲端的 Vercel 也要一起改。）
 """
 from __future__ import annotations
@@ -101,6 +101,9 @@ def to_row(r: dict, vec: list[float]) -> dict:
         "topics": r.get("topics", []), "identities": r.get("identities", []), "status": "active",
         "valid_until": "" if r.get("deadline_passed") or ingest.is_regulation(r) else iso(r.get("latest_date")),
         "last_verified": iso(r.get("last_verified_at") or r.get("fetched_at")),
+        'policy_review_status': r.get('policy_review_status',''),
+        'policy_reviewed_at': str(r.get('policy_reviewed_at','')),
+        'policy_reviewed_sha256': r.get('policy_reviewed_sha256',''),
         "embedding": sb.vec(vec),
     }
 
@@ -114,6 +117,14 @@ def main() -> int:
         print("`.env` 少了：" + "、".join(missing))
         return 1
 
+    try:
+        ready_version = sb.rpc('reliability_version', {})
+    except RuntimeError:
+        print('reliability v2 SQL 尚未就緒；停止上傳。')
+        return 1
+    if ready_version != 2:
+        print('請先完成 reliability v2 SQL 的隔離驗收及核准部署；停止上傳。')
+        return 1
     keep, review = ingest.split_records()
     if not keep:
         print("沒有可用的資料。請先執行 2_更新資料.bat，或放入 faq.csv。")
@@ -136,7 +147,7 @@ def main() -> int:
     for i in range(0, len(ready), UPLOAD_BATCH):
         rows = [to_row(r, cache[key(r["text"])]) for r in ready[i:i + UPLOAD_BATCH]]
         try:
-            sb.rpc("ingest_upsert", {"p_secret": secret, "p_run_id": run_id, "p_rows": rows})
+            sb.rpc("ingest_upsert_v2", {"p_secret": secret, "p_run_id": run_id, "p_rows": rows})
         except RuntimeError as e:
             if "invalid ingest secret" in str(e):
                 print(".env 的 SUPABASE_INGEST_SECRET 不對，停止上傳。")
@@ -144,18 +155,18 @@ def main() -> int:
             # 這一批有問題：改成一段一段傳，壞掉的那段跳過，其他照常上傳
             for row in rows:
                 try:
-                    sb.rpc("ingest_upsert", {"p_secret": secret, "p_run_id": run_id, "p_rows": [row]})
+                    sb.rpc("ingest_upsert_v2", {"p_secret": secret, "p_run_id": run_id, "p_rows": [row]})
                 except RuntimeError as e2:
                     skipped.append((row["title"], row["url"], str(e2)[:120]))
         print(f"  {min(i + UPLOAD_BATCH, len(ready))}/{len(ready)}")
     if skipped:
-        complete = False  # 有段落沒傳上去，這次先不刪雲端舊資料
+        complete = False  # 有段落沒傳上去，這次先不封存雲端舊資料
         print(f"有 {len(skipped)} 段上傳失敗、已跳過：")
         for t, u, err in skipped:
             print(f"  - {t} {u}\n    {err}")
-    removed = sb.rpc("ingest_finish", {"p_secret": secret, "p_run_id": run_id}) if complete else 0
+    removed = sb.rpc("ingest_finish_v2", {"p_secret": secret, "p_run_id": run_id}) if complete else 0
     stats = (sb.rpc("kb_stats", {}) or [{}])[0]
-    print(f"雲端可用 {stats.get('active')} 段，刪掉舊資料 {removed} 段；"
+    print(f"雲端可用 {stats.get('active')} 段，保留並封存舊資料 {removed} 段；"
           f"被時效規則擋下 {len(review)} 段（見 待確認清單.csv）")
     if len(uniq) > len(ready):
         print(f"還有 {len(uniq) - len(ready)} 段沒算完：Gemini 額度在台灣時間下午 4 點重置，之後再跑一次就會補上。")

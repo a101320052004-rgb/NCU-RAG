@@ -62,8 +62,25 @@ def review_reason(text: str, metadata: dict, today: dt.date, stale_before: dt.da
     return None
 
 
+def neighboring_policy_ids(cid: str, md: dict) -> list[str]:
+    if md.get('source') == 'manual' or cid.startswith(('md','faq-','sheet-')):
+        return []
+    doc, _, part = cid.rpartition('-')
+    if not doc or not part.isdigit():
+        return []
+    n = int(part)
+    return ([f'{doc}-{n-1}'] if n else []) + [f'{doc}-{n+1}']
+
+
 def eligible(text: str, md: dict, *, identity: str | None, topic: str | None,
              today: dt.date, stale_before: dt.date) -> bool:
+    context_rule = md.get('policy_context_rule') or ''
+    if context_rule.startswith('obsolete:'):
+        return False
+    # Reviewable regulations must stand on their own in the approved body.
+    # A fragment inheriting a claim needs curation/rechunking before approval.
+    if context_rule.startswith('review:') and not policy_claim(text)[0]:
+        return False
     verified = date_value(md.get('last_verified'))
     expires = date_value(md.get('valid_until'))
     if md.get('status') != 'active' or verified is None or verified < stale_before:

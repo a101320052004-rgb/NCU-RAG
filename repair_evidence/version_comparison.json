@@ -1,0 +1,66 @@
+{
+  "base_commit": "164083292fa518e85ee2073a198dbb7ecbde9d7c",
+  "comparison": "UTF-8 text with CRLF/LF normalized",
+  "files": [
+    {
+      "file": "rag.py",
+      "equal_normalized": [
+        "deployed_app\\rag.py"
+      ]
+    },
+    {
+      "file": "router.py",
+      "equal_normalized": [
+        "deployed_app\\router.py"
+      ]
+    },
+    {
+      "file": "cloud_ingest.py",
+      "equal_normalized": [
+        "pipeline_pc\\app\\cloud_ingest.py"
+      ]
+    },
+    {
+      "file": "ingest.py",
+      "equal_normalized": [
+        "pipeline_pc\\app\\ingest.py"
+      ]
+    },
+    {
+      "file": "config.py",
+      "equal_normalized": [
+        "pipeline_pc\\app\\config.py"
+      ]
+    },
+    {
+      "file": "db.py",
+      "equal_normalized": [
+        "pipeline_pc\\app\\db.py"
+      ]
+    },
+    {
+      "file": "embedder.py",
+      "equal_normalized": [
+        "pipeline_pc\\app\\embedder.py"
+      ]
+    },
+    {
+      "file": "sb.py",
+      "equal_normalized": [
+        "deployed_app\\sb.py"
+      ]
+    },
+    {
+      "file": "main.py",
+      "equal_normalized": [
+        "deployed_app\\main.py"
+      ]
+    },
+    {
+      "file": "contacts.py",
+      "equal_normalized": [
+        "deployed_app\\contacts.py"
+      ]
+    }
+  ]
+}

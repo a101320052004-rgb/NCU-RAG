@@ -7,6 +7,7 @@ import config
 import contacts
 import db
 import embedder
+import knowledge_policy
 
 CJK = re.compile(r"[一-鿿]")
 _col = None
@@ -43,14 +44,11 @@ def build_where(identity: str | None, topic: str | None) -> dict:
 
 def _query_supabase(qvec: list[float], identity: str | None, topic: str | None) -> list[tuple]:
     import sb
-    rows = sb.rpc("match_chunks", {
+    rows = sb.rpc("match_chunks_v2", {
         "query_embedding": sb.vec(qvec), "match_count": config.TOP_K * 3,
         "p_identity": identity if identity in config.IDENTITIES else None, "p_topic": topic,
         "p_stale_before": config.stale_before().isoformat()}) or []
-    d = lambda s: int(s.replace("-", "")) if s else 0  # noqa: E731
-    return [(r["body"], {"id": r.get("id"), "title": r["title"] or "", "url": r["url"] or "", "lang": r["lang"],
-                         "valid_until": d(r["valid_until"]), "last_verified": d(r["last_verified"])},
-             r["distance"]) for r in rows]
+    return [(r['body'], {k: v for k, v in r.items() if k not in ('body', 'distance')}, r['distance']) for r in rows]
 
 
 # 中文短問題配英文資料很弱（「選課」找不到 Course Selection Calendar），檢索時補上英文說法。
@@ -99,7 +97,7 @@ GLOSSARY_EN = [
     (r"scholarship|financial aid|stipend", "獎學金 獎助學金"),
     (r"insurance|\bnhi\b", "保險 健保"),
     (r"\barc\b|resident certificate|residence permit", "居留證"),
-    (r"work permit|part[- ]time", "工作證 打工"),
+    (r"work permit|part[- ]time|\bpermission\s+to\s+work\b|\b(?:work|employment)\s+authori[sz]ation\b|\bauthori[sz]ation\s+(?:to|for)\s+(?:work|employment)\b", "工作證 打工"),
     (r"lecture hall|venue|book a room|borrow", "借用 場地"),
 ]
 
@@ -138,7 +136,7 @@ def partner_terms(q: str) -> list[str]:
     return sorted(out, key=len, reverse=True)[:12]
 
 
-def _partner_hits(question: str) -> list[dict]:
+def _partner_hits(question: str, identity: str | None = None, topic: str | None = None) -> list[dict]:
     if config.STORE != "supabase" or not PARTNER_Q.search(question):
         return []
     terms = partner_terms(question)
@@ -146,27 +144,48 @@ def _partner_hits(question: str) -> list[dict]:
         return []
     try:
         import sb
-        rows = sb.rpc("find_partner_chunks", {"p_terms": terms}) or []
+        rows = sb.rpc("find_partner_chunks_v2", {"p_terms": terms, 'p_identity': identity,
+                      'p_topic': topic, 'p_stale_before': config.stale_before().isoformat()}) or []
     except Exception as e:  # noqa: BLE001  找不到就照一般向量搜尋
         print("partner lookup failed:", e)
         return []
-    d = lambda s: int(s.replace("-", "")) if s else 0  # noqa: E731
-    return [{"text": r["body"], "distance": 0.0, "score": -1.0,
-             "meta": {"id": r["id"], "title": r["title"] or "", "url": r["url"] or "", "lang": r["lang"],
-                      "valid_until": d(r["valid_until"]), "last_verified": d(r["last_verified"])}} for r in rows]
+    return [{"text": r['body'], 'distance': 0.0, 'score': -1.0,
+             'meta': {k: v for k, v in r.items() if k not in ('body', 'distance', 'hit')}}
+            for r in rows if _eligible(r['body'], r, identity, topic)]
+
+
+def _eligible(text: str, md: dict, identity: str | None, topic: str | None) -> bool:
+    return knowledge_policy.eligible(text, md, identity=identity, topic=topic,
+                                     today=config.today(), stale_before=config.stale_before())
+
+
+def _dorm_fee_question(question: str) -> bool:
+    return bool(re.search(r'dorm|housing|accommodation|宿舍|住宿', question, re.I)
+                and re.search(r'\b(?:fees?|cost|charges?|rates?|pay|price)\b|費用|收費|多少錢|住宿費', question, re.I))
+
+
+def _dorm_fee_payload(text: str, md: dict) -> bool:
+    t = ((md.get('title') or '') + '\n' + text).lower()
+    money = re.search(r'(?:ntd|nt\$|twd|usd|新[臺台]幣)\s*[0-9][0-9,.]*', t)
+    accommodation = re.search(r'dorm|housing|accommodation|hsi wang|宿舍|住宿', t)
+    unit = re.search(r'per person|per semester|每[人房學]|每學期|/每學期', t)
+    fee_table = re.search(r'standard for dormitory fee|宿舍收費|住宿費', t)
+    return bool(money and accommodation and (unit or fee_table))
 
 
 def retrieve(question: str, identity: str | None, lang: str, topic: str | None = None) -> list[dict]:
-    exact = _partner_hits(question)
+    exact = _partner_hits(question, identity, topic)
     search = expand_query(question)
     expanded = search != question
     # 補了英文的版本和原本的問題各查一次再合併：補字幫英文資料浮上來，但不能把剛好對題的中文資料（例如公告）擠掉
-    rows, seen = [], {}
+    rows, seen, original_rank = [], {}, {}
     for q in ([question, search] if expanded else [question]):
         qvec = embedder.embed_query(q)
         found = _query_supabase(qvec, identity, topic) if config.STORE == "supabase" else _query_local(qvec, identity, topic)
-        for doc, md, dist in found:
+        for rank, (doc, md, dist) in enumerate(found, 1):
             key = md.get("id") or (md.get("url"), doc[:50])
+            if q == question:
+                original_rank[key] = rank
             if key in seen:
                 i = seen[key]
                 if dist < rows[i][2]:
@@ -174,11 +193,9 @@ def retrieve(question: str, identity: str | None, lang: str, topic: str | None =
                 continue
             seen[key] = len(rows)
             rows.append((doc, md, dist))
-    today = int(config.today().strftime("%Y%m%d"))
     hits = []
     for doc, md, dist in rows:
-        # 時效過濾第二道：有截止日而且已經過了的段落，就算還在資料庫裡也不用
-        if md.get("valid_until") and md["valid_until"] < today:
+        if not _eligible(doc, md, identity, topic):
             continue
         if topic is None and dist > config.MAX_DISTANCE:
             continue
@@ -191,6 +208,14 @@ def retrieve(question: str, identity: str | None, lang: str, topic: str | None =
             score -= 0.015
         hits.append({"text": doc, "meta": md, "distance": dist, "score": score})
     hits.sort(key=lambda h: h["score"])
+    if _dorm_fee_question(question):
+        # Only fee queries receive a bounded rescue tier. Original-query evidence
+        # is kept ahead of broad expansion/manual bonuses; TOP_K and distance
+        # threshold stay unchanged. Every rescued chunk already passed eligibility.
+        hits.sort(key=lambda h: (0 if _dorm_fee_payload(h['text'], h['meta']) else 1,
+                                original_rank.get(h['meta'].get('id'), 10**6)
+                                if _dorm_fee_payload(h['text'], h['meta']) else h['score'],
+                                h['score']))
     if exact:
         ids = {h["meta"]["id"] for h in exact}
         hits = exact + [h for h in hits if h["meta"].get("id") not in ids]
@@ -227,22 +252,26 @@ def _query_local(qvec: list[float], identity: str | None, topic: str | None) -> 
 NEIGHBOR_HITS = 3  # 前幾名的段落，把前後段一起給 AI（PDF 常被切斷在句子中間）
 
 
-def _fetch_chunks(ids: list[str]) -> dict[str, str]:
+def _fetch_chunks(ids: list[str], identity: str | None = None, topic: str | None = None) -> dict[str, str]:
     if not ids:
         return {}
     try:
         if config.STORE == "supabase":
             import sb
-            return {r["id"]: r["body"] for r in (sb.rpc("get_chunks", {"p_ids": ids}) or [])}
+            rows = sb.rpc('get_chunks_v2', {'p_ids': ids, 'p_identity': identity, 'p_topic': topic,
+                          'p_stale_before': config.stale_before().isoformat()}) or []
+            return {r['id']: r['body'] for r in rows if _eligible(r['body'], r, identity, topic)}
         got = collection().get(ids=ids)
-        return dict(zip(got["ids"], got["documents"]))
+        return {cid: text for cid, text, md in zip(got['ids'], got['documents'], got.get('metadatas') or [])
+                if _eligible(text, md, identity, topic)}
     except Exception as e:  # noqa: BLE001  補不到就用原本的段落
         print("fetch neighbors failed:", e)
         return {}
 
 
-def expand_context(hits: list[dict]) -> list[dict]:
+def expand_context(hits: list[dict], identity: str | None = None, topic: str | None = None) -> list[dict]:
     """段落 id 是「文件id-序號」：把前幾名的前一段、後一段接起來，讓 AI 看到完整的步驟或條件。"""
+    hits = [h for h in hits if _eligible(h['text'], h['meta'], identity, topic)]
     want, plan = [], []
     for h in hits[:NEIGHBOR_HITS]:
         doc, _, n = str(h["meta"].get("id", "")).rpartition("-")
@@ -254,7 +283,7 @@ def expand_context(hits: list[dict]) -> list[dict]:
         ids = [f"{doc}-{n - 1}", f"{doc}-{n + 1}"] if n > 0 else [f"{doc}-{n + 1}"]
         want += ids
         plan.append((doc, n))
-    got = _fetch_chunks(want)
+    got = _fetch_chunks(want, identity, topic)
     used: set[str] = {str(h["meta"].get("id")) for h in hits}
     out = []
     for h, p in zip(hits, plan + [None] * (len(hits) - len(plan))):
@@ -271,9 +300,9 @@ def expand_context(hits: list[dict]) -> list[dict]:
     return out
 
 
-def fmt_date(n: int) -> str:
-    s = str(n)
-    return f"{s[:4]}-{s[4:6]}-{s[6:]}" if len(s) == 8 else "未知"
+def fmt_date(n) -> str:
+    value = knowledge_policy.date_value(n)
+    return value.isoformat() if value else '未知'
 
 
 # ---------------------------------------------------------------- 生成
@@ -413,7 +442,7 @@ def answer(question: str, identity: str | None, lang: str | None = None,
         route = "ai_off" if allow == "off" else "limited"
         return {"answer": f"{quota_answer(allow, lang, contact)}\n\n{footer}", "route": route, "sources": used}
     try:
-        context = expand_context(hits)
+        context = expand_context(hits, identity, topic)
         text = call_llm(system_prompt(identity, lang),
                         build_user_message(question, context, history or [], lang, contact), context)
     except Exception as e:  # noqa: BLE001  API 金鑰錯、沒餘額、額度用完、網路斷線

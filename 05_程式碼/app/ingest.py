@@ -22,6 +22,7 @@ import sys
 
 import config
 import embedder
+import knowledge_policy
 
 COLLECTION = "campus_kb"
 YEAR_RE = re.compile(r"(?<!\d)(1[01]\d)\s*學?年度?(?=[^\d]|$)")
@@ -73,6 +74,9 @@ OUTBOUND_TITLE = re.compile(r"Partner Universities|出國交換|^學生出國$|^
 def judge(rec: dict) -> tuple[str, str]:
     """回傳 (狀態, 原因)。"""
     title = (rec.get("title") or "").strip()
+    policy_reason = knowledge_policy.review_reason(rec.get('text', ''), rec, config.today(), config.stale_before())
+    if policy_reason:
+        return 'needs_review', policy_reason
     if NOISE_TITLE.search(title):
         return "needs_review", "測試頁或非內容頁（標題看起來不是給學生看的內容）"
     if OUTBOUND_TITLE.search(title) and rec.get("source") != "manual":
@@ -202,6 +206,9 @@ def to_metadata(r: dict) -> dict:
         "status": "active",
         "valid_until": 0 if r.get("deadline_passed") or is_regulation(r) else as_int_date(r.get("latest_date")),
         "last_verified": as_int_date(r.get("last_verified_at") or r.get("fetched_at")),
+        'policy_review_status': r.get('policy_review_status', ''),
+        'policy_reviewed_at': str(r.get('policy_reviewed_at', '')),
+        'policy_reviewed_sha256': r.get('policy_reviewed_sha256', ''),
         "topics": "、".join(r.get("topics", [])),
     }
     for ident in config.IDENTITIES + [config.ALL_STUDENTS]:
@@ -282,6 +289,9 @@ def load_manual() -> list[dict]:
                 "identities": split_list(meta.get("identities", "")) or [config.ALL_STUDENTS],
                 "lang": meta.get("lang", "zh"), "risk": "normal",
                 "last_verified_at": meta.get("last_verified", ""), "latest_date": "", "deadline_passed": False,
+                'policy_review_status': meta.get('policy_review_status', ''),
+                'policy_reviewed_at': meta.get('policy_reviewed_at', ''),
+                'policy_reviewed_sha256': meta.get('policy_reviewed_sha256', ''),
                 "source": "manual",
             })
     return out

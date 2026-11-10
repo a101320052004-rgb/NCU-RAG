@@ -111,9 +111,27 @@ def detect_smalltalk(text: str) -> str | None:
 
 
 def detect_high_risk(text: str) -> str | None:
-    low = text.lower()
+    low = text.lower().replace("’", "'")
+    low = re.sub(r"\b(?:don't|doesn't|didn't|won't|wouldn't)\b", "do not", low)
+    # Educational mentions are not evidence of an actual person's intent.
+    # A reported real person's immediate risk must still reach a human.
+    educational = re.compile(r"^\s*(?:please\s+)?(?:translate\b|(?:the )?(?:definition|meaning|example sentence|lyrics)\b|in (?:my|a|the) (?:novel|fictional story)\b|what does .+ mean|how (?:can|do) i (?:avoid|prevent)\b.+\b(?:while|when)\b)")
+    action = re.compile(r"\b(?:hurt(?:ing)?|harm(?:ing)?|kill(?:ing)?)\s+(?:myself|himself|herself|themselves|yourself)\b")
+    negated = re.compile(r"\b(?:not|never|no longer)\s+(?:(?:thinking|thoughts?)\s+(?:about|of)\s+|(?:planning|going|trying|want(?:ing)?|intend(?:ing)?)\s+to\s+)?$")
+    clauses = re.split(r"[.!?;\n]|\bbut\b|\bhowever\b", low)
+    for clause in clauses:
+        for match in action.finditer(clause):
+            if not educational.search(clause) and not negated.search(clause[:match.start()]):
+                return "自我傷害"
+        for word in HIGH_RISK['自我傷害']:
+            for match in re.finditer(re.escape(word), clause):
+                if educational.search(clause) or negated.search(clause[:match.start()]):
+                    continue
+                if re.search(r"(?:不想|不會|沒有|不打算)\s*$", clause[:match.start()]) and word != '不想活':
+                    continue
+                return '自我傷害'
     for cat, words in HIGH_RISK.items():
-        if any(w in low for w in words):
+        if cat != '自我傷害' and any(word in low for word in words):
             return cat
     return None
 

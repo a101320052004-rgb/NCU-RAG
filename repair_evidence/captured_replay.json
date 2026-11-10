@@ -1,0 +1,192 @@
+{
+  "type": "captured_candidate_replay_not_live_test",
+  "snapshot_run_id": "20261110171206",
+  "date": "2026-11-10",
+  "golden_definition": "Complete text coverage of the three handbook fee-table chunks, ignoring headings/whitespace.",
+  "queries": [
+    {
+      "diagnostic": "q2",
+      "before_context_recall": 0.0,
+      "after_context_recall": 1.0,
+      "golden_chunks": [
+        "8af182dee53384c3-32",
+        "8af182dee53384c3-33",
+        "8af182dee53384c3-34"
+      ],
+      "selected_ids": [
+        "8af182dee53384c3-34",
+        "8af182dee53384c3-33",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "58773c60f5d8a7cd-1"
+      ],
+      "fee_branch_disabled_reproduces_baseline_ids": true
+    },
+    {
+      "diagnostic": "q3",
+      "before_context_recall": 0.0,
+      "after_context_recall": 1.0,
+      "golden_chunks": [
+        "8af182dee53384c3-32",
+        "8af182dee53384c3-33",
+        "8af182dee53384c3-34"
+      ],
+      "selected_ids": [
+        "8af182dee53384c3-33",
+        "8af182dee53384c3-34",
+        "3b32819208450c61-18",
+        "md897d587d48-20",
+        "mda4b98886c6-6"
+      ],
+      "fee_branch_disabled_reproduces_baseline_ids": true
+    },
+    {
+      "diagnostic": "q4",
+      "before_context_recall": 0.0,
+      "after_context_recall": 1.0,
+      "golden_chunks": [
+        "8af182dee53384c3-32",
+        "8af182dee53384c3-33",
+        "8af182dee53384c3-34"
+      ],
+      "selected_ids": [
+        "8af182dee53384c3-34",
+        "8af182dee53384c3-33",
+        "md897d587d48-20",
+        "mda4b98886c6-8",
+        "md897d587d48-19"
+      ],
+      "fee_branch_disabled_reproduces_baseline_ids": true
+    },
+    {
+      "diagnostic": "q5",
+      "before_context_recall": 0.0,
+      "after_context_recall": 1.0,
+      "golden_chunks": [
+        "8af182dee53384c3-32",
+        "8af182dee53384c3-33",
+        "8af182dee53384c3-34"
+      ],
+      "selected_ids": [
+        "8af182dee53384c3-33",
+        "8af182dee53384c3-34",
+        "md897d587d48-20",
+        "mda4b98886c6-6",
+        "md897d587d48-19"
+      ],
+      "fee_branch_disabled_reproduces_baseline_ids": true
+    },
+    {
+      "diagnostic": "q6",
+      "before_context_recall": 0.0,
+      "after_context_recall": 1.0,
+      "golden_chunks": [
+        "8af182dee53384c3-32",
+        "8af182dee53384c3-33",
+        "8af182dee53384c3-34"
+      ],
+      "selected_ids": [
+        "8af182dee53384c3-33",
+        "8af182dee53384c3-34",
+        "3b32819208450c61-18",
+        "mda4b98886c6-6",
+        "mda4b98886c6-1"
+      ],
+      "fee_branch_disabled_reproduces_baseline_ids": true
+    }
+  ],
+  "policy_scan": [
+    {
+      "id": "084a1a606d7ea9d4-3",
+      "source": "https://oia.ncu.edu.tw/static/file/26/1026/img/389/VISAandARC.pdf",
+      "family": "arc_arrival_deadline",
+      "obsolete_literal": true,
+      "body_sha256_export_only": "96203ed32ef52f53e769aa886721d13ad10461817e16a9f5885d40feaf8a6ee8"
+    },
+    {
+      "id": "19735f1a755978db-1",
+      "source": "https://oia.ncu.edu.tw/p/412-1026-1887.php?Lang=zh-tw",
+      "family": "student_work_permit_duration",
+      "obsolete_literal": true,
+      "body_sha256_export_only": "297161c17a069c81ddf6992f2a00c0a7f5078b3330c52272b71d7ace00503cf9"
+    },
+    {
+      "id": "19735f1a755978db-2",
+      "source": "https://oia.ncu.edu.tw/p/412-1026-1887.php?Lang=zh-tw",
+      "family": "student_work_permit_duration",
+      "obsolete_literal": true,
+      "body_sha256_export_only": "fa02dc5491334f16c63c4c555ca0c5fc5b39d7462a704f48215e79758a98501a"
+    },
+    {
+      "id": "231a8d7f7b43fedb-3",
+      "source": "https://oia.ncu.edu.tw/p/412-1026-1885.php?Lang=zh-tw",
+      "family": "arc_arrival_deadline",
+      "obsolete_literal": false,
+      "body_sha256_export_only": "85467b210493045e0312212d412752840e9571adb0de641f646f072d6e386800"
+    },
+    {
+      "id": "231a8d7f7b43fedb-4",
+      "source": "https://oia.ncu.edu.tw/p/412-1026-1885.php?Lang=zh-tw",
+      "family": "arc_arrival_deadline",
+      "obsolete_literal": false,
+      "body_sha256_export_only": "26c07254b2181d5c8cdf1a178b03a2bfc62025c2efc09052f3f0be68d6c2e721"
+    },
+    {
+      "id": "231a8d7f7b43fedb-5",
+      "source": "https://oia.ncu.edu.tw/p/412-1026-1885.php?Lang=zh-tw",
+      "family": "arc_arrival_deadline",
+      "obsolete_literal": true,
+      "body_sha256_export_only": "28a4a01b16c97255c724e63660cb4a3440372425769b27d3d4311d11360ee4b3"
+    },
+    {
+      "id": "4a82cc1fbc880f85-10",
+      "source": "https://oia.ncu.edu.tw/static/file/26/1026/img/389/ARCApplicationFormMultiplePurposeApplicationForm.pdf",
+      "family": "arc_arrival_deadline",
+      "obsolete_literal": true,
+      "body_sha256_export_only": "328c2c7548771173bd41f80afa938f64e8ac6e55640c4a8dda9b1864db28e6fb"
+    },
+    {
+      "id": "4a82cc1fbc880f85-13",
+      "source": "https://oia.ncu.edu.tw/static/file/26/1026/img/389/ARCApplicationFormMultiplePurposeApplicationForm.pdf",
+      "family": "arc_arrival_deadline",
+      "obsolete_literal": true,
+      "body_sha256_export_only": "801354bb40277356a8a5378a42b5380d72e4843404657e3d175c7c26a3e9ccd8"
+    },
+    {
+      "id": "52bc3d64ab8adaa6-4",
+      "source": "https://www.immigration.gov.tw/5385/7244/7250/7317/%E5%B1%85%E7%95%99/362168/",
+      "family": "arc_arrival_deadline",
+      "obsolete_literal": false,
+      "body_sha256_export_only": "cbcb46e2f97a6cf1c35e29fad0bd4efe132e0637064d14c749909cc1895fac28"
+    },
+    {
+      "id": "6ddff93c960569db-5",
+      "source": "https://www.immigration.gov.tw/media/118853/0929外國學生與僑生線上申請居留或延期居留及異動登記送件須知-1150506.pdf",
+      "family": "arc_arrival_deadline",
+      "obsolete_literal": false,
+      "body_sha256_export_only": "ca6f3e2cc36307b924e3e2bb27ec358a2c9996b468a5fdbeb3b4bfef7f352168"
+    },
+    {
+      "id": "8af182dee53384c3-3",
+      "source": "https://oia.ncu.edu.tw/static/file/26/1026/img/396/115-1StudentHandbook.pdf",
+      "family": "arc_arrival_deadline",
+      "obsolete_literal": false,
+      "body_sha256_export_only": "7157817ec8ec39e2e3322acd5e3cb3557bea68044c919b704365d4b55bd1b57c"
+    },
+    {
+      "id": "a20d7a7e9a628894-1",
+      "source": "https://oia.ncu.edu.tw/p/412-1026-2204.php?Lang=en",
+      "family": "student_work_permit_duration",
+      "obsolete_literal": false,
+      "body_sha256_export_only": "342c1c34f2dee331e5d167cb8ccea554f46f60c5169f7543ab127d708c2315d9"
+    },
+    {
+      "id": "a20d7a7e9a628894-2",
+      "source": "https://oia.ncu.edu.tw/p/412-1026-2204.php?Lang=en",
+      "family": "student_work_permit_duration",
+      "obsolete_literal": false,
+      "body_sha256_export_only": "f8ecfa91c0215e404060a44ffabb20296ec13c7ade46e387409a8676bd519466"
+    }
+  ],
+  "note": "Exported bodies may be redacted. Export hashes must not authorize live data changes."
+}

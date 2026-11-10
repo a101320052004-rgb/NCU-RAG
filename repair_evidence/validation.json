@@ -1,6 +1,6 @@
 {
   "base_commit": "164083292fa518e85ee2073a198dbb7ecbde9d7c",
-  "unittest_methods": 23,
+  "unittest_methods": 35,
   "unittest_passed": true,
   "originals_preserved": [
     {
@@ -33,7 +33,9 @@
   "captured_replay_queries": 5,
   "changed_code_ast_parse": "passed",
   "token_shape_scan": "no matches",
-  "native_postgresql_executed": false,
+  "isolated_postgresql_wasm_groups": 8,
+  "production_postgresql17_executed": false,
+  "postgrest_integration_tested": false,
   "claude_calls": 0,
   "production_database_writes": 0,
   "production_deployments_requested": 0

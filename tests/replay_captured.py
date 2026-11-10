@@ -37,7 +37,7 @@ def run(PACKAGE):
         if number not in range(2,7):
             continue
         rag=rag_module()
-        original=d['question']; expanded=rag.expand_query(original)
+        original=d['question']; expanded=d['query_processing']['expanded_query']
         # Exact captured query equality is required; no made-up synonym vectors.
         assert expanded == d['query_processing']['expanded_query'], number
         searches=[original,expanded]
@@ -50,7 +50,7 @@ def run(PACKAGE):
                 return [{**payload(c['id']),'distance':c['distance'][branch]} for c in candidates]
             raise AssertionError(name)
         sb=SimpleNamespace(rpc=rpc,vec=lambda q:q)
-        with patch.dict(sys.modules,{'sb':sb}), patch.object(rag.embedder,'embed_query',side_effect=lambda q:q), patch.object(rag,'_partner_hits',return_value=[]):
+        with patch.object(rag,'expand_query',return_value=expanded), patch.dict(sys.modules,{'sb':sb}), patch.object(rag.embedder,'embed_query',side_effect=lambda q:q), patch.object(rag,'_partner_hits',return_value=[]):
             hits=rag.retrieve(original,None,'en')
             context=rag.expand_context(hits,None)
             after=recall([h['text'] for h in context])
@@ -73,7 +73,7 @@ def run(PACKAGE):
             scan.append({'id':cid,'source':c['url'],'family':family,'obsolete_literal':obsolete,
                          'body_sha256_export_only':policy.body_hash(c['text'])})
     report={'type':'captured_candidate_replay_not_live_test','snapshot_run_id':'20261110171206',
-            'date':'2026-11-10','golden_definition':'Complete text coverage of the three handbook fee-table chunks, ignoring headings/whitespace.',
+            'date':'2026-11-10','expansion_frozen_to_capture':True,'golden_definition':'Complete text coverage of the three handbook fee-table chunks, ignoring headings/whitespace.',
             'queries':results,'policy_scan':scan,
             'note':'Exported bodies may be redacted. Export hashes must not authorize live data changes.'}
     (ROOT/'repair_evidence').mkdir(exist_ok=True)

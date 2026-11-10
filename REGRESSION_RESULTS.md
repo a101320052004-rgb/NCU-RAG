@@ -37,3 +37,9 @@ python tests/replay_captured.py --package <私有診斷包目錄>
 ```
 
 首次下載原模型；不換正式模型。原始包、Excel、模型／向量快取與 node_modules 均不上 Git。新向量由遮罩後快照重建，屬本次控制重跑，不能冒稱歷史正式檢索。沒有量測正式延遲或 Claude 答案通過率。
+
+## 遠端平台檢查
+
+後續 Draft PR：[PR #2](https://github.com/a101320052004-rgb/NCU-RAG/pull/2)。第一版 PR #1 由儲存庫擁有者合併；此後續 PR 未合併。
+
+已觀察到 Vercel 自動預覽連動。Vercel 檢查失敗，原因為 Git 作者 `b9600517-droid` 缺少該 Vercel 專案存取權；Supabase Preview 為 skipped。這不是已執行的程式 build 結果，需要專案擁有者在預覽驗收前處理授權。本次未變更平台權限、未執行正式部署，不能將本機測試通過當成遠端 CI 通過。

@@ -26,3 +26,9 @@
 4. 官方現行資料由人確認後，才使用 `004_approve_policy_template.sql`。缺少完整依據的段落需整理／重切並重算受影響向量，不能機械替換數字。
 
 README 說明 push 不自動更新正式網站，Repository 無部署 workflow／自訂 hook；未直接查核 Vercel 遠端管理設定。PR 維持 Draft。
+
+## 遠端平台檢查
+
+後續 Draft PR：[PR #2](https://github.com/a101320052004-rgb/NCU-RAG/pull/2)。第一版 PR #1 由儲存庫擁有者合併；此後續 PR 未合併。
+
+已觀察到 Vercel 自動預覽連動。Vercel 檢查失敗，原因為 Git 作者 `b9600517-droid` 缺少該 Vercel 專案存取權；Supabase Preview 為 skipped。這不是已執行的程式 build 結果，需要專案擁有者在預覽驗收前處理授權。本次未變更平台權限、未執行正式部署，不能將本機測試通過當成遠端 CI 通過。

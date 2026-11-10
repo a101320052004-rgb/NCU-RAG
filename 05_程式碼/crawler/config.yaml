@@ -1,0 +1,106 @@
+# 校園 RAG 專案爬蟲設定檔
+# 第一次執行前，請把 user_agent 裡的 your-email 換成你們的聯絡信箱
+
+user_agent: "NCU-CampusRAG-StudentProject/0.1 (student competition project; contact: a101320052004@gmail.com)"
+delay_seconds: 2        # 每次請求間隔秒數；robots.txt 有指定 Crawl-delay 時以較大者為準
+timeout: 20
+max_pages: 300          # 每個網站最多抓幾個網址（含附件）
+max_depth: 3            # 從起始頁往下最多跟幾層連結
+keep_query_params: [Lang]   # 網址裡只保留這些參數（中英文版靠 Lang 區分）
+chunk_size: 500         # 每段字數
+chunk_overlap: 80       # 段與段重疊字數，避免句子被切斷後失去上下文
+min_chars: 40           # 內文少於這個字數的頁面不切段
+output_dir: "../../04_知識庫資料/原始資料"   # 相對於這個設定檔的位置
+
+sites:
+  - name: oia
+    unit: 國際處
+    enabled: true
+    seeds:
+      # 網站導覽（中、英）：從這裡可以連到全站
+      - https://oia.ncu.edu.tw/p/17-1026.php?Lang=zh-tw
+      - https://oia.ncu.edu.tw/p/17-1026.php?Lang=en
+      # 已知的國際生重點頁（10/1 盤點過），確保一定會抓到
+      - https://oia.ncu.edu.tw/p/412-1026-1879.php?Lang=zh-tw   # 校園生活資訊
+      - https://oia.ncu.edu.tw/p/412-1026-1884.php?Lang=zh-tw   # 僑生保險
+      - https://oia.ncu.edu.tw/p/412-1026-1885.php?Lang=zh-tw   # 居留證申請與延期／出入境
+      - https://oia.ncu.edu.tw/p/412-1026-1886.php?Lang=zh-tw   # 獎助學金
+      - https://oia.ncu.edu.tw/p/412-1026-1887.php?Lang=zh-tw   # 工作證
+      - https://oia.ncu.edu.tw/p/412-1026-1894.php?Lang=zh-tw   # 陸生在學期間注意事項
+      - https://oia.ncu.edu.tw/p/412-1026-2201.php?Lang=en      # Insurance
+      - https://oia.ncu.edu.tw/p/412-1026-2202.php?Lang=en      # Immigration
+      - https://oia.ncu.edu.tw/p/412-1026-2203.php?Lang=en      # Information for Incoming Students
+      - https://oia.ncu.edu.tw/p/412-1026-2204.php?Lang=en      # Work Permit
+      - https://oia.ncu.edu.tw/p/412-1026-2205.php?Lang=en      # Scholarship
+      - https://oia.ncu.edu.tw/p/412-1026-2207.php?Lang=en      # Incoming Exchange Students
+      - https://oia.ncu.edu.tw/p/403-1026-342.php?Lang=zh-tw    # 最新公告
+      - https://oia.ncu.edu.tw/p/403-1026-571.php?Lang=zh-tw    # 境外學生事務公告
+    allow:
+      # 一般頁面（412）、公告列表與分頁（403）、公告內文（406）、網站導覽（17）
+      - '^https://oia\.ncu\.edu\.tw/p/(412|403|406|404|426|17)-1026[-\d,r]*\.php'
+    deny:
+      - 'login|logout|search|print'
+    link_only:
+      # 網站導覽與公告列表：只用來找連結，不當成知識內容
+      - '/p/17-1026\.php'
+      - '/p/403-1026-'
+    content_selectors:
+      # 學校網站多用同一套版型，內文放在 .mpgdetail；抓不到時程式會自動改用其他方法
+      - '.mpgdetail'
+      - '.module-detail'
+      - '.mcont'
+    attachment_hosts: [oia.ncu.edu.tw]
+
+  - name: shsd
+    unit: 學務處住宿服務組
+    enabled: true          # 「住」的問題答案多半在這裡，負責人也提到宿舍停水停電公告
+    max_depth: 1
+    max_pages: 40
+    seeds:
+      - https://shsd.ncu.edu.tw/Home/QA
+      - https://shsd.ncu.edu.tw/Dormitory
+      - https://shsd.ncu.edu.tw/Application/LiveDorm
+      - https://shsd.ncu.edu.tw/Info/Medical
+      - https://shsd.ncu.edu.tw/Info/Emergency
+    allow:
+      - '^https://shsd\.ncu\.edu\.tw/(Home/QA|Dormitory|Application/(LiveDorm|Refund)|Info/(Medical|Emergency|SOP)|Student/Rules)'
+    attachment_hosts: [shsd.ncu.edu.tw]
+
+  - name: ncu_life
+    unit: 中央大學校園生活資訊
+    enabled: true          # 國際處「校園生活資訊」頁連出去的學校官網內容：飲食、交通、地圖、郵局銀行、行事曆、衛保、宿舍
+    max_depth: 1           # 只抓這幾頁本身和頁面上的附件（例如行事曆 PDF），不往下爬
+    max_pages: 40
+    keep_query_params: [Lang, top, num]   # 學校官網用 top、num 參數區分頁面，不能拿掉
+    seeds:
+      - https://www.ncu.edu.tw/tw/pages/show.php?top=1&num=43   # 飲食指南
+      - https://www.ncu.edu.tw/tw/pages/show.php?top=1&num=54   # 交通資訊
+      - https://www.ncu.edu.tw/tw/pages/show.php?top=1&num=35   # 校園地圖
+      - https://www.ncu.edu.tw/tw/pages/show.php?top=1&num=47   # 郵局及銀行
+      - https://pdc.adm.ncu.edu.tw/p/412-1019-1725.php?Lang=zh-tw   # 校曆（教務處 2026 改版後的新網址；舊的 calendar.asp 已 404）
+      - https://health.ncu.edu.tw/zh                            # 健康服務
+      - https://in.ncu.edu.tw/~ncu7221/OSDS/index.php           # 宿舍資訊（和住宿組網站比對用）
+    allow:
+      - '^https://www\.ncu\.edu\.tw/tw/pages/show\.php\?top=1&num=(43|54|35|47)$'
+      - '^https://pdc\.adm\.ncu\.edu\.tw/p/412-1019-1725\.php'
+      - '^https://health\.ncu\.edu\.tw/zh$'
+      - '^https://in\.ncu\.edu\.tw/~ncu7221/OSDS/index\.php$'
+    attachment_hosts: [www.ncu.edu.tw, pdc.adm.ncu.edu.tw, health.ncu.edu.tw]
+    # 校曆頁同時放了好幾個學年度：只收今年的，舊學年度擋掉（每年 8 月把數字往上加 1）
+    attachment_deny: ['calendar11[34]\b', 'calendar11[34]\.pdf', '202[45]-202[56]_ncu']
+
+  - name: nia
+    unit: 內政部移民署
+    enabled: true          # 居留證以移民署為準：國際處網站上的 .doc 說明檔是多年前的版本（桃園縣、舊機關名）
+    max_depth: 1           # 只抓下面幾頁和頁面上的附件（送件須知 PDF），不往下爬整個移民署網站
+    max_pages: 20
+    seeds:
+      - https://www.immigration.gov.tw/5385/7244/7250/7317/%E5%B1%85%E7%95%99/362168/   # 外國學生與僑生線上申請居留、延期、異動登記
+      - https://www.immigration.gov.tw/5475/5478/141465/141469/367180/cp_news          # 同上英文版
+      - https://www.immigration.gov.tw/5385/5388/7181/100924/                          # 業務諮詢一覽表（1990 外來人士在臺生活諮詢熱線等）
+    allow:
+      - '^https://www\.immigration\.gov\.tw/(5382/)?5385/7244/7250/7317/[^/]+/362168/?$'
+      - '^https://www\.immigration\.gov\.tw/5475/5478/141465/141469/367180/cp_news$'
+      - '^https://www\.immigration\.gov\.tw/(5382/)?5385/5388/7181/100924/?$'
+    attachment_hosts: [www.immigration.gov.tw]
+    attachment_allow: ['學生', '僑生', 'student', 'compatriot']   # 只收學生居留相關的附件（不要「個人資料彙整表」這類行政文件）

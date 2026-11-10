@@ -1,0 +1,315 @@
+<title>國際生 LINE Bot 架構</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* 版面：單欄閱讀寬度，架構圖與表格可橫向捲動；語氣像一份工程規格，配色取自青瓷與墨色 */
+:root{
+  --bg:#f4f7f6; --surface:#ffffff; --fg:#13212a; --muted:#566872; --line:#d3dde0;
+  --accent:#0d7a6a; --accent-soft:#dff1ed; --warn:#a8650a; --warn-soft:#fbefdc;
+  --crit:#b3261e; --crit-soft:#fbe4e2; --ink2:#2f4a8a; --ink2-soft:#e4e9f6;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1518; --surface:#152025; --fg:#e4ecee; --muted:#93a6ae; --line:#2a3a41;
+  --accent:#4cc3ad; --accent-soft:#163a35; --warn:#e3a34a; --warn-soft:#3a2c17;
+  --crit:#f08a80; --crit-soft:#3d1f1d; --ink2:#9fb2ec; --ink2-soft:#1f2842; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1518; --surface:#152025; --fg:#e4ecee; --muted:#93a6ae; --line:#2a3a41;
+  --accent:#4cc3ad; --accent-soft:#163a35; --warn:#e3a34a; --warn-soft:#3a2c17;
+  --crit:#f08a80; --crit-soft:#3d1f1d; --ink2:#9fb2ec; --ink2-soft:#1f2842; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15.5px;line-height:1.75}
+.wrap{max-width:980px;margin:0 auto;padding-block:40px 72px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:44px}
+header{display:flex;flex-direction:column;gap:10px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;color:var(--accent);text-transform:uppercase}
+h1{font-size:clamp(28px,4.6vw,40px);font-weight:900;line-height:1.25;margin:0;text-wrap:balance}
+h2{font-size:22px;font-weight:700;margin:0 0 12px;text-wrap:balance}
+h3{font-size:16px;font-weight:700;margin:18px 0 6px}
+p{margin:0 0 10px;max-width:68ch}
+.lead{font-size:17px;color:var(--fg);max-width:64ch}
+.meta{font-size:13px;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:6px;min-width:0}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;vertical-align:top;padding:10px 14px;border-bottom:1px solid var(--line)}
+th{font-weight:700;font-size:13px;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td code,p code,li code{font-family:var(--f-mono);font-size:12.5px;background:var(--bg);padding:1px 5px;border-radius:4px}
+.pill{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:999px;white-space:nowrap}
+.p-ok{background:var(--accent-soft);color:var(--accent)}
+.p-warn{background:var(--warn-soft);color:var(--warn)}
+.p-crit{background:var(--crit-soft);color:var(--crit)}
+.p-ink{background:var(--ink2-soft);color:var(--ink2)}
+/* 架構圖 */
+.diagram{min-width:780px;padding:12px}
+.diagram svg{display:block;width:100%;height:auto}
+.d-col{font:700 13px var(--f-body);fill:var(--muted);letter-spacing:.06em}
+.d-box{fill:var(--surface);stroke:var(--line);stroke-width:1.2}
+.d-group{fill:var(--bg);stroke:var(--line);stroke-width:1.2;stroke-dasharray:4 4}
+.d-key{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.6}
+.d-ext{fill:var(--ink2-soft);stroke:var(--ink2);stroke-width:1.2}
+.d-t{font:700 14px var(--f-body);fill:var(--fg)}
+.d-s{font:400 12.5px var(--f-body);fill:var(--muted)}
+.d-k{font:700 14px var(--f-body);fill:var(--accent)}
+.d-arrow{stroke:var(--muted);stroke-width:1.4;fill:none}
+.d-head{fill:var(--muted)}
+.d-label{font:400 12px var(--f-body);fill:var(--muted)}
+/* 規則卡 */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.rule{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.rule b{font-size:15px}
+.rule span{color:var(--muted);font-size:14px}
+ol.steps{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:6px;max-width:72ch}
+ol.steps li::marker{font-family:var(--f-mono);color:var(--accent);font-weight:600}
+/* 對話示意 */
+.chat{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.thread{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.thread h4{margin:0;font-size:14px;display:flex;gap:8px;align-items:center}
+.bubble{padding:10px 14px;border-radius:14px;font-size:14.5px;line-height:1.65;max-width:92%}
+.me{align-self:flex-end;background:var(--ink2-soft);border-bottom-right-radius:4px}
+.bot{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:4px}
+.bot small{display:block;margin-top:6px;color:var(--muted);font-size:12px}
+.why{font-size:13px;color:var(--muted);border-top:1px dashed var(--line);padding-top:8px}
+pre{font-family:var(--f-mono);font-size:12.5px;line-height:1.7;white-space:pre-wrap;margin:0;padding:16px 18px;color:var(--fg)}
+.note{border-left:3px solid var(--warn);background:var(--warn-soft);padding:12px 16px;border-radius:0 8px 8px 0;font-size:14.5px;max-width:72ch}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:520px){body{font-size:15px}th,td{padding:8px 10px}}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">校園 RAG 專案 · 試點單位：國際處 · 2026-11-08 草稿</div>
+  <h1>國際生 LINE Bot 架構</h1>
+  <p class="lead">學生在 LINE 問問題，後端只從「還有效」的國際處資料找答案，用耐心、直接的語氣回覆，並附上來源和資料日期。過期或查不到的內容一律不回答，改成給承辦窗口。</p>
+  <p class="meta">demo 版在 11/11 前完成；正式版的選項列在各段的右欄，待計中與國際處確認後再定。</p>
+</header>
+
+<section>
+  <h2>整體架構</h2>
+  <div class="scroll"><div class="diagram">
+  <svg viewBox="0 0 960 620" role="img" aria-labelledby="dg-title">
+    <title id="dg-title">架構圖：使用者層、後端、資料層與每日更新流程</title>
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path class="d-head" d="M0,0 L10,5 L0,10 z"/>
+      </marker>
+    </defs>
+
+    <text class="d-col" x="20" y="30">使用者</text>
+    <text class="d-col" x="290" y="30">後端（Python FastAPI）</text>
+    <text class="d-col" x="710" y="30">資料與外部服務</text>
+
+    <!-- 使用者 -->
+    <rect class="d-box" x="20" y="50" width="210" height="100" rx="10"/>
+    <text class="d-t" x="36" y="78">國際生（LINE）</text>
+    <text class="d-s" x="36" y="102">圖文選單：食衣住行育樂</text>
+    <text class="d-s" x="36" y="122">自由提問、接收推播</text>
+    <text class="d-s" x="36" y="142">中文或英文</text>
+
+    <rect class="d-box" x="20" y="180" width="210" height="80" rx="10"/>
+    <text class="d-t" x="36" y="208">小組測試頁</text>
+    <text class="d-s" x="36" y="232">Streamlit，不對外</text>
+    <text class="d-s" x="36" y="250">調整回答品質用</text>
+
+    <rect class="d-box" x="20" y="300" width="210" height="110" rx="10"/>
+    <text class="d-t" x="36" y="328">國際處同仁</text>
+    <text class="d-s" x="36" y="352">在 Google Sheet 更新</text>
+    <text class="d-s" x="36" y="372">FAQ 與公告</text>
+    <text class="d-s" x="36" y="396">審核要推播的訊息</text>
+
+    <!-- 後端 -->
+    <rect class="d-group" x="290" y="46" width="360" height="460" rx="14"/>
+    <rect class="d-box" x="310" y="66" width="320" height="46" rx="8"/>
+    <text class="d-t" x="326" y="95">LINE Webhook／測試頁 API</text>
+
+    <rect class="d-box" x="310" y="134" width="320" height="72" rx="8"/>
+    <text class="d-t" x="326" y="158">分流器</text>
+    <text class="d-s" x="326" y="180">點選單 → 直接回懶人包</text>
+    <text class="d-s" x="326" y="198">受傷、心理、糾紛 → 轉人工</text>
+
+    <rect class="d-group" x="310" y="224" width="320" height="178" rx="10"/>
+    <text class="d-s" x="326" y="244">一般問題 → RAG 問答引擎</text>
+    <rect class="d-box" x="326" y="254" width="288" height="40" rx="7"/>
+    <text class="d-t" x="340" y="279">① 檢索：依身分、語言過濾</text>
+    <rect class="d-key" x="326" y="302" width="288" height="40" rx="7"/>
+    <text class="d-k" x="340" y="327">② 時效過濾：過期資料不使用</text>
+    <rect class="d-box" x="326" y="350" width="288" height="40" rx="7"/>
+    <text class="d-t" x="340" y="375">③ 生成：語氣規則＋來源日期</text>
+
+    <rect class="d-box" x="310" y="420" width="320" height="66" rx="8"/>
+    <text class="d-t" x="326" y="446">推播模組</text>
+    <text class="d-s" x="326" y="468">新公告 → 同仁審核 → 依身分推播</text>
+
+    <!-- 資料層 -->
+    <rect class="d-box" x="710" y="150" width="230" height="100" rx="10"/>
+    <text class="d-t" x="726" y="178">向量資料庫</text>
+    <text class="d-s" x="726" y="202">Chroma（demo）→ pgvector</text>
+    <text class="d-s" x="726" y="222">段落＋身分、語言、</text>
+    <text class="d-s" x="726" y="240">有效期限、狀態</text>
+
+    <rect class="d-ext" x="710" y="320" width="230" height="74" rx="10"/>
+    <text class="d-t" x="726" y="348">Claude API</text>
+    <text class="d-s" x="726" y="370">只用檢索到的資料作答</text>
+    <text class="d-s" x="726" y="388">模型可抽換</text>
+
+    <rect class="d-box" x="710" y="412" width="230" height="94" rx="10"/>
+    <text class="d-t" x="726" y="440">關聯式資料庫</text>
+    <text class="d-s" x="726" y="462">SQLite（demo）→ PostgreSQL</text>
+    <text class="d-s" x="726" y="482">使用者設定、對話紀錄、</text>
+    <text class="d-s" x="726" y="500">推播、轉人工清單</text>
+
+    <!-- 每日更新流程 -->
+    <text class="d-col" x="140" y="540">每天自動執行一次的資料更新</text>
+    <rect class="d-box" x="20" y="554" width="172" height="52" rx="8"/>
+    <text class="d-t" x="34" y="577">資料來源</text>
+    <text class="d-s" x="34" y="596">官網＋Google Sheet</text>
+    <rect class="d-box" x="206" y="554" width="172" height="52" rx="8"/>
+    <text class="d-t" x="220" y="577">爬蟲</text>
+    <text class="d-s" x="220" y="596">遵守 robots.txt</text>
+    <rect class="d-box" x="392" y="554" width="172" height="52" rx="8"/>
+    <text class="d-t" x="406" y="577">清理與標記</text>
+    <text class="d-s" x="406" y="596">主題、身分、語言</text>
+    <rect class="d-key" x="578" y="554" width="172" height="52" rx="8"/>
+    <text class="d-k" x="592" y="577">時效檢查</text>
+    <text class="d-s" x="592" y="596">過期 → 不入庫</text>
+    <rect class="d-box" x="764" y="554" width="176" height="52" rx="8"/>
+    <text class="d-t" x="778" y="577">寫入資料庫</text>
+    <text class="d-s" x="778" y="596">並產生變動報告</text>
+
+    <!-- 箭頭 -->
+    <path class="d-arrow" d="M230,90 L306,89" marker-end="url(#ah)" marker-start="url(#ah)"/>
+    <path class="d-arrow" d="M230,220 C268,220 270,170 306,170" marker-end="url(#ah)"/>
+    <path class="d-arrow" d="M230,380 C270,380 270,452 306,452" marker-end="url(#ah)"/>
+    <path class="d-arrow" d="M120,410 L120,550" marker-end="url(#ah)"/>
+    <path class="d-arrow" d="M470,112 L470,130" marker-end="url(#ah)"/>
+    <path class="d-arrow" d="M590,206 L590,250" marker-end="url(#ah)"/>
+    <path class="d-arrow" d="M470,294 L470,298" marker-end="url(#ah)"/>
+    <path class="d-arrow" d="M470,342 L470,346" marker-end="url(#ah)"/>
+    <path class="d-arrow" d="M614,274 C660,274 664,205 706,205" marker-end="url(#ah)"/>
+    <path class="d-arrow" d="M614,370 C660,370 664,357 706,357" marker-end="url(#ah)" marker-start="url(#ah)"/>
+    <path class="d-arrow" d="M630,454 L706,458" marker-end="url(#ah)"/>
+    <path class="d-arrow" d="M192,580 L202,580" marker-end="url(#ah)"/>
+    <path class="d-arrow" d="M378,580 L388,580" marker-end="url(#ah)"/>
+    <path class="d-arrow" d="M564,580 L574,580" marker-end="url(#ah)"/>
+    <path class="d-arrow" d="M750,580 L760,580" marker-end="url(#ah)"/>
+    <path class="d-arrow" d="M852,554 L852,510" marker-end="url(#ah)"/>
+    <text class="d-label" x="240" y="80">訊息／回覆</text>
+    <text class="d-label" x="864" y="536">向量＋關聯式</text>
+  </svg>
+  </div></div>
+  <p class="meta">綠色框是「不回答過時內容」的兩道關卡：資料進來時擋一次，回答前再擋一次。</p>
+</section>
+
+<section>
+  <h2>三層各用什麼</h2>
+  <div class="scroll"><table>
+    <thead><tr><th style="width:16%">層</th><th style="width:22%">元件</th><th>demo 版（11/11 前）</th><th>正式版選項</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="3"><b>前端</b></td><td>LINE 官方帳號</td><td>Messaging API；圖文選單 6 格「食、衣、住、行、育、樂」，第二頁放居留、工作、獎學金、保險、緊急、切換語言</td><td>同左，加上依身分分眾推播</td></tr>
+      <tr><td>回覆格式</td><td>文字回覆＋Flex 卡片（「查看官方頁面」按鈕、資料日期）</td><td>同左</td></tr>
+      <tr><td>內容後台</td><td>Google Sheet：FAQ、公告、懶人包，各一個分頁</td><td>簡易管理頁，可查看沒答出來的問題</td></tr>
+      <tr><td rowspan="4"><b>後端</b></td><td>API 伺服器</td><td>Python FastAPI＋<code>line-bot-sdk</code>，筆電執行＋ngrok 對外</td><td>部署到雲端（Cloud Run 等）或學校主機</td></tr>
+      <tr><td>LLM</td><td>Claude（小型模型，成本低）</td><td>依計中規定；需本地部署時換成可自架的模型</td></tr>
+      <tr><td>向量化模型</td><td><code>multilingual-e5</code>（中英文都可，免費、可本地執行）</td><td>同左，或換成雲端 embedding API</td></tr>
+      <tr><td>排程</td><td>手動執行爬蟲</td><td>Windows 工作排程器或 GitHub Actions，每日一次</td></tr>
+      <tr><td rowspan="2"><b>資料庫</b></td><td>向量資料庫</td><td>Chroma（存成本機資料夾，免安裝伺服器）</td><td>PostgreSQL＋pgvector（和關聯式資料庫合一）</td></tr>
+      <tr><td>關聯式資料庫</td><td>SQLite（一個檔案）</td><td>PostgreSQL</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>一則訊息怎麼被處理</h2>
+  <ol class="steps">
+    <li>LINE 把訊息送到 Webhook，後端先驗證簽章，確認真的是 LINE 送來的。</li>
+    <li>讀取這位學生的設定：語言、身分（第一次使用時用按鈕選一次，例如「外籍學位生／交換生／僑生／陸生」）。</li>
+    <li>分流器判斷：點了選單 → 直接回該分類的懶人包；提到受傷、心理困擾、糾紛 → 給校安中心 24 小時電話和國際處窗口，不讓 AI 自己處理；其他 → 進 RAG。</li>
+    <li>檢索：只找「適用這個身分或全體境外生」「狀態為有效」的段落，中文問題優先找中文資料，英文亦同。</li>
+    <li>時效過濾：把截止日已過、超過 12 個月沒確認過的段落拿掉。剩下的資料不足以回答時，直接回「目前沒有最新資料」並給承辦窗口。</li>
+    <li>生成：Claude 只根據這些段落回答，遵守下面的語氣規則，結尾附來源連結與資料日期。</li>
+    <li>回覆學生，並把問題、回答、用到的來源、學生給的讚或倒讚寫進對話紀錄（不存姓名，LINE 帳號只存雜湊值）。</li>
+  </ol>
+</section>
+
+<section>
+  <h2>規則一：不回答過時的內容</h2>
+  <p>國際處網站上就有過期資料，例如保險頁還寫著 109-110 年度的保費，獎學金頁的截止日也早就過了。所以「不能回答太久以前的內容」不能只靠提示詞，要在資料進來時和回答前各擋一次。</p>
+  <div class="scroll"><table>
+    <thead><tr><th style="width:18%">關卡</th><th>怎麼判斷</th><th style="width:26%">結果</th></tr></thead>
+    <tbody>
+      <tr><td><b>1. 入庫時</b></td><td>爬蟲標記：有寫期限而且日期都已經過了（<code>deadline_passed</code>）</td><td><span class="pill p-crit">expired</span> 不進知識庫</td></tr>
+      <tr><td></td><td>內文提到的最近年份是兩年前以前，例如「109-110 年度」（<code>possibly_outdated</code>）</td><td><span class="pill p-warn">needs_review</span> 列進待確認清單，不參與回答</td></tr>
+      <tr><td><b>2. 檢索時</b></td><td>只取 <code>status = active</code>，而且 <code>valid_until</code> 在今天以後</td><td>過期段落不會被找到</td></tr>
+      <tr><td></td><td><code>last_verified_at</code> 超過 12 個月（爬蟲每次重抓且內容沒變，就更新這個日期）</td><td>視為過期，不使用</td></tr>
+      <tr><td><b>3. 回答時</b></td><td>提示詞規定只能用提供的段落，不能用模型自己的知識；段落不足就說查不到</td><td>不會拿舊知識亂答</td></tr>
+      <tr><td><b>4. 顯示時</b></td><td>每則回答附「資料更新：YYYY-MM-DD」與官方連結</td><td>學生自己也能判斷新舊</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">需要你們決定：「太久以前」的標準先定為 <b>12 個月</b>，學年度相關內容只用 <b>115 學年</b>。之後可以依國際處的意見，改成依主題分別設定。例如居留規定 6 個月就要重新確認，校園地圖可以放寬到 2 年。</p>
+</section>
+
+<section>
+  <h2>規則二：回答語氣</h2>
+  <p>目標：讓學生覺得「問了就有答案，而且對方懂我在急什麼」。</p>
+  <div class="rules">
+    <div class="rule"><b>第一句就回答</b><span>先給結論：可以或不行、多少錢、去哪裡、什麼時候截止。背景說明放後面。</span></div>
+    <div class="rule"><b>先接住情緒，只用一句</b><span>學生著急或沮喪時，用一句具體的話回應他的處境，接著馬上給解法。不說「別擔心」「我理解您的感受」這類空話。</span></div>
+    <div class="rule"><b>有耐心，但不囉嗦</b><span>步驟最多 3～5 點；一則 LINE 訊息控制在 250 字左右。學生追問同一件事，換個方式再說明，不重複貼同一段。</span></div>
+    <div class="rule"><b>缺資訊只問一個問題</b><span>答案會因身分不同時，先問最關鍵的一題，通常是「你是外籍學位生、交換生、僑生還是陸生？」</span></div>
+    <div class="rule"><b>用學生的語言</b><span>英文問就用英文答，中文問就用繁體中文答；專有名詞附上中文原名，方便學生到櫃台詢問。</span></div>
+    <div class="rule"><b>不確定就說，並給出口</b><span>查不到或資料過期時，直接說，再給承辦人或窗口，不猜測。居留、打工、緊急狀況一律附官方連結。</span></div>
+  </div>
+
+  <h3>對話示意（內容為示範，實際以爬到的資料為準）</h3>
+  <div class="chat">
+    <div class="thread">
+      <h4><span class="pill p-ok">建議</span>直接、有同理、附日期</h4>
+      <div class="bubble me">I just found out I missed the scholarship renewal email… is it too late? I really need this for tuition 😟</div>
+      <div class="bubble bot">That sounds stressful, especially when tuition depends on it. Based on the latest notice, the renewal deadline was <b>Sep 24</b>, so the online application is closed.<br>What you can do now:<br>1. Email or visit the Office of International Affairs today and explain your situation.<br>2. Ask whether a late submission can be considered.<br>Whether a late application is accepted is up to the office, so please contact them directly.
+        <small>Source: OIA Scholarship page · Data updated 2026-09-20</small></div>
+      <div class="why">第一句回應處境，第二句給答案，接著給可以做的事，最後誠實說明決定權在承辦人。</div>
+    </div>
+    <div class="thread">
+      <h4><span class="pill p-crit">避免</span>冗長、用舊資料、沒有出口</h4>
+      <div class="bubble me">我沒收到獎學金續領通知，是不是來不及了？</div>
+      <div class="bubble bot">您好！非常理解您的心情，請別擔心😊 本校獎學金種類繁多，包含僑生獎學金、外籍生獎學金……（以下貼出整段辦法）依 109-110 年度規定，申請期間為……</div>
+      <div class="why">空泛安慰、沒有回答「是不是來不及」、引用過期年度、沒有來源，也沒有告訴學生下一步。</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>資料庫設計</h2>
+  <div class="scroll"><table>
+    <thead><tr><th style="width:20%">資料表</th><th>主要欄位</th><th style="width:28%">用途</th></tr></thead>
+    <tbody>
+      <tr><td><code>chunks</code><br><span class="meta">向量資料庫</span></td><td>段落文字、向量、來源網址、單位、主題、適用身分、語言、風險、<b>published_at、valid_until、last_verified_at、status</b></td><td>RAG 檢索；後四個欄位負責時效過濾</td></tr>
+      <tr><td><code>documents</code></td><td>網址、標題、內容指紋、狀態、狀態原因、確認人、確認日期</td><td>追蹤每份來源，處理「待確認」清單</td></tr>
+      <tr><td><code>users</code></td><td>LINE 帳號雜湊值、語言、身分、訂閱的主題</td><td>個人化檢索與推播；不存姓名</td></tr>
+      <tr><td><code>messages</code></td><td>問題、回答、處理路線（選單／RAG／轉人工）、用到的段落、回應時間、讚或倒讚</td><td>分析常見問題、找出答不好的題目</td></tr>
+      <tr><td><code>announcements</code></td><td>中英標題與內文、適用身分、截止日、狀態（草稿／已核准／已發送）、核准人</td><td>推播前一定要同仁核准</td></tr>
+      <tr><td><code>handoffs</code></td><td>類別（受傷、心理、糾紛、查不到）、問題、建立時間、處理時間</td><td>國際處隔天上班查看，不推播到同仁手機</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>待決定事項</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>項目</th><th>目前預設</th><th style="width:22%">由誰決定</th></tr></thead>
+    <tbody>
+      <tr><td>「太久以前」的時間標準</td><td>12 個月；學年度內容只用 115 學年</td><td>小組，之後請國際處確認</td></tr>
+      <tr><td>能不能把資料送到雲端 LLM</td><td>demo 用 Claude；資料都是公開網頁</td><td><span class="pill p-ink">計中</span></td></tr>
+      <tr><td>LINE 官方帳號歸屬與推播費用</td><td>demo 用小組自己的帳號</td><td><span class="pill p-ink">國際處</span></td></tr>
+      <tr><td>國際處網站能不能爬</td><td>爬蟲遵守 robots.txt；不允許就改請單位提供檔案</td><td><span class="pill p-ink">國際處、計中</span></td></tr>
+      <tr><td>是否串接現有的 AI 顧問</td><td>demo 先不串</td><td>建置 AI 顧問的前任</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+</div>

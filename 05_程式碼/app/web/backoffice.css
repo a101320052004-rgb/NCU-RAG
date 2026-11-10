@@ -1,0 +1,119 @@
+/* 管理後台共用樣式：demo 頁右側面板和 /admin 全螢幕版共用。樣式刻意樸素，像行政系統：以表格為主、少用卡片和圖示。 */
+.bo{
+  --bo-fg:#1d2730; --bo-muted:#5d6a74; --bo-faint:#8b979f; --bo-line:#dde3e7; --bo-head:#f4f6f8; --bo-hover:#f8fafb;
+  --bo-accent:#0d7a6a; --bo-ok:#1a7f37; --bo-warn:#9a6700; --bo-crit:#c0362c; --bo-bg:#ffffff;
+  color:var(--bo-fg); font-size:13px; line-height:1.55;
+}
+@media (prefers-color-scheme: dark){.bo{
+  --bo-fg:#e3ebee; --bo-muted:#9aacb3; --bo-faint:#6f8189; --bo-line:#2a3a41; --bo-head:#1c272c; --bo-hover:#1a2429;
+  --bo-accent:#4cc3ad; --bo-ok:#4ac26b; --bo-warn:#d6a33a; --bo-crit:#f07b70; --bo-bg:#172126;
+}}
+.bo *{box-sizing:border-box}
+.bo h3{font-size:13px;font-weight:700;margin:18px 0 6px;color:var(--bo-fg)}
+.bo > h3:first-child,.bo > div > h3:first-child:not(.bo-twocol h3){margin-top:0}
+.bo .bo-muted{color:var(--bo-muted)}
+.bo .bo-small{font-size:12px;color:var(--bo-faint)}
+.bo table{width:100%;border-collapse:collapse;font-size:12.5px;background:var(--bo-bg)}
+.bo th,.bo td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--bo-line);vertical-align:top}
+.bo th{background:var(--bo-head);font-weight:500;color:var(--bo-muted);white-space:nowrap}
+.bo td.num,.bo th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bo .bo-table{border:1px solid var(--bo-line);border-radius:4px;overflow:hidden}
+.bo .bo-table tr:last-child td{border-bottom:0}
+.bo .ok{color:var(--bo-ok)} .bo .warn{color:var(--bo-warn)} .bo .crit{color:var(--bo-crit)}
+.bo .bo-share{display:flex;align-items:center;gap:6px}
+.bo .bo-share i{display:inline-block;height:6px;background:var(--bo-accent);border-radius:1px;min-width:1px}
+.bo .bo-controls{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}
+.bo select,.bo input,.bo button{font:inherit;font-size:12.5px;color:var(--bo-fg);background:var(--bo-bg);border:1px solid var(--bo-line);border-radius:4px;padding:4px 8px}
+.bo input[type=search]{flex:1;min-width:120px}
+.bo button{cursor:pointer}
+.bo button:hover{border-color:var(--bo-accent)}
+.bo button.bo-primary{background:var(--bo-accent);border-color:var(--bo-accent);color:#fff}
+.bo .bo-ai{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;border:1px solid var(--bo-line);border-radius:4px;padding:8px 10px;background:var(--bo-bg)}
+.bo .bo-chart svg{display:block;width:100%;height:auto}
+.bo .bo-axis{font:10.5px sans-serif;fill:var(--bo-faint)}
+.bo .bo-tip{position:absolute;pointer-events:none;background:var(--bo-fg);color:var(--bo-bg);font-size:11.5px;padding:4px 7px;border-radius:3px;white-space:nowrap;transform:translate(-50%,-100%);margin-top:-6px;opacity:0}
+.bo tr.bo-row{cursor:pointer}
+.bo tr.bo-row:hover td{background:var(--bo-hover)}
+.bo tr.bo-row td.q{word-break:break-word}
+.bo tr.bo-row.open td{background:var(--bo-hover);border-bottom-color:transparent}
+.bo tr.bo-detail td{background:var(--bo-hover);padding:4px 8px 10px}
+.bo .bo-answer{white-space:pre-wrap;word-break:break-word;max-height:260px;overflow:auto;border-left:2px solid var(--bo-line);padding:2px 0 2px 8px;margin:2px 0 6px}
+.bo .bo-sources{margin:0;padding-left:1.2em}
+.bo .bo-sources a{color:var(--bo-accent);word-break:break-all}
+.bo .bo-more{width:100%;margin-top:8px}
+.bo .bo-login{display:flex;flex-direction:column;gap:8px;max-width:360px}
+.bo .bo-err{color:var(--bo-crit);font-size:12.5px}
+.bo .bo-twocol{display:grid;grid-template-columns:1fr;gap:0 18px}
+
+/* 發布分頁 */
+.bo .bo-seg{display:flex;border:1px solid var(--bo-line);border-radius:4px;overflow:hidden}
+.bo .bo-seg button{border:0;border-radius:0;padding:5px 10px}
+.bo .bo-seg button[aria-pressed="true"]{background:var(--bo-fg);color:var(--bo-bg)}
+.bo .bo-form{display:flex;flex-direction:column;gap:4px}
+.bo .bo-form label{font-weight:500;margin-top:6px}
+.bo .bo-form input,.bo .bo-form select,.bo .bo-form textarea{width:100%;font:inherit;font-size:13px;color:var(--bo-fg);background:var(--bo-bg);border:1px solid var(--bo-line);border-radius:4px;padding:6px 8px}
+.bo .bo-form textarea{resize:vertical;line-height:1.5}
+.bo .bo-form input:disabled,.bo .bo-form textarea:disabled,.bo .bo-form select:disabled{opacity:.75}
+.bo .bo-form .bo-primary{margin-top:10px;align-self:flex-start}
+.bo .bo-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.bo .bo-grid2 > div{display:flex;flex-direction:column;gap:4px}
+.bo .bo-editor{margin-top:14px;border-top:1px solid var(--bo-line);padding-top:4px}
+.bo .bo-editor details{margin-bottom:6px}
+.bo .bo-editor summary{cursor:pointer;color:var(--bo-muted);font-size:12.5px}
+.bo .bo-check{margin-top:10px;border:1px solid var(--bo-line);border-radius:4px;padding:8px 10px;font-size:12.5px}
+.bo .bo-check ul{margin:4px 0 0;padding-left:1.2em}
+.bo .bo-preview{background:#8fa9c7;border-radius:6px;padding:10px}
+.bo .bo-channels{margin-top:8px}
+.notice-card{background:#fff;color:#14202b;border-radius:14px;border-top-left-radius:6px;overflow:hidden;max-width:290px;font-size:13px;line-height:1.55;white-space:normal}
+.notice-card .nc-head{background:#0d7a6a;color:#fff;font-size:12px;padding:5px 11px;font-weight:500}
+.notice-card .nc-body{padding:8px 11px;display:flex;flex-direction:column;gap:4px}
+.notice-card .nc-title{font-weight:700;font-size:13.5px}
+.notice-card .nc-en{font-size:12px;color:#5e6c78}
+.notice-card .nc-due{font-size:12px;color:#9a6700;font-weight:700}
+.notice-card .nc-btn{display:block;border-top:1px solid #e3e8ec;padding:8px 11px;text-align:center;color:#0d6d5f;font-weight:500;text-decoration:none}
+
+/* 發布公告（LINE 為主）＋發布紀錄 */
+.bo .bo-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.bo .bo-pub{display:grid;grid-template-columns:minmax(0,1fr);gap:20px}
+@media (min-width:1000px){.bo .bo-pub{grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:28px}}
+.bo .bo-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+.bo .bo-head button{min-height:36px}
+.bo .bo-import{display:flex;flex-direction:column;gap:8px;border:1px solid var(--bo-line);background:var(--bo-head);border-radius:4px;padding:10px 12px;margin-bottom:12px}
+.bo .bo-import[hidden]{display:none}
+.bo .bo-from{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;background:var(--bo-head);border-radius:4px;padding:6px 10px;margin-bottom:4px}
+.bo .bo-lab{display:flex;justify-content:space-between;align-items:baseline;margin-top:6px}
+.bo .bo-lab label{margin-top:0}
+.bo .bo-link{border:0;background:none;color:var(--bo-accent);padding:0 2px;font-weight:500}
+.bo .bo-fs{border:0;padding:0;margin:16px 0 0;min-width:0}
+.bo .bo-fs legend{font-weight:700;font-size:13.5px;padding:0;margin-bottom:6px}
+.bo .bo-chlist{border:1px solid var(--bo-line);border-radius:4px;overflow:hidden}
+.bo .bo-ch{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border-top:1px solid var(--bo-line);cursor:pointer}
+.bo .bo-ch:first-child{border-top:0}
+.bo .bo-ch > span{display:flex;flex-direction:column;min-width:0}
+.bo .bo-ch input{width:18px;height:18px;margin:2px 0 0;flex:none;padding:0}
+.bo .bo-ch .t{font-weight:700;display:inline}
+.bo .bo-ch .d{font-size:12px;color:var(--bo-muted)}
+.bo .bo-ch.main{background:var(--bo-hover)}
+.bo .bo-ch.off{color:var(--bo-faint);cursor:default}
+.bo .bo-ch.off .d{color:var(--bo-faint)}
+.bo .bo-tag{display:inline-block;font-size:11px;background:var(--bo-accent);color:#fff;border-radius:999px;padding:0 8px;margin-left:6px;vertical-align:1px}
+.bo .bo-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.bo .bo-actions .sp{flex:1}
+.bo .bo-actions button{min-height:36px}
+.bo button.bo-big{padding:7px 20px;font-size:14px;font-weight:500}
+.bo .bo-side h3{margin-top:0}
+.bo .bo-note{border:1px solid var(--bo-line);border-radius:4px;padding:8px 12px;margin-top:8px;display:flex;flex-direction:column;gap:2px}
+.bo .bo-mail{border:1px solid var(--bo-line);border-radius:6px;overflow:hidden;background:var(--bo-bg)}
+.bo .bo-mail .h{padding:8px 12px;border-bottom:1px solid var(--bo-line);display:flex;flex-direction:column;gap:2px}
+.bo .bo-mail .b{padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.bo .bo-link-t{color:var(--bo-accent);text-decoration:underline}
+.bo .bo-dash{border:1px dashed var(--bo-line);border-radius:6px;padding:14px 12px;color:var(--bo-muted)}
+.bo .bo-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+@media (max-width:700px){.bo .bo-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.bo .bo-card{border:1px solid var(--bo-line);border-radius:4px;padding:8px 12px;display:flex;flex-direction:column;gap:2px}
+.bo .bo-card b{font-size:18px}
+.bo .bo-card.crit{border-color:var(--bo-crit)}
+.bo .bo-card.crit b{color:var(--bo-crit)}
+.bo .bo-detail{margin-top:14px;border:1px solid var(--bo-line);border-radius:4px;padding:12px 14px}
+.bo .bo-detail td button{white-space:nowrap}
+@media (max-width:600px){.bo .bo-grid2{grid-template-columns:minmax(0,1fr)}}

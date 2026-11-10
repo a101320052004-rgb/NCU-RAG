@@ -1,0 +1,26 @@
+# 這個 repo 只放「程式碼＋架構文件」。其他資料夾留在各自電腦（OneDrive），不上 GitHub。
+/01_需求訪談/
+/02_資料盤點/
+/04_知識庫資料/
+/06_成果交付/
+
+# 金鑰與本機產物：絕對不要上傳
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+__pycache__/
+*.pyc
+05_程式碼/app/store/
+*.db
+*.sqlite3
+.vercel/
+05_程式碼/crawler/_to_delete/
+05_程式碼/app/richmenu_preview.png
+
+# 系統雜檔
+.DS_Store
+Thumbs.db
+desktop.ini
+~$*

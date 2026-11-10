@@ -1,0 +1,241 @@
+"""分流器：決定一則訊息要走哪條路。
+  1. 設定指令（選身分、切換語言）
+  2. 高風險（受傷、心理、糾紛、緊急）→ 轉人工，不讓 AI 回答
+  3. 點選單（食衣住行育樂）→ 該主題的懶人包
+  4. 其他 → RAG 問答
+"""
+from __future__ import annotations
+
+import re
+import time
+
+import config
+import contacts
+import db
+import rag
+
+HIGH_RISK = {
+    "自我傷害": ["自殺", "想死", "不想活", "傷害自己", "割腕", "kill myself", "suicide", "self-harm",
+                 "self harm", "end my life", "want to die"],
+    "受傷就醫": ["受傷", "車禍", "急診", "救護車", "骨折", "流血", "injured", "injury", "accident",
+                 "ambulance", "emergency room", "bleeding"],
+    "心理困擾": ["憂鬱", "焦慮到", "崩潰", "恐慌", "depressed", "depression", "panic attack", "breakdown"],
+    "糾紛安全": ["騷擾", "性騷", "被打", "被偷", "糾紛", "威脅", "報警", "跟蹤",
+                 "harass", "assault", "stolen", "threat", "stalk", "police"],
+}
+
+MENU_QUERY = {
+    "zh": "列出境外生在「{t}」方面最實用的事，最多 3 件，每件一句話（地點、價格、時間、怎麼辦）。",
+    "en": "List the most useful things international students should know about '{t}', "
+          "at most 3, one sentence each (places, prices, times, how-to).",
+}
+# 點選單時拿去檢索的關鍵字（問句太抽象，例如「住」會找到「居留證」）
+MENU_SEARCH = {
+    "食": "學生餐廳 學餐 美食 用餐 便當 價格 素食 清真 food dining restaurant cafeteria",
+    "衣": "洗衣 洗衣機 天氣 氣候 冬天 衣服 laundry weather clothing",
+    "住": "宿舍 住宿申請 入住 退宿 住宿費 校外租屋 dormitory housing check-in",
+    "行": "交通 公車 客運 高鐵 機場 腳踏車 停車 transportation bus HSR airport bike",
+    "育": "選課 課程 學分 註冊 學業 華語 course registration study credits",
+    "樂": "社團 活動 旅遊 運動 文化交流 club activities travel sports",
+    "規": "居留證 簽證 工作證 打工 健保 保險 規定 權益 ARC visa residence permit work permit health insurance regulations",
+}
+# 單一個字 Claude 會猜錯（「育」被當成體育），問句裡改用完整的說法
+TOPIC_ZH = {"食": "飲食（學餐、餐廳、價格）", "衣": "衣物（洗衣、天氣、穿著）", "住": "住宿（宿舍申請、入住、退宿）",
+            "行": "交通（公車、高鐵、機場）", "育": "學業（選課、註冊、行事曆、華語課）", "樂": "休閒（社團、活動、旅遊）",
+            "規": "權益與規定（居留證、簽證、工作證、健保）"}
+TOPIC_EN = {"食": "food and dining", "衣": "clothing, laundry and weather", "住": "housing and dorms",
+            "行": "transportation", "育": "courses and study", "樂": "activities and clubs",
+            "規": "rights and regulations (residence permit/ARC, visa, work permit, health insurance)"}
+# LINE 圖文選單（2026-11 新版五格）按下去送出的文字 → 主題；舊的「食衣住行育樂」單字也照樣認得
+MENU_BUTTONS = {"food": "食", "stay": "住", "transport": "行", "fun": "樂", "rights & regulations": "規"}
+# 點選單後附上的常見問題按鈕（LINE 按鈕文字上限 20 字，所以都寫短）
+MENU_SUGGEST = {
+    "食": (["素食推薦", "校內餐廳", "附近便宜美食", "附近夜市"],
+          ["Vegetarian options?", "Campus cafeterias", "Cheap food nearby", "Night markets"]),
+    "住": (["怎麼申請宿舍", "宿舍入住流程", "宿舍電費怎麼付", "退宿流程"],
+          ["Apply for a dorm", "Dorm check-in", "Moving out of dorm"]),
+    "行": (["怎麼去高鐵站", "怎麼去中壢火車站", "機場到中大", "YouBike"],
+          ["Bus to HSR station", "Bus to Zhongli", "Airport to NCU", "YouBike near NCU"]),
+    "樂": (["附近夜市", "百貨商場", "學生社團", "Outlet 購物"],
+          ["Night markets", "Shopping malls", "Student clubs", "Outlet shopping"]),
+    "規": (["怎麼申請居留證", "居留證延期", "工作證申請", "健保怎麼辦"],
+          ["Apply for an ARC", "Extend my ARC", "Work permit", "Health insurance"]),
+}
+MENU_NAME_EN = {"食": "Food", "住": "Stay", "行": "Transport", "樂": "Fun", "規": "Rights & Regulations",
+                "衣": "Clothing", "育": "Study"}
+
+
+def menu_key(text: str) -> str | None:
+    if text in config.MENU_TOPICS:
+        return text
+    return MENU_BUTTONS.get(text.strip().lower())
+
+
+# 不用查資料、也不用呼叫 Claude 的閒聊（省錢、也不會亂塞不相關的資料）
+END = r"[!！~～。.,，\s]*$"
+SMALLTALK = [
+    ("greet", re.compile(r"^(hi|hello|hey|嗨+|你好|您好|哈囉|哈嘍|早安|午安|晚安|安安)" + END, re.I)),
+    ("thanks", re.compile(r"^(謝謝|感謝|謝啦|thanks?( you)?|thx|ok|okay|好的?|了解|知道了|收到)" + END, re.I)),
+    ("bye", re.compile(r"^(bye|掰掰?|再見|拜拜)" + END, re.I)),
+]
+MOOD_GOOD = ("心情很好", "心情好", "好開心", "很開心", "好快樂", "happy", "great day", "good mood")
+MOOD_BAD = ("心情不好", "難過", "想家", "孤單", "寂寞", "好累", "壓力好大", "好煩", "sad", "homesick", "lonely",
+            "stressed", "so tired", "bad day")
+ASKING = re.compile(r"[?？]|怎麼|如何|哪|嗎|什麼|請問|要不要|可以|\b(how|what|where|when|which|can|need|should)\b", re.I)
+# 國際處要求不閒聊：打招呼、道謝、聊心情一律只回「可以問什麼」這句必要資訊
+HELP_LINE = ("可以問居留證、宿舍、獎學金、保險、選課、交通、飲食，直接打字或點下方選單。",
+             "Ask me about your ARC, dorms, scholarships, insurance, courses, transportation or food, "
+             "or tap the menu below.")
+SMALLTALK_REPLY = {
+    "greet": HELP_LINE,
+    "thanks": HELP_LINE,
+    "bye": HELP_LINE,
+    "good": HELP_LINE,
+    "bad": ("需要找人談的話，可以打給國際處承辦人（下方按鈕）。" + HELP_LINE[0],
+            "If you need someone to talk to, call the OIA staff below. " + HELP_LINE[1]),
+}
+
+
+def detect_smalltalk(text: str) -> str | None:
+    t = text.strip()
+    for kind, pat in SMALLTALK:
+        if pat.match(t):
+            return kind
+    if len(t) <= 40 and not ASKING.search(t):
+        low = t.lower()
+        if any(w in low for w in MOOD_BAD):
+            return "bad"
+        if any(w in low for w in MOOD_GOOD):
+            return "good"
+    return None
+
+
+def detect_high_risk(text: str) -> str | None:
+    low = text.lower()
+    for cat, words in HIGH_RISK.items():
+        if any(w in low for w in words):
+            return cat
+    return None
+
+
+ID_EN = {"外籍學位生": "Degree student", "交換生": "Exchange student", "僑生": "Overseas Chinese",
+         "陸生": "Mainland China", "訪問研修生": "Visiting student"}
+# 國際處決定：不先問學生身分，一律預設用英文回答；學生打「中文」可以切換成中文
+DEFAULT_LANG = "en"
+
+
+SWITCH_ID = {"身分", "身份", "切換身分", "切換身份", "更改身分", "identity", "change identity", "切換身分 change id"}
+SWITCH_CHIP = "切換身分 Change ID"
+
+
+def identity_chips() -> list[str]:
+    return [f"身分：{i} {ID_EN[i]}" for i in config.IDENTITIES[:4]]
+
+
+def parse_identity(text: str) -> str | None:
+    m = re.match(r"^(身分|identity|i am|i'm)\s*[:：]?\s*(.+)$", text, re.I)
+    if not m:
+        return None
+    rest = m.group(2).lower()
+    return next((i for i in config.IDENTITIES if i in rest or ID_EN[i].lower() in rest), None)
+
+
+def handoff_message(category: str, lang: str, identity: str | None = None, text: str = "") -> str:
+    contact = contacts.contact_line(identity, lang, text)
+    if lang == "zh":
+        msg = ("這件事很重要，需要由真人協助，我不想只給你一般資訊。\n"
+               f"・緊急狀況請立刻撥校安中心 24 小時電話：{config.SECURITY_PHONE}\n"
+               f"・國際處承辦人：{contact}")
+        if category == "自我傷害":
+            msg += "\n・如果你現在很難受，也可以撥 1925 安心專線（24 小時、免付費），有人可以陪你聊。"
+        return msg
+    msg = ("This matters, and a real person should help you with it rather than general information from me.\n"
+           f"- In an emergency, call the Campus Security 24-hour line now: {config.SECURITY_PHONE}\n"
+           f"- {contact}")
+    if category == "自我傷害":
+        msg += "\n- If you're struggling right now, you can call 1925 (Taiwan's 24-hour free support line)."
+    return msg
+
+
+def handle(user_id: str, text: str, channel: str = "line", identity_override: str | None = None,
+           limit_key: str | None = None) -> dict:
+    """回傳 {answer, route, sources, quick_replies}。"""
+    t0 = time.time()
+    uh = db.hash_user(user_id)
+    user = db.get_user(uh)
+    text = text.strip()
+    known = identity_override or user.get("identity")
+    lang = user.get("lang") or DEFAULT_LANG  # 不看學生用哪種語言打字，只有打「中文」/「English」才切換
+    result = {"quick_replies": []}
+
+    # 1. 設定指令（按鈕是中文，不拿來判斷語言）
+    new_id = parse_identity(text)
+    if new_id:
+        db.set_user(uh, identity=new_id)
+        result.update(answer=(f"好的，已設定為「{new_id}」。有問題直接打字，或點下方選單。" if lang == "zh" else
+                              f"Got it: {ID_EN[new_id]}. Type your question or tap the menu."),
+                      route="setting", sources=[])
+        return result
+    if text.lower() in SWITCH_ID:
+        cur = f"目前身分：{known}。" if known else ""
+        cur_en = f"Current: {ID_EN[known]}. " if known else ""
+        result.update(answer=f"{cur}請點下面的按鈕選擇新的身分。\n{cur_en}Tap a button below to choose who you are.",
+                      route="setting", sources=[], quick_replies=identity_chips())
+        return result
+    if text.lower() in {"english", "language", "切換語言", "中文"}:
+        new = "zh" if text in {"中文"} else "en"
+        db.set_user(uh, lang=new)
+        result.update(answer="已切換為中文。" if new == "zh" else "Switched to English.", route="setting", sources=[])
+        return result
+    identity = known  # 沒選身分也沒關係：承辦人會從問題內容判斷（contacts.guess_identity）
+
+    # 2. 高風險 → 轉人工
+    cat = detect_high_risk(text)
+    if cat:
+        db.log_handoff(uh, cat, text)
+        result.update(answer=handoff_message(cat, lang, identity, text), route="handoff", sources=[])
+        result["calls"] = [{"label": contacts.SECURITY_CALL[lang], "tel": contacts.SECURITY_CALL["tel"]},
+                           contacts.call_button(identity, lang, text)]
+        if cat == "自我傷害":
+            result["calls"].insert(0, {"label": contacts.CRISIS_CALL[lang], "tel": contacts.CRISIS_CALL["tel"]})
+    elif detect_smalltalk(text):
+        kind = detect_smalltalk(text)
+        zh, en = SMALLTALK_REPLY[kind]
+        result.update(answer=zh if lang == "zh" else en, route="chat", sources=[])
+        if kind == "bad":
+            result["calls"] = [contacts.call_button(identity, lang)]
+    # 3. 選單
+    elif menu_key(text):
+        key = menu_key(text)
+        q = MENU_QUERY[lang].format(t=TOPIC_ZH[key] if lang == "zh" else TOPIC_EN[key])
+        # 「權益與規定」橫跨居留、工作、保險好幾個主題，不限定主題，只靠關鍵字找
+        topic = key if key in config.MENU_TOPICS else None
+        result.update(rag.answer(q, identity, lang, topic=topic, quota_key=limit_key or uh, search=MENU_SEARCH[key]))
+        zh_q, en_q = MENU_SUGGEST.get(key, ([], []))
+        if result["route"] == "no_data" and (zh_q or en_q):
+            # 主題太廣、AI 整理不出重點時，不說「沒有資料」，改成列出常見問題讓學生點
+            result.pop("answered", None)
+            name = TOPIC_ZH[key].split("（")[0] if lang == "zh" else MENU_NAME_EN.get(key, text)
+            result.update(answer=(f"「{name}」常見的問題在下面，點一個就能問，也可以直接打字。" if lang == "zh" else
+                                  f"Here are common questions about {name}. Tap one, or type your own question."),
+                          route="rag", sources=[])
+        elif result["route"] == "no_data" and not result.pop("answered", False):
+            result["answer"] = (f"「{text}」這個分類目前還沒有整理好的最新資料，我們正在補充。\n"
+                                f"有急事可以先問：{contacts.contact_line(identity, lang)}") if lang == "zh" else result["answer"]
+        if result["route"] in {"rag", "menu"}:
+            result["quick_replies"] = zh_q if lang == "zh" else en_q
+        result["route"] = "menu" if result["route"] == "rag" else result["route"]
+    # 4. 一般問題
+    else:
+        result.update(rag.answer(text, identity, lang, history=db.recent_turns(uh), quota_key=limit_key or uh))
+    result.pop("answered", None)
+
+    # 需要找人的情況，附上一鍵撥號（撥總機後自動轉分機）
+    if result["route"] in {"no_data", "ai_off", "limited", "llm_error"} and not result.get("calls"):
+        result["calls"] = [contacts.call_button(identity, lang, text)]
+
+    # 不再追問身分，也不顯示身分按鈕
+
+    db.log_message(uh, channel, text, result["answer"], result["route"], result["sources"],
+                   int((time.time() - t0) * 1000))
+    return result

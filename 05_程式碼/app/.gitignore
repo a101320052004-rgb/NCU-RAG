@@ -1,0 +1,6 @@
+.env
+.venv/
+store/
+__pycache__/
+richmenu_preview.png
+.vercel/

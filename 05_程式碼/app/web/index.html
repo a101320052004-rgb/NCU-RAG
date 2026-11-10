@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>國際生小幫手 Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="/web/backoffice.css">
+<style>
+/* 仿通訊軟體聊天畫面（demo 用）。圖示路徑取自 Lucide（github.com/lucide-icons/lucide，ISC 授權） */
+:root{
+  --page:#e9eef2; --phone:#ffffff; --head:#1f2b38; --head-fg:#ffffff;
+  --chat:#8fa9c7; --bubble-bot:#ffffff; --bubble-me:#8ee26a; --fg:#14202b; --muted:#5e6c78;
+  --menu-a:#0d7a6a; --menu-b:#13212a; --chip:#ffffff; --chip-fg:#0d6d5f; --line:#d6dee5;
+  --panel:#ffffff; --ok:#0d7a6a; --warn:#a8650a; --crit:#b3261e; --ink:#2f4a8a;
+  --font:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--page);color:var(--fg);font-family:var(--font);font-size:14px}
+/* 頂端：學生端／後台切換 */
+.topbar{position:sticky;top:0;z-index:10;background:var(--head);color:#fff;display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:8px 16px}
+.topbar .brand{font-weight:700;font-size:15px;margin-right:auto}
+.switch{display:flex;background:rgba(255,255,255,.12);border-radius:999px;padding:3px}
+.switch button{border:0;background:none;color:#dbe4ea;font:500 14px var(--font);padding:7px 16px;border-radius:999px;cursor:pointer;min-height:36px}
+.switch button[aria-pressed="true"]{background:#fff;color:var(--head)}
+.topbar .tools{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#dbe4ea}
+.topbar .tools select,.topbar .tools button{font:13px var(--font);padding:5px 9px;border-radius:8px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;cursor:pointer}
+.topbar .tools select option{color:var(--fg)}
+body[data-view="admin"] .topbar .tools{display:none}
+.stage{display:flex;justify-content:center;padding:16px}
+body[data-view="admin"] .stage{display:none}
+body[data-view="student"] .admin{display:none}
+/* 手機外框 */
+.phone{width:380px;height:min(780px,calc(100vh - 84px));min-height:520px;background:var(--phone);border-radius:36px;
+  box-shadow:0 0 0 8px #1b232b,0 16px 40px rgba(20,32,43,.3);overflow:hidden;display:flex;flex-direction:column;position:relative}
+.head{background:var(--head);color:var(--head-fg);display:flex;align-items:center;gap:8px;padding:10px 12px}
+.head svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2;flex:none;opacity:.9}
+.head .name{font-weight:700;font-size:15px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.head .tag{font-size:11px;background:rgba(255,255,255,.16);padding:2px 7px;border-radius:999px}
+.chat{flex:1;min-height:0;overflow-y:auto;background:var(--chat);padding:10px 10px 6px;display:flex;flex-direction:column;gap:8px;scroll-behavior:smooth}
+.day{align-self:center;font-size:11.5px;color:#fff;background:rgba(20,32,43,.28);padding:2px 10px;border-radius:999px}
+.row{display:flex;gap:8px;align-items:flex-end;max-width:100%}
+.row.me{justify-content:flex-end}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--menu-a);color:#fff;display:grid;place-items:center;font-weight:700;font-size:10.5px;flex:none;align-self:flex-start}
+.col{display:flex;flex-direction:column;gap:2px;min-width:0;max-width:78%}
+.who{font-size:11px;color:#fff;opacity:.9}
+.bubble{padding:7px 11px;border-radius:16px;line-height:1.55;white-space:pre-wrap;word-break:break-word;font-size:13.5px}
+.bot .bubble{background:var(--bubble-bot);border-top-left-radius:6px}
+.me .bubble{background:var(--bubble-me);border-top-right-radius:6px}
+.bubble a{color:#1a5fb4;word-break:break-all}
+.src{display:block;margin-top:6px;padding-top:5px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted);white-space:normal}
+.src a{display:inline-block;margin-top:2px}
+.time{font-size:10.5px;color:#eef3f8;align-self:flex-end;white-space:nowrap;line-height:1.3;text-align:right}
+.typing .bubble{display:flex;gap:5px;padding:13px 14px}
+.typing i{width:7px;height:7px;border-radius:50%;background:#9aa7b2;animation:blink 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.typing i{animation:none}.chat{scroll-behavior:auto}}
+/* 快速回覆 */
+.quick{display:flex;gap:6px;overflow-x:auto;padding:6px 10px;background:var(--chat);scrollbar-width:none}
+.quick:empty{display:none}
+.quick button{flex:none;border:1px solid var(--chip-fg);background:var(--chip);color:var(--chip-fg);border-radius:999px;padding:4px 10px;font:500 12.5px var(--font);cursor:pointer}
+/* 輸入列 */
+.input{display:flex;align-items:center;gap:6px;padding:6px 8px;background:#fff;border-top:1px solid var(--line)}
+.input button.icon{border:0;background:none;padding:4px;cursor:pointer;color:var(--muted);display:grid;place-items:center}
+.input svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
+.input input{flex:1;min-width:0;border:0;background:#f0f3f6;border-radius:16px;padding:7px 12px;font:14px var(--font);color:var(--fg)}
+.input input:focus{outline:2px solid var(--menu-a)}
+.input .send{color:var(--menu-a)}
+.input .send:disabled{opacity:.35;cursor:default}
+/* 圖文選單 */
+.menubar{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;border:0;border-top:1px solid var(--line);background:#fff;padding:5px;font:500 12.5px var(--font);color:var(--fg);cursor:pointer}
+.menubar svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.2;transition:transform .2s}
+.menubar[aria-expanded="false"] svg{transform:rotate(180deg)}
+/* 圖文選單：國際處提供的五格設計（Food／Stay／Transport／Fun／Rights & Regulations），比例同 LINE 2500×1686 */
+.richmenu{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:4px;padding:4px;background:#f6eedd;aspect-ratio:2500/1686}
+.richmenu[hidden]{display:none}
+.richmenu button{border:0;border-radius:9px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;padding:4px;min-width:0;
+  color:#123b3b;font:800 22px/1 "Baloo 2",var(--font);letter-spacing:-.2px}
+.richmenu button svg{width:52%;max-width:64px;height:auto;flex:none;fill:none;stroke:#123b3b;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.richmenu .rm-food{background:#97c181}
+.richmenu .rm-stay{background:#f4a57e}
+.richmenu .rm-transport{background:#8ccbea;font-size:19px}
+.richmenu .rm-fun{background:#f9d47c}
+.richmenu .rm-rights{grid-column:3;grid-row:1 / 3;background:#0e4a4f;color:#f8efdc;font-size:19px;line-height:1.02;gap:10px}
+.richmenu .rm-rights svg{stroke:#f8efdc;width:62%;max-width:84px}
+.richmenu button:active{filter:brightness(1.08)}
+:focus-visible{outline:2px solid #ffbf47;outline-offset:2px}
+/* 後台視角 */
+.admin{max-width:1240px;margin:16px auto 32px;padding:0 16px}
+.panel{background:var(--panel);border-radius:12px;border:1px solid var(--line);display:flex;flex-direction:column;min-height:calc(100vh - 100px)}
+.panel header{padding:12px 18px 0;border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:4px;flex-wrap:wrap}
+.tabs button{border:0;background:none;padding:9px 14px;font:500 14px var(--font);color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--menu-a)}
+.pane{flex:1;min-height:0}
+.pane[hidden]{display:none}
+.pane.bo{padding:16px 18px 24px}
+.admin .bo{--bo-fg:#1d2730;--bo-muted:#5d6a74;--bo-faint:#6f7c85;--bo-line:#dde3e7;--bo-head:#f4f6f8;--bo-hover:#f2f8f7;
+  --bo-accent:#0d7a6a;--bo-ok:#1a7f37;--bo-warn:#9a6700;--bo-crit:#c0362c;--bo-bg:#ffffff}
+@media (min-width:1000px){
+  .admin .bo-twocol{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  #pane-now .log{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--head);color:#fff;border-radius:12px;padding:10px 12px 10px 16px;display:flex;align-items:center;gap:12px;font-size:14px;box-shadow:0 8px 24px rgba(20,32,43,.3);z-index:20}
+.toast[hidden]{display:none}
+.toast{max-width:calc(100% - 32px)}
+.toast button{white-space:nowrap;flex:none;border:0;background:#fff;color:var(--head);font:500 13px var(--font);padding:7px 12px;border-radius:8px;cursor:pointer}
+.panel h2{margin:0 0 3px;font-size:15px}
+.panel p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.55}
+.panel .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.panel select,.panel .btn{font:13px var(--font);padding:5px 9px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--fg)}
+.panel .btn{cursor:pointer}
+.log{padding:10px 14px 14px;display:flex;flex-direction:column;gap:10px}
+.log .empty{color:var(--muted);font-size:13px;line-height:1.6}
+.entry{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.55;display:flex;flex-direction:column;gap:5px}
+.entry .q{font-weight:700;font-size:13px}
+.badges{display:flex;gap:6px;flex-wrap:wrap}
+.badge{font-size:11.5px;font-weight:700;padding:1px 8px;border-radius:999px;background:#eef2f6;color:var(--muted)}
+.badge.rag,.badge.menu{background:#dff1ed;color:var(--ok)}
+.badge.handoff{background:#fbe4e2;color:var(--crit)}
+.badge.no_data{background:#fbefdc;color:var(--warn)}
+.badge.llm_error,.badge.error{background:#fbe4e2;color:var(--crit)}
+.badge.ai_off,.badge.limited{background:#fbefdc;color:var(--warn)}
+.badge.setting,.badge.chat{background:#e4e9f6;color:var(--ink)}
+.calls{display:flex;flex-direction:column;gap:5px;margin-top:8px}
+.calls a{display:flex;align-items:center;justify-content:center;gap:6px;padding:7px 10px;border-radius:12px;background:var(--menu-a);color:#fff;text-decoration:none;font-size:13px;font-weight:500;word-break:normal}
+.calls a svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;flex:none}
+.entry ul{margin:0;padding-left:1.1em}
+.entry li{word-break:break-all}
+.note{font-size:11.5px;color:var(--muted);text-align:center;margin-top:8px}
+.err{background:#fbe4e2;color:var(--crit);font-size:12.5px;padding:8px 12px;text-align:center}
+/* 公告卡片與 LINE 內建瀏覽器（點「查看全文」） */
+.row.bot .bubble.card{padding:0;background:none}
+.inapp{position:absolute;inset:0;background:#fff;display:flex;flex-direction:column;z-index:5;border-radius:inherit;overflow:hidden}
+.inapp[hidden]{display:none}
+.inapp .bar{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f5f7f9;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.inapp .bar button{border:0;background:none;font-size:20px;line-height:1;cursor:pointer;color:var(--fg);padding:2px 6px}
+.inapp .bar span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inapp iframe{flex:1;border:0;width:100%}
+@media (max-width:860px){
+  .stage{padding:0}
+  .phone{width:100%;height:calc(100dvh - 52px);border-radius:0;box-shadow:none}
+  .topbar .brand{display:none}
+  .head{padding-top:max(14px,env(safe-area-inset-top))}
+  .richmenu{padding-bottom:max(3px,env(safe-area-inset-bottom))}
+}
+</style>
+</head>
+<body data-view="student">
+<header class="topbar">
+  <div class="brand">NCU 國際生小幫手 Demo</div>
+  <div class="switch" role="group" aria-label="切換畫面">
+    <button type="button" data-view="student" aria-pressed="true">學生端（LINE）</button>
+    <button type="button" data-view="admin" aria-pressed="false">國際處後台</button>
+  </div>
+  <div class="tools">
+    <button id="reset" type="button">重新開始</button>
+  </div>
+</header>
+<div class="stage">
+  <main class="phone" aria-label="聊天示範畫面">
+    <div class="head">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+      <div class="name">NCU 國際生小幫手</div>
+      <span class="tag">Demo</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16M4 6h16M4 18h16"/></svg>
+    </div>
+    <div id="err" class="err" hidden></div>
+    <div class="chat" id="chat" aria-live="polite">
+      <div class="day" id="today"></div>
+    </div>
+    <div class="quick" id="quick"></div>
+    <form class="input" id="form" autocomplete="off">
+      <button type="button" class="icon" id="toggleMenu2" aria-label="開關選單">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      </button>
+      <input id="msg" type="text" placeholder="輸入訊息 / Type a message" aria-label="輸入訊息">
+      <button type="submit" class="icon send" id="send" aria-label="送出" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 21.7a.5.5 0 0 0 .9 0L22 2.6a.5.5 0 0 0-.6-.6L2.3 8.6a.5.5 0 0 0 0 .9l8 3.2a2 2 0 0 1 1.1 1.1z"/><path d="m21.9 2.1-10.9 10.9"/></svg>
+      </button>
+    </form>
+    <button class="menubar" id="menubar" aria-expanded="true" aria-controls="richmenu">選單 Menu
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="inapp" id="inapp" hidden role="dialog" aria-label="公告全文">
+      <div class="bar"><button type="button" id="inappClose" aria-label="關閉">×</button><span id="inappUrl"></span></div>
+      <iframe id="inappFrame" title="公告全文"></iframe>
+    </div>
+    <div class="richmenu" id="richmenu">
+      <button class="rm-food" data-t="Food">Food<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M30 26l16-16M35 27l14-13"/><path d="M14 30c0-6 5-9 9-8 2-4 9-5 12-1 5-1 9 3 8 9" fill="#fbf3e2"/><path d="M9 31h46c-1 12-10 20-23 20S10 43 9 31z" fill="#fbf3e2"/><path d="M12 38h40" stroke="#6ea15a" stroke-width="3"/><path d="M24 51h16v4H24z" fill="#fbf3e2"/></svg></button>
+      <button class="rm-stay" data-t="Stay">Stay<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M17 30v22h30V30" fill="#fbf3e2"/><path d="M9 32L32 13l23 19" stroke-width="5" stroke="#123b3b"/><path d="M9 32L32 13l23 19" stroke-width="2.4" stroke="#e8774f"/><path d="M42 18v-6h5v10"/><rect x="21" y="35" width="9" height="8" fill="#8ccbea"/><path d="M36 52V40a3 3 0 016 0v12" fill="#e08a4a"/><path d="M6 52h52"/><path d="M8 52c0-5 7-6 9-2M47 50c2-4 9-3 9 2" fill="#86b96e"/></svg></button>
+      <button class="rm-rights" data-t="Rights &amp; Regulations"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 5l21 8v17c0 14-9 23-21 29C20 53 11 44 11 30V13z"/><path d="M32 17v26M21 22h22M25 45h14"/><path d="M21 22l-5 11h10zM43 22l-5 11h10z"/><path d="M15 33a6 4 0 0012 0M37 33a6 4 0 0012 0"/><circle cx="32" cy="16" r="2" fill="#f8efdc"/><path d="M52 5l2-4M56 9l4-2" stroke-width="2.2"/></svg><span>Rights<br>&amp;<br>Regulations</span></button>
+      <button class="rm-transport" data-t="Transport">Transport<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="13" y="10" width="38" height="40" rx="8" fill="#fbf3e2"/><rect x="18" y="16" width="28" height="15" rx="3" fill="#8ccbea"/><path d="M13 39h38v6a5 5 0 01-5 5H18a5 5 0 01-5-5z" fill="#86b96e"/><circle cx="21" cy="42" r="2.6" fill="#f2c14e"/><circle cx="43" cy="42" r="2.6" fill="#f2c14e"/><path d="M8 22v8M56 22v8M18 50v5h6v-5M40 50v5h6v-5"/><path d="M24 20l-3 5M30 20l-5 8" stroke="#fbf3e2"/></svg></button>
+      <button class="rm-fun" data-t="Fun">Fun<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="26" r="17"/><path d="M32 9v34M15 26h34M20 14l24 24M44 14L20 38"/><circle cx="32" cy="26" r="4" fill="#fbf3e2"/><g fill="#f0907a"><circle cx="32" cy="9" r="4"/><circle cx="49" cy="26" r="4"/><circle cx="15" cy="26" r="4"/><circle cx="44" cy="14" r="4"/><circle cx="20" cy="14" r="4"/><circle cx="44" cy="38" r="4"/><circle cx="20" cy="38" r="4"/></g><path d="M32 30l-9 24M32 30l9 24M26 46h12M20 55h24"/></svg></button>
+    </div>
+  </main>
+</div>
+
+<div class="admin">
+  <section class="panel" aria-label="國際處後台">
+    <header>
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="false" data-tab="now">剛剛的問答</button>
+        <button role="tab" aria-selected="true" data-tab="stats">統計</button>
+        <button role="tab" aria-selected="false" data-tab="msgs">對話紀錄</button>
+        <button role="tab" aria-selected="false" data-tab="pub">發布公告</button>
+        <button role="tab" aria-selected="false" data-tab="hist">發布紀錄</button>
+      </div>
+    </header>
+    <div class="pane" id="pane-now" hidden>
+      <div style="padding:14px 18px 0">
+        <p>在學生端問的每一題走了哪條路、用了哪些資料、資料是哪一天確認的。過期或超過 12 個月沒確認的資料不會被拿來回答。</p>
+      </div>
+      <div class="log" id="log"><div class="empty">切到「學生端」提問或點選單，這裡會即時顯示系統怎麼處理。</div></div>
+    </div>
+    <div class="pane bo" id="pane-stats"></div>
+    <div class="pane bo" id="pane-msgs" hidden></div>
+    <div class="pane bo" id="pane-pub" hidden></div>
+    <div class="pane bo" id="pane-hist" hidden></div>
+  </section>
+</div>
+<div class="toast" id="toast" role="status" hidden><span id="toastText"></span><button type="button" id="toastGo">切到學生端看看</button></div>
+
+<script src="/web/backoffice.js"></script>
+<script>
+(() => {
+  const API = "/api/chat";
+  const ROUTE = {rag:"RAG 問答", menu:"選單懶人包", handoff:"轉人工", no_data:"查無有效資料", setting:"設定", llm_error:"AI 服務異常", error:"系統錯誤", ai_off:"AI 已關閉", limited:"已達每日上限", chat:"閒聊"};
+  const PHONE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>';
+  const $ = s => document.querySelector(s);
+  const chat = $("#chat"), quick = $("#quick"), input = $("#msg"), send = $("#send"), log = $("#log");
+
+  // 每個瀏覽器一個測試用 ID；讀寫失敗時用臨時 ID
+  let uid;
+  try { uid = localStorage.getItem("demo_uid"); if (!uid) { uid = "web-" + Math.random().toString(36).slice(2, 10); localStorage.setItem("demo_uid", uid); } }
+  catch { uid = "web-" + Math.random().toString(36).slice(2, 10); }
+
+  const now = () => new Date().toLocaleTimeString("zh-TW", {hour:"2-digit", minute:"2-digit", hour12:false});
+  $("#today").textContent = new Date().toLocaleDateString("zh-TW", {month:"numeric", day:"numeric", weekday:"short"});
+
+  const esc = s => s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const linkify = s => esc(s).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">查看官方頁面</a>');
+
+  function renderBot(text) {
+    // 把系統附上的「來源｜資料更新」行分開，用小字顯示
+    const lines = text.split("\n");
+    const i = lines.findIndex(l => /^(來源|Source)[：:]/.test(l));
+    const body = i >= 0 ? lines.slice(0, i).join("\n").trimEnd() : text;
+    const src = i >= 0 ? lines.slice(i).join("\n") : "";
+    return linkify(body) + (src ? `<span class="src">${linkify(src).replace(/\n/g, "<br>")}</span>` : "");
+  }
+
+  function addMsg(who, text, calls) {
+    const row = document.createElement("div");
+    row.className = "row " + who;
+    const time = `<div class="time">${who === "me" ? "已讀<br>" : ""}${now()}</div>`;
+    if (who === "me") {
+      row.innerHTML = `${time}<div class="col"><div class="bubble">${esc(text)}</div></div>`;
+    } else {
+      const btns = (calls || []).filter(c => /^tel:[+\d,]+$/.test(c.tel))
+        .map(c => `<a href="${c.tel}">${PHONE}${esc(c.label)}</a>`).join("");
+      row.innerHTML = `<div class="avatar" aria-hidden="true">NCU</div><div class="col"><div class="who">國際生小幫手</div><div class="bubble">${renderBot(text)}${btns ? `<div class="calls">${btns}</div>` : ""}</div></div>${time}`;
+    }
+    chat.appendChild(row);
+    chat.scrollTop = chat.scrollHeight;
+    return row;
+  }
+
+  function typing() {
+    const row = document.createElement("div");
+    row.className = "row bot typing";
+    row.innerHTML = `<div class="avatar" aria-hidden="true">NCU</div><div class="col"><div class="bubble" aria-label="輸入中"><i></i><i></i><i></i></div></div>`;
+    chat.appendChild(row); chat.scrollTop = chat.scrollHeight;
+    return row;
+  }
+
+  function setQuick(items) {
+    quick.innerHTML = "";
+    (items || []).forEach(q => {
+      const b = document.createElement("button");
+      b.type = "button"; b.textContent = q.split("：").pop(); b.dataset.text = q;
+      quick.appendChild(b);
+    });
+  }
+
+  function logEntry(q, r, ms) {
+    if (log.querySelector(".empty")) log.innerHTML = "";
+    const e = document.createElement("div");
+    e.className = "entry";
+    const srcs = (r.sources || []).map(s =>
+      `<li>${esc(s.title || "（無標題）")}<br><span style="color:var(--muted)">資料更新 ${esc(s.updated || "未知")}</span></li>`).join("");
+    e.innerHTML = `<div class="q">${esc(q)}</div>
+      <div class="badges"><span class="badge ${r.route}">${ROUTE[r.route] || r.route}</span><span class="badge">${(ms/1000).toFixed(1)} 秒</span></div>
+      ${srcs ? `<div>使用的資料：<ul>${srcs}</ul></div>` :
+        r.route === "handoff" ? "<div>偵測到受傷、心理困擾或糾紛等情況，不讓 AI 回答，直接提供真人窗口。</div>" :
+        r.route === "no_data" ? "<div>沒有找到有效期限內的資料，所以不回答，改給承辦窗口。</div>" :
+        r.route === "error" ? "<div>後端出錯，原因記在 store\\error.log。</div>" :
+        r.route === "chat" ? "<div>閒聊或和學校無關的訊息：不查資料、不附來源。</div>" : ""}
+      ${r.route === "ai_off" ? "<div>AI 開關目前關閉：不呼叫 Claude，只給找到的官方頁面。</div>" :
+        r.route === "limited" ? "<div>今天的提問次數已達上限：不呼叫 Claude，只給找到的官方頁面。</div>" : ""}
+      ${r.route === "llm_error" ? "<div>AI 回答服務呼叫失敗（金鑰、餘額或額度問題），改給找到的官方頁面。原因記在 store\\error.log。</div>" : ""}`;
+    log.prepend(e);
+  }
+
+  let busy = false;
+  async function ask(text) {
+    text = text.trim();
+    if (!text || busy) return;
+    busy = true; send.disabled = true; setQuick([]);
+    addMsg("me", text);
+    input.value = "";
+    const t = typing(), t0 = performance.now();
+    try {
+      const res = await fetch(API, {method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({user_id: uid, message: text})});
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const r = await res.json();
+      t.remove();
+      addMsg("bot", r.answer, r.calls);
+      setQuick(r.quick_replies);
+      logEntry(text, r, performance.now() - t0);
+      refreshTab();
+      $("#err").hidden = true;
+    } catch (err) {
+      t.remove();
+      $("#err").hidden = false;
+      $("#err").textContent = "連不到後端（" + err.message + "）。" +
+        (location.hostname.endsWith("vercel.app") ? "請稍後再試一次。" : "請確認後端視窗還開著。");
+    } finally {
+      busy = false; send.disabled = !input.value.trim();
+    }
+  }
+
+
+  // 後台分頁：這一題／統計／對話紀錄（統計和紀錄要管理者金鑰，第一次點開時才載入）
+  const BO = window.Backoffice;
+  const views = BO ? {stats: BO.Stats($("#pane-stats")), msgs: BO.Messages($("#pane-msgs")),
+                       pub: BO.Publish($("#pane-pub"), {onPublished: addNotice, openHistory: () => openTab("hist"),
+                                                        onChanged: () => { loaded.hist = false; }}),
+                       hist: BO.History($("#pane-hist"), {onChanged: () => { loaded.pub = false; }})} : {};
+  let tab = "stats";
+  const loaded = {};
+  function openTab(name) {
+    tab = name;
+    document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", String(x.dataset.tab === tab)));
+    ["now", "stats", "msgs", "pub", "hist"].forEach(t => { $("#pane-" + t).hidden = t !== tab; });
+    if (views[tab] && !loaded[tab]) { loaded[tab] = true; views[tab].load(); }
+    if (tab === "stats" && views.stats.redraw) views.stats.redraw();
+  }
+  document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => openTab(b.dataset.tab)));
+  // 剛問完一題時，已經載入過的統計和紀錄下次切過去時重新讀
+  function refreshTab() { loaded.stats = loaded.msgs = loaded.hist = false; }
+
+  // 一鍵切換學生端／國際處後台（網址 #admin 直接開後台）
+  function setView(v) {
+    document.body.dataset.view = v;
+    document.querySelectorAll(".switch button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === v)));
+    history.replaceState(null, "", v === "admin" ? "#admin" : location.pathname);
+    if (v === "admin") openTab(tab);
+    else { $("#toast").hidden = true; chat.scrollTop = chat.scrollHeight; }
+  }
+  document.querySelectorAll(".switch button").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
+  $("#toastGo").addEventListener("click", () => setView("student"));
+
+  // 後台按「確認推播」：模擬手機收到 LINE 公告卡片（還沒有正式 LINE 金鑰，demo 只在這裡顯示）
+  function addNotice(a) {
+    const row = document.createElement("div");
+    row.className = "row bot";
+    row.innerHTML = `<div class="avatar" aria-hidden="true">NCU</div><div class="col"><div class="who">國際生小幫手</div>
+      <div class="bubble card">${BO.noticeCard(a, "/notice/" + a.id)}</div></div><div class="time">${now()}</div>`;
+    chat.appendChild(row);
+    chat.scrollTop = chat.scrollHeight;
+    $("#toastText").textContent = "已推播，學生的 LINE 收到這則公告了";
+    $("#toast").hidden = false;
+  }
+  // 點「查看全文」：在手機裡開一層，像 LINE 的內建瀏覽器
+  chat.addEventListener("click", e => {
+    const a = e.target.closest("a[data-notice]");
+    if (!a) return;
+    e.preventDefault();
+    $("#inappUrl").textContent = location.host + a.dataset.notice;
+    $("#inappFrame").src = a.dataset.notice;
+    $("#inapp").hidden = false;
+    $("#inappClose").focus();
+  });
+  $("#inappClose").addEventListener("click", () => { $("#inapp").hidden = true; $("#inappFrame").src = "about:blank"; });
+
+  // 事件
+  $("#form").addEventListener("submit", e => { e.preventDefault(); ask(input.value); });
+  input.addEventListener("input", () => { send.disabled = busy || !input.value.trim(); });
+  quick.addEventListener("click", e => { const b = e.target.closest("button"); if (b) ask(b.dataset.text); });
+  $("#richmenu").addEventListener("click", e => { const b = e.target.closest("button"); if (b) ask(b.dataset.t); });
+  const toggleMenu = () => {
+    const m = $("#richmenu"), open = m.hidden;
+    m.hidden = !open; $("#menubar").setAttribute("aria-expanded", String(open));
+  };
+  $("#menubar").addEventListener("click", toggleMenu);
+  $("#toggleMenu2").addEventListener("click", toggleMenu);
+  $("#reset").addEventListener("click", () => {
+    uid = "web-" + Math.random().toString(36).slice(2, 10);
+    try { localStorage.setItem("demo_uid", uid); } catch {}
+    chat.querySelectorAll(".row").forEach(r => r.remove());
+    log.innerHTML = '<div class="empty">已重新開始。</div>';
+    greet();
+  });
+
+  const menu = $("#richmenu"), bar = $("#menubar");
+  const setMenu = open => { menu.hidden = !open; bar.setAttribute("aria-expanded", String(open)); };
+  if (window.innerHeight < 760) setMenu(false);
+  input.addEventListener("focus", () => setMenu(false));
+
+  function greet() {
+    addMsg("bot", "Hi! I'm the NCU international student assistant. Ask me about your ARC, dorms, scholarships, insurance, courses, transportation or food, or tap the menu below.\n\n需要中文回答請輸入「中文」。");
+    setQuick([]);
+  }
+  greet();
+  setView(location.hash === "#admin" ? "admin" : "student");
+  // 雲端版：趁學生看歡迎訊息時，先叫後端把向量模型載入
+  fetch("/api/warmup").catch(() => {});
+})();
+</script>
+</body>
+</html>

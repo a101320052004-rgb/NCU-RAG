@@ -1,35 +1,28 @@
-# NCU RAG 修復工作副本
+# NCU RAG 修復摘要
 
-2026-11-10。已使用本機 Git CLI Fetch 並確認基準 `main` = `164083292fa518e85ee2073a198dbb7ecbde9d7c`，在 `fix/rag-reliability` 整合修復。已比對關鍵 10 個程式：檢索／路由／入口與部署快照一致，匯入／設定／DB／Embedding 與電腦版快照一致；只正規化 CRLF/LF，未混用替換 config、DB 或 Embedding。版本證據見 `repair_evidence/version_comparison.json`。正式部署及 Supabase 均未變更。
+本機 Git CLI 已確認基準 main `164083292fa518e85ee2073a198dbb7ecbde9d7c` 與診斷快照的關鍵程式一致（只差 CRLF/LF），修復位於 `fix/rag-reliability`、Draft PR #1。未修改正式 Supabase、未合併 main、未執行 Vercel 部署。
 
-## 已準備的工程修改
+## 工程修改
 
-| 項目 | 修改及隔離驗證 | 狀態 |
-|---|---|---|
-| P0-1 | `05_程式碼/app/router.py` 辨識 H07/H08 的 hurt/hurting myself；否定句與明確教育引用排除；真實第三人稱風險轉人工 | 本機測試通過 |
-| P0-2 | 共用 `knowledge_policy.py` 阻擋已知 ARC 15 天、工作許可最長 6 個月陳述；新版法規陳述需明確人工確認日期及完整本文 SHA256。混合新舊陳述不能靠核准繞過。抓取日期不作人工法規確認 | Python 通過；SQL 未執行 |
-| P0-3 | 主檢索、鄰段與校名捷徑皆傳身分、主題、期限；SQL v2 與 Python 防線同時檢查 active、有效期限、驗證日期及法規審核 | Python mock 通過；真實 RPC 待驗收 |
-| P1-1 | 僅對住宿費意圖，優先保留含金額及住宿計費單位的合格段落，以原句排名保留原始意圖；原 manual 加權、每文件兩段、K=5、距離 .30 均保留 | q2–q6 快照重播通過 |
-| P1-2 | permission to work、employment authorization、authorisation to work 補相同中文關鍵詞，保留原問句及身分過濾 | 字串與參數測試通過；新向量排名待驗收 |
+- H01–H08 原始安全題句全部固定 handoff，不呼叫 RAG／Claude。這輪新增 H03/H04 英文心理求助及 H05/H06 嚴重宿舍衝突的情境式辨識，保留否定、一般詢問及教育引用反例。
+- 工作許可同義詞在擴充分支正規化，仍保留原始查詢分支；只讓工作許可相關段落入選，排除醫療授權、行事曆等同字不同義資料。身分參數保留。
+- 住宿費問題保留費率段落及原始意圖。繳費方式 G03、尚未公布的未來費率 U01 不套用費率表救援排序；K=5、距離 .30、每文件兩段不變。
+- 主檢索、鄰段、校名捷徑及本機 Chroma 套用一致資格。SQL/Python 同時阻擋過期、待審核、錯誤身分及已知舊法規；抓取日期不能作政策人工確認。
+- 補上切塊漏洞：ARC 舊文件的「15 天」殘片即使本段缺少入境句，也會受相鄰爬蟲段落檢查；獨立人工 FAQ 不繼承另一題政策，也不再跨題補鄰段。
+- F03 類 ARC 期限問題需有完整、合格的期限依據；不足時直接 no_data／承辦轉介，不交給 Claude 從問句的「15 天」猜答。這是安全拒答，不宣稱已補完現行法規答案。
+- 人工核准綁定完整本文 hash 與確認日期。孤立的期限殘片需先整理成完整陳述；SQL 保留歷史版本、封存、隔離及 CAS 回復機制。
 
-`rag.py` 同時保留 ISO 日期與本地整數日期的來源顯示，避免新 RPC metadata 造成日期變成「未知」。沒有更換模型、向量資料庫或 UI。
+## 已執行
 
-## SQL 與資料變更順序（尚未執行）
+35 項 Python 測試方法、8 組 PostgreSQL 記憶體引擎測試通過。以同一 E5 ONNX 權重、1,195 段固定快照及實際 pgvector，比較 Excel 的 47 題非安全題，另外完成 8 題原句安全路由，以及中英文費用／四種工作許可問法與五種身分組合。
 
-1. 在隔離 PostgreSQL 17／pgvector 克隆套用 `sql/001_reliability_v2.sql`，執行 `003_isolated_checks.sql`。新 v2 RPC 不覆蓋原 RPC。新增政策審核表及私有版本歷史；既有 writer 更新／刪除時先保存完整舊列。finish v2 封存舊批次，不刪內容。
-2. 審查即時唯讀 preflight 清單；快照掃描有 6 段舊規定字面命中、7 段新版規定待人工確認，並非宣稱這 13 段均為已確認錯誤。清單見 `repair_evidence/captured_replay.json`。
-3. 經人工核准後才以 `002_quarantine_obsolete.sql` 將即時確認的舊規定 active 改 needs_review，保留正文與批次／hash 稽核；回復方式在 `002_rollback_quarantine.sql`。不得將遮罩匯出文字的 hash 當成正式資料 hash。
-4. 人工核實最新版來源、身分及適用條件，以 `004_approve_policy_template.sql` 對精確 live body 核准；不能自動改寫 15→30 或 6 個月→1 年。人工 Markdown 若以 metadata 輸入核准，hash 必須是含標題的最終單一段落本文；多段落不能共用一個 hash。
-5. 確認 v2 SQL 可用後，才在隔離／預覽環境驗收 Python。新程式不靜默回退舊 RPC。上傳工具先檢查 v2 版本，避免先動資料再發現版本不相容。
+詳見 `REGRESSION_RESULTS.md`；這些不是 Claude 答案通過率。原始 55 題、Excel、ZIP、三份診斷成果與 35 份快照程式 hash 未變。
 
-回復 Python 排序／路由可獨立撤回 Commit；不要同時退回不安全的舊檢索與重新啟用舊法規。審核與歷史表保留，不以 DROP／DELETE 清掉稽核。
+## SQL 發布與回復（全部尚未套用正式 DB）
 
-## GitHub 與部署檢查
+1. 先在與正式相同版本的 PostgreSQL 17.11／pgvector 0.8.2 克隆及 PostgREST 驗收 `sql/001_reliability_v2.sql`。原 RPC 保留，新 Python 需要 v2。
+2. 人工審查 `002_quarantine_obsolete.sql` 的 live preflight。這輪以 effective policy rule 包含切塊殘片；不能直接把原先字面掃描 6 舊／7 新的數量當作正式變更清單。
+3. 核准後以獨立批次隔離舊資料；`002_rollback_quarantine.sql` 只回復本文／run 未變的列，保留稽核。不能同時回退到不安全 reader 並重新啟用舊法規。
+4. 官方現行資料由人確認後，才使用 `004_approve_policy_template.sql`。缺少完整依據的段落需整理／重切並重算受影響向量，不能機械替換數字。
 
-以本機 Git 的既有授權 Fetch／Push，不使用 GitHub Connector。已確認可 Push、預設分支 main；建立修復分支，提交程式與測試、文件與證據兩批 Commit。PR 應維持 Draft，待隔離 SQL 及必要回歸驗收後再決定是否合併。
-
-Repository 沒有 .github workflow 或自訂 Git hook；現有 README 明載正式部署由組長處理，push 不自動更新正式網址。Vercel 遠端 Project Git 設定因非管理員未直接核實；本次只推修復分支，不操作 Vercel CLI 或正式分支。
-
-安全檢查不包含原始診斷包、55 題回答或機密檔案上傳。修復文件、合成 fixture 測試、官方 chunk ID／hash 與聚合指標才列入 Commit；敏感資料完整保存於既有本機位置。
-
-既有診斷三份成果、來源快照及原始 55 題紀錄保持原樣；測試結果另存。完整驗證與未完成項目分別見 `REGRESSION_RESULTS.md`、`KNOWN_LIMITATIONS.md`。本次 SQL 不變更原 RPC，但新程式必須先在隔離環境完成 v2 migration 驗收，不能直接部署到仍只有舊 RPC 的服務。
+README 說明 push 不自動更新正式網站，Repository 無部署 workflow／自訂 hook；未直接查核 Vercel 遠端管理設定。PR 維持 Draft。

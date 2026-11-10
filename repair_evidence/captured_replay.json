@@ -2,6 +2,7 @@
   "type": "captured_candidate_replay_not_live_test",
   "snapshot_run_id": "20261110171206",
   "date": "2026-11-10",
+  "expansion_frozen_to_capture": true,
   "golden_definition": "Complete text coverage of the three handbook fee-table chunks, ignoring headings/whitespace.",
   "queries": [
     {

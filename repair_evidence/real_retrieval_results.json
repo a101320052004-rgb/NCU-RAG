@@ -1,0 +1,4331 @@
+{
+  "kind": "new_controlled_snapshot_rerun_with_actual_existing_embedding_and_memory_pgvector",
+  "historical_reconstruction": false,
+  "summary": {
+    "original_tested_items": 55,
+    "workbook_retrieval_items": 47,
+    "safety_route_items_tested_separately": 8,
+    "untargeted_items": 41,
+    "untargeted_identical_primary": 41,
+    "untargeted_primary_changes": [],
+    "untargeted_context_changes": [
+      "G01",
+      "G03",
+      "G04",
+      "G05",
+      "G06",
+      "G07",
+      "G08",
+      "G09",
+      "G10",
+      "G11",
+      "G12",
+      "G17",
+      "G18",
+      "G20",
+      "G21",
+      "G23",
+      "G24",
+      "I03",
+      "I06",
+      "I07",
+      "I11",
+      "I12",
+      "F01",
+      "F04",
+      "U01",
+      "U03",
+      "U04",
+      "U05",
+      "U07",
+      "U08"
+    ],
+    "work_variants": 24,
+    "work_relevant_source_coverage_before": 9,
+    "work_relevant_source_coverage_after": 24,
+    "work_unrelated_selected_before": 109,
+    "work_unrelated_selected_after": 0,
+    "fee_fixed_golden_applicable_cases": 10,
+    "fee_fixed_golden_full_after": 8,
+    "fee_english_applicable_cases": 8,
+    "fee_english_full_after": 8,
+    "fee_chinese_applicable_cases": 2,
+    "fee_chinese_full_after": 0,
+    "fee_cases_without_identity_applicable_golden": 20,
+    "legacy_arc_fragment_contexts_after": 0,
+    "known_rule_obsolete_contexts_after": 0,
+    "answer_pass_rate_measured": false
+  },
+  "workbook_sha256": "15b8b10f430e3ccbd4daa838acd7c48c37614bab191af1cfca8662d6201a2074",
+  "model": {
+    "model": "Xenova/multilingual-e5-small",
+    "resolved_revision_at_download": "761b726dd34fb83930e26aab4e9ac3899aa1fa78",
+    "file_hashes": {
+      "tokenizer.json": "0b44a9d7b51c3c62626640cda0e2c2f70fdacdc25bbbd68038369d14ebdf4c39",
+      "onnx/model_quantized.onnx": "f80102d3f2a1229f387d3c81909990d8945513e347b0eab049f7de3c6f98c193"
+    },
+    "onnxruntime": "1.31.1",
+    "tokenizers": "0.23.3",
+    "numpy": "2.5.4",
+    "query_dimensions": 384,
+    "query_l2_norm": 1.000000046352998
+  },
+  "sql_engine": {
+    "version": "PostgreSQL 18.6 (PGlite 0.5.16) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.13 (e13ee988ce3d87a738dd8f3661d02223308c412a), 32-bit",
+    "current_database": "ncu_reliability_test",
+    "extversion": "0.8.7"
+  },
+  "kb_snapshot_run": "20261110171206",
+  "passages": 1195,
+  "reembedded_redacted_snapshot": true,
+  "identity_and_date_fixed": true,
+  "claude_calls": 0,
+  "production_connections": 0,
+  "workbook_queries": [
+    {
+      "id": "G01",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "mda4b98886c6-8",
+        "a4cf2561a9c3e679-0",
+        "mda4b98886c6-6",
+        "md897d587d48-20",
+        "md897d587d48-4"
+      ],
+      "after_ids": [
+        "mda4b98886c6-8",
+        "a4cf2561a9c3e679-0",
+        "mda4b98886c6-6",
+        "md897d587d48-20",
+        "md897d587d48-4"
+      ],
+      "before_context_sha256": [
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f",
+        "cba38f7b6440a266f9735ece36d338530f990c541a90e75677e23470589ed7c7",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6"
+      ],
+      "after_context_sha256": [
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.672
+    },
+    {
+      "id": "G02",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "mda4b98886c6-6",
+        "mda4b98886c6-8",
+        "md897d587d48-4",
+        "md897d587d48-20",
+        "694ddc8efa604d15-18"
+      ],
+      "after_ids": [
+        "8af182dee53384c3-34",
+        "8af182dee53384c3-32",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-4"
+      ],
+      "before_context_sha256": [
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "7a7c8dc19395957588dbd55bc0ac7a15ba4ce0286f2a3645e456ac1f569d00ed",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "29641bffb5f3b47ef11a1a7578709e4473a3151216a7f73106a13616d843f4bd"
+      ],
+      "after_context_sha256": [
+        "c97996ee455c28a1b49cfb99e9e93be9ebe1be65578188f9a2271fe2954d1ad7",
+        "9f78a4a1e57f7f1a331ef1b81885bf9c9492dfe2c2ded39c786ea8b2417eb6ec",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 1.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.516
+    },
+    {
+      "id": "G03",
+      "identity": "交換生",
+      "before_ids": [
+        "mda4b98886c6-6",
+        "mda4b98886c6-8",
+        "a4cf2561a9c3e679-0",
+        "58773c60f5d8a7cd-1",
+        "58773c60f5d8a7cd-3"
+      ],
+      "after_ids": [
+        "mda4b98886c6-6",
+        "mda4b98886c6-8",
+        "a4cf2561a9c3e679-0",
+        "58773c60f5d8a7cd-1",
+        "58773c60f5d8a7cd-3"
+      ],
+      "before_context_sha256": [
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f",
+        "029ebfc9d899ee98ff4fe9c40b101f8afcb1f4f7acce42c796f3d7c38a35eb67",
+        "6449bec54aaf06f0aa19b33782dbe6eb463cbf1bc40aafe5f0218663433553a9"
+      ],
+      "after_context_sha256": [
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f",
+        "029ebfc9d899ee98ff4fe9c40b101f8afcb1f4f7acce42c796f3d7c38a35eb67",
+        "6449bec54aaf06f0aa19b33782dbe6eb463cbf1bc40aafe5f0218663433553a9"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.844
+    },
+    {
+      "id": "G04",
+      "identity": "交換生",
+      "before_ids": [
+        "mda4b98886c6-6",
+        "md897d587d48-20",
+        "65db296870310a86-2",
+        "mda4b98886c6-8",
+        "ce1fb8ba516bab82-3"
+      ],
+      "after_ids": [
+        "mda4b98886c6-6",
+        "md897d587d48-20",
+        "65db296870310a86-2",
+        "mda4b98886c6-8",
+        "ce1fb8ba516bab82-3"
+      ],
+      "before_context_sha256": [
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "50365ea46bf543f05f37993cd1387d469411dffb906eec21201d20e53b1daa4a",
+        "60b80f96dbdb01134d2f12f044ca0b90ca67a011debf389fb9c2886ed2fe5105",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "0dbbcfd6a3495bc7cd68156eb9333f7c150ac89d488594ba6ae060387de8cb06"
+      ],
+      "after_context_sha256": [
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "60b80f96dbdb01134d2f12f044ca0b90ca67a011debf389fb9c2886ed2fe5105",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "0dbbcfd6a3495bc7cd68156eb9333f7c150ac89d488594ba6ae060387de8cb06"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.859
+    },
+    {
+      "id": "G05",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "mda4b98886c6-6",
+        "mda4b98886c6-5",
+        "ce1fb8ba516bab82-3",
+        "65db296870310a86-2",
+        "a4cf2561a9c3e679-0"
+      ],
+      "after_ids": [
+        "mda4b98886c6-6",
+        "mda4b98886c6-5",
+        "ce1fb8ba516bab82-3",
+        "65db296870310a86-2",
+        "a4cf2561a9c3e679-0"
+      ],
+      "before_context_sha256": [
+        "863408ebd99d43b0ff514fcaf70bcec5bda59145e2c7702f0658ea2e0859e88b",
+        "e90ae324daa08eea4d284ba6194c0374d52e793192f4d5372a98b43fe0f0340d",
+        "d368e43bc42affe8f5de2d7e373070c10250bc25a24f1455a15799f98d5618eb",
+        "925f594c3de77f93cfc8a494b6cc42a2a7c38638b10c6c0e84164acde1b7f31b",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "after_context_sha256": [
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "73d334e8091eae46c6e9c5bd3e9ceb31abaf99a79ffed81154af0e463801e1f1",
+        "d368e43bc42affe8f5de2d7e373070c10250bc25a24f1455a15799f98d5618eb",
+        "925f594c3de77f93cfc8a494b6cc42a2a7c38638b10c6c0e84164acde1b7f31b",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.266
+    },
+    {
+      "id": "G06",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "md897d587d48-20",
+        "mda4b98886c6-2",
+        "mda4b98886c6-6",
+        "a4cf2561a9c3e679-0",
+        "58773c60f5d8a7cd-1"
+      ],
+      "after_ids": [
+        "md897d587d48-20",
+        "mda4b98886c6-2",
+        "mda4b98886c6-6",
+        "a4cf2561a9c3e679-0",
+        "58773c60f5d8a7cd-1"
+      ],
+      "before_context_sha256": [
+        "50365ea46bf543f05f37993cd1387d469411dffb906eec21201d20e53b1daa4a",
+        "acd7d76d4601bf514e4e741233a045fcfaee6859195a40824ee6559525acfe2e",
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f",
+        "029ebfc9d899ee98ff4fe9c40b101f8afcb1f4f7acce42c796f3d7c38a35eb67"
+      ],
+      "after_context_sha256": [
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "854b8f05ac0244766bd32058f3b3aec72b37824f22ae0db8a3a933cfcd504ac0",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f",
+        "029ebfc9d899ee98ff4fe9c40b101f8afcb1f4f7acce42c796f3d7c38a35eb67"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.734
+    },
+    {
+      "id": "G07",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "mda4b98886c6-1",
+        "mda4b98886c6-8",
+        "md897d587d48-19",
+        "md897d587d48-20",
+        "md75cb01a49b-0"
+      ],
+      "after_ids": [
+        "mda4b98886c6-1",
+        "mda4b98886c6-8",
+        "md897d587d48-19",
+        "md897d587d48-20",
+        "md75cb01a49b-0"
+      ],
+      "before_context_sha256": [
+        "c81f10d409a05c2906aaed32ccd1d2f3f3944a4e6531236bb12eb40dd644c9db",
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "63fee2d8a24987b9cc64549bca423d786ee9a4463f27af272fc75c9354bb6284",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "b1d3e8d29b99b33425d6ca9a7ae9b5917e6ad7cdf0e649e30c41c2c464aa05e1"
+      ],
+      "after_context_sha256": [
+        "3eb45e25e786b454fdf743deaf9e162656d8c5c04845a6364afa6e5740d1f910",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "b1d3e8d29b99b33425d6ca9a7ae9b5917e6ad7cdf0e649e30c41c2c464aa05e1"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.906
+    },
+    {
+      "id": "G08",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "mda4b98886c6-2",
+        "mda4b98886c6-3",
+        "md897d587d48-20",
+        "65db296870310a86-2",
+        "694ddc8efa604d15-18"
+      ],
+      "after_ids": [
+        "mda4b98886c6-2",
+        "mda4b98886c6-3",
+        "md897d587d48-20",
+        "65db296870310a86-2",
+        "694ddc8efa604d15-18"
+      ],
+      "before_context_sha256": [
+        "3f5003a108b6f63d6312deb2d47f9a5d3aa26fded78a5426d9bae3f7b53c67b7",
+        "ca73e2360dd2d9330c9640f029f14cbd657144d20906d08c002bed1714387fea",
+        "50365ea46bf543f05f37993cd1387d469411dffb906eec21201d20e53b1daa4a",
+        "925f594c3de77f93cfc8a494b6cc42a2a7c38638b10c6c0e84164acde1b7f31b",
+        "29641bffb5f3b47ef11a1a7578709e4473a3151216a7f73106a13616d843f4bd"
+      ],
+      "after_context_sha256": [
+        "854b8f05ac0244766bd32058f3b3aec72b37824f22ae0db8a3a933cfcd504ac0",
+        "3fcf84291d45f49f41e2078364e10c2b63d4e3064b1468a5b748fee45be5f459",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "925f594c3de77f93cfc8a494b6cc42a2a7c38638b10c6c0e84164acde1b7f31b",
+        "29641bffb5f3b47ef11a1a7578709e4473a3151216a7f73106a13616d843f4bd"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.141
+    },
+    {
+      "id": "G09",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "65db296870310a86-1",
+        "mda4b98886c6-5",
+        "mda4b98886c6-6",
+        "65db296870310a86-2",
+        "ce1fb8ba516bab82-1"
+      ],
+      "after_ids": [
+        "65db296870310a86-1",
+        "mda4b98886c6-5",
+        "mda4b98886c6-6",
+        "65db296870310a86-2",
+        "ce1fb8ba516bab82-1"
+      ],
+      "before_context_sha256": [
+        "f28e9e845a93bccbeca227f4a8c148203369a73ac43dd4680740c6429ba3420f",
+        "e90ae324daa08eea4d284ba6194c0374d52e793192f4d5372a98b43fe0f0340d",
+        "863408ebd99d43b0ff514fcaf70bcec5bda59145e2c7702f0658ea2e0859e88b",
+        "925f594c3de77f93cfc8a494b6cc42a2a7c38638b10c6c0e84164acde1b7f31b",
+        "83c6088d0c889b445ccfa1b431fb6942c1cff2a1c86cfae026161615ffb06905"
+      ],
+      "after_context_sha256": [
+        "f28e9e845a93bccbeca227f4a8c148203369a73ac43dd4680740c6429ba3420f",
+        "73d334e8091eae46c6e9c5bd3e9ceb31abaf99a79ffed81154af0e463801e1f1",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "925f594c3de77f93cfc8a494b6cc42a2a7c38638b10c6c0e84164acde1b7f31b",
+        "83c6088d0c889b445ccfa1b431fb6942c1cff2a1c86cfae026161615ffb06905"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.187
+    },
+    {
+      "id": "G10",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "mda4b98886c6-0",
+        "62546755ea36874a-9",
+        "62546755ea36874a-2",
+        "52cefac45fb9dffc-0",
+        "8af182dee53384c3-36"
+      ],
+      "after_ids": [
+        "mda4b98886c6-0",
+        "62546755ea36874a-9",
+        "62546755ea36874a-2",
+        "52cefac45fb9dffc-0",
+        "8af182dee53384c3-36"
+      ],
+      "before_context_sha256": [
+        "e499d98cff5645a658a70d8e16df59783d3bd76c8fdbf5ff418eadaf58718fbf",
+        "6395b24203cf4c91f2a897dcda96984728bc7420de3f8f38b6039c65e3d5955b",
+        "03ff59b8514a489d22b223f6ff06b600600e9bd0e51971ec0cddbaa31ba0c772",
+        "22e69497503be5eb613fe4f493bc8fbbbfd48e75d817c3bf3d11c29a34ce4094",
+        "7da0c77ec1b63ae4b426e728676af600ed777d8c565435714b8a100303499ed6"
+      ],
+      "after_context_sha256": [
+        "ca905e7ed52f4eb5e37bb7e04265a76e4a3a09ac04537f529a6fa64818a0c206",
+        "6395b24203cf4c91f2a897dcda96984728bc7420de3f8f38b6039c65e3d5955b",
+        "03ff59b8514a489d22b223f6ff06b600600e9bd0e51971ec0cddbaa31ba0c772",
+        "22e69497503be5eb613fe4f493bc8fbbbfd48e75d817c3bf3d11c29a34ce4094",
+        "7da0c77ec1b63ae4b426e728676af600ed777d8c565435714b8a100303499ed6"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 2,
+      "after_work_relevant_sources": 2,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.157
+    },
+    {
+      "id": "G11",
+      "identity": "交換生",
+      "before_ids": [
+        "mda4b98886c6-6",
+        "md897d587d48-20",
+        "mda4b98886c6-8",
+        "a4cf2561a9c3e679-0",
+        "694ddc8efa604d15-18"
+      ],
+      "after_ids": [
+        "mda4b98886c6-6",
+        "md897d587d48-20",
+        "mda4b98886c6-8",
+        "a4cf2561a9c3e679-0",
+        "694ddc8efa604d15-18"
+      ],
+      "before_context_sha256": [
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "50365ea46bf543f05f37993cd1387d469411dffb906eec21201d20e53b1daa4a",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f",
+        "29641bffb5f3b47ef11a1a7578709e4473a3151216a7f73106a13616d843f4bd"
+      ],
+      "after_context_sha256": [
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f",
+        "29641bffb5f3b47ef11a1a7578709e4473a3151216a7f73106a13616d843f4bd"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.922
+    },
+    {
+      "id": "G12",
+      "identity": "交換生",
+      "before_ids": [
+        "mda4b98886c6-6",
+        "mda4b98886c6-8",
+        "65db296870310a86-2",
+        "md897d587d48-20",
+        "md897d587d48-19"
+      ],
+      "after_ids": [
+        "mda4b98886c6-6",
+        "mda4b98886c6-8",
+        "65db296870310a86-2",
+        "md897d587d48-20",
+        "md897d587d48-19"
+      ],
+      "before_context_sha256": [
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "60b80f96dbdb01134d2f12f044ca0b90ca67a011debf389fb9c2886ed2fe5105",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665"
+      ],
+      "after_context_sha256": [
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "60b80f96dbdb01134d2f12f044ca0b90ca67a011debf389fb9c2886ed2fe5105",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.735
+    },
+    {
+      "id": "G13",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "694ddc8efa604d15-33",
+        "694ddc8efa604d15-35",
+        "1f09e01886cd2fe8-4",
+        "613f2e754e320e1d-2",
+        "c238710b60c11732-0"
+      ],
+      "after_ids": [
+        "694ddc8efa604d15-33",
+        "694ddc8efa604d15-35",
+        "1f09e01886cd2fe8-4",
+        "613f2e754e320e1d-2",
+        "c238710b60c11732-0"
+      ],
+      "before_context_sha256": [
+        "344f0921d394b65e90e4aa57c73a03c206b8be98d9628925c60dd89dc554405a",
+        "0bb94114d5f5a949e74b74ae2c39d8431bb87a570924a06f16d84cf365b41cbc",
+        "e9c43b75ebd4c115bcbfa63a0cb73105c2eddd47ae34ff149d83df4a45b57022",
+        "a8bf5a13d76534b8dab2b6377e1d96c6bc3878e176fdacb86e7bb8edf713547d",
+        "c61b94a4e5045a85561646e7149878d46eff783affe33725128307961c530d06"
+      ],
+      "after_context_sha256": [
+        "344f0921d394b65e90e4aa57c73a03c206b8be98d9628925c60dd89dc554405a",
+        "0bb94114d5f5a949e74b74ae2c39d8431bb87a570924a06f16d84cf365b41cbc",
+        "e9c43b75ebd4c115bcbfa63a0cb73105c2eddd47ae34ff149d83df4a45b57022",
+        "a8bf5a13d76534b8dab2b6377e1d96c6bc3878e176fdacb86e7bb8edf713547d",
+        "c61b94a4e5045a85561646e7149878d46eff783affe33725128307961c530d06"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.265
+    },
+    {
+      "id": "G14",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "6c6b73e7dd9871a7-0",
+        "694ddc8efa604d15-33",
+        "694ddc8efa604d15-35",
+        "613f2e754e320e1d-10",
+        "613f2e754e320e1d-2"
+      ],
+      "after_ids": [
+        "6c6b73e7dd9871a7-0",
+        "694ddc8efa604d15-33",
+        "694ddc8efa604d15-35",
+        "613f2e754e320e1d-10",
+        "613f2e754e320e1d-2"
+      ],
+      "before_context_sha256": [
+        "09b0b5eb83bdf0f6620122fd0a5790f4401b1422ab07c50464acec3eb2ee0903",
+        "344f0921d394b65e90e4aa57c73a03c206b8be98d9628925c60dd89dc554405a",
+        "0bb94114d5f5a949e74b74ae2c39d8431bb87a570924a06f16d84cf365b41cbc",
+        "1e6415245d73a6ed91443656f38f9eef0d09467cab54cd45b413a1d0dc944ee9",
+        "a8bf5a13d76534b8dab2b6377e1d96c6bc3878e176fdacb86e7bb8edf713547d"
+      ],
+      "after_context_sha256": [
+        "09b0b5eb83bdf0f6620122fd0a5790f4401b1422ab07c50464acec3eb2ee0903",
+        "344f0921d394b65e90e4aa57c73a03c206b8be98d9628925c60dd89dc554405a",
+        "0bb94114d5f5a949e74b74ae2c39d8431bb87a570924a06f16d84cf365b41cbc",
+        "1e6415245d73a6ed91443656f38f9eef0d09467cab54cd45b413a1d0dc944ee9",
+        "a8bf5a13d76534b8dab2b6377e1d96c6bc3878e176fdacb86e7bb8edf713547d"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.125
+    },
+    {
+      "id": "G15",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "c9fdd88183bc796c-2",
+        "md1771e3f80d-4",
+        "c9fdd88183bc796c-0",
+        "71c3d2fd39bb6086-12",
+        "1ad657e047538a27-6"
+      ],
+      "after_ids": [
+        "1ad657e047538a27-6",
+        "c9fdd88183bc796c-2",
+        "71c3d2fd39bb6086-1",
+        "c9fdd88183bc796c-0",
+        "71c3d2fd39bb6086-12"
+      ],
+      "before_context_sha256": [
+        "7f613bfdfbdd6a099df80850bc4c232caf4fdb9774e5b29a7a83617e6917751f",
+        "394853195744d5c2ce11aeb5325332f2988bebea6ef307e03a61173b39bdb8b6",
+        "ca022a27f3047b39a62ddd52e6df57c5f5d311a3dfa7bb604764c6d895afcebc",
+        "f5d2909f01c9851f8eb76077b4393219a7990c9a3e7a1ed3f05bc017fbcd6c6a",
+        "680b9520cb954b788f45033600be29b0d17013fe1a11d87496b59bd82f9377d5"
+      ],
+      "after_context_sha256": [
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162",
+        "7f613bfdfbdd6a099df80850bc4c232caf4fdb9774e5b29a7a83617e6917751f",
+        "365b71cb99f7c53b2dd40a77e3b04b4694640ff87f46d2863970be45bfd9231e",
+        "ca022a27f3047b39a62ddd52e6df57c5f5d311a3dfa7bb604764c6d895afcebc",
+        "f5d2909f01c9851f8eb76077b4393219a7990c9a3e7a1ed3f05bc017fbcd6c6a"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 4,
+      "after_work_relevant_sources": 5,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.688
+    },
+    {
+      "id": "G16",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "mda4b98886c6-6",
+        "c9fdd88183bc796c-3",
+        "c9fdd88183bc796c-2",
+        "71c3d2fd39bb6086-1",
+        "1ad657e047538a27-6"
+      ],
+      "after_ids": [
+        "c9fdd88183bc796c-3",
+        "71c3d2fd39bb6086-1",
+        "c9fdd88183bc796c-2",
+        "1ad657e047538a27-6",
+        "1ad657e047538a27-5"
+      ],
+      "before_context_sha256": [
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "34f55078e69099d95c701f11a2b36caa7dd76a8408d16b3549dd860b498bb54c",
+        "bf0805ffd3cf9d861e03d87599e7654348533ceb8f87339a3d0b92384a7c7e6b",
+        "33a9647e51764b4899db6bed63b9c86768bec364eeb158ca5228f7099b034af1",
+        "680b9520cb954b788f45033600be29b0d17013fe1a11d87496b59bd82f9377d5"
+      ],
+      "after_context_sha256": [
+        "34f55078e69099d95c701f11a2b36caa7dd76a8408d16b3549dd860b498bb54c",
+        "365b71cb99f7c53b2dd40a77e3b04b4694640ff87f46d2863970be45bfd9231e",
+        "bf0805ffd3cf9d861e03d87599e7654348533ceb8f87339a3d0b92384a7c7e6b",
+        "680b9520cb954b788f45033600be29b0d17013fe1a11d87496b59bd82f9377d5",
+        "2bf8ac7b2a9088bdd65c13663fb0139d5725ac08a413d573843b1e76c2bf03ee"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 4,
+      "after_work_relevant_sources": 5,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.75
+    },
+    {
+      "id": "G17",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "md897d587d48-20",
+        "799d5f1249c20668-12",
+        "4b9b85a7b5c3353e-0",
+        "799d5f1249c20668-13",
+        "447ffca6bae5380d-3"
+      ],
+      "after_ids": [
+        "md897d587d48-20",
+        "799d5f1249c20668-12",
+        "4b9b85a7b5c3353e-0",
+        "799d5f1249c20668-13",
+        "447ffca6bae5380d-3"
+      ],
+      "before_context_sha256": [
+        "50365ea46bf543f05f37993cd1387d469411dffb906eec21201d20e53b1daa4a",
+        "77ca032d5e1b2847b9fcaffcf78e133dfa9e89997bd79ff2c409d37e1f5272b4",
+        "a2d5b3d75a36d08d11ded7557384d2e3ef9a131b0a3b7d8a3bf4cac08f94a4f3",
+        "27264ffc8d06a8c0f6324e15f35413881b88f894adc39664a66125510c07db9f",
+        "7854bc97531e5ace08bfb077c680fa6f7abd3d26749322fffeabba789d08e9a0"
+      ],
+      "after_context_sha256": [
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "77ca032d5e1b2847b9fcaffcf78e133dfa9e89997bd79ff2c409d37e1f5272b4",
+        "a2d5b3d75a36d08d11ded7557384d2e3ef9a131b0a3b7d8a3bf4cac08f94a4f3",
+        "27264ffc8d06a8c0f6324e15f35413881b88f894adc39664a66125510c07db9f",
+        "7854bc97531e5ace08bfb077c680fa6f7abd3d26749322fffeabba789d08e9a0"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.562
+    },
+    {
+      "id": "G18",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "799d5f1249c20668-13",
+        "md897d587d48-20",
+        "799d5f1249c20668-12",
+        "4b9b85a7b5c3353e-0",
+        "12b5e67f79afb723-2"
+      ],
+      "after_ids": [
+        "799d5f1249c20668-13",
+        "md897d587d48-20",
+        "799d5f1249c20668-12",
+        "4b9b85a7b5c3353e-0",
+        "12b5e67f79afb723-2"
+      ],
+      "before_context_sha256": [
+        "6f1f1fca3b472740e9036ee0da7fff23ee17fd88fa2fa27387a56e2f149e452d",
+        "50365ea46bf543f05f37993cd1387d469411dffb906eec21201d20e53b1daa4a",
+        "77ca032d5e1b2847b9fcaffcf78e133dfa9e89997bd79ff2c409d37e1f5272b4",
+        "a2d5b3d75a36d08d11ded7557384d2e3ef9a131b0a3b7d8a3bf4cac08f94a4f3",
+        "de9483f73c5066e54b83dad05277be9d5f8c40d54a1f0b4ce6e96de0fb9fe7cb"
+      ],
+      "after_context_sha256": [
+        "6f1f1fca3b472740e9036ee0da7fff23ee17fd88fa2fa27387a56e2f149e452d",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "77ca032d5e1b2847b9fcaffcf78e133dfa9e89997bd79ff2c409d37e1f5272b4",
+        "a2d5b3d75a36d08d11ded7557384d2e3ef9a131b0a3b7d8a3bf4cac08f94a4f3",
+        "de9483f73c5066e54b83dad05277be9d5f8c40d54a1f0b4ce6e96de0fb9fe7cb"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.453
+    },
+    {
+      "id": "G19",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "c244199dc51c383d-0",
+        "c1a247fe9849e2cd-0",
+        "62546755ea36874a-10",
+        "12b5e67f79afb723-0",
+        "3b95429ad1f0eead-0"
+      ],
+      "after_ids": [
+        "c244199dc51c383d-0",
+        "c1a247fe9849e2cd-0",
+        "62546755ea36874a-10",
+        "12b5e67f79afb723-0",
+        "3b95429ad1f0eead-0"
+      ],
+      "before_context_sha256": [
+        "ca88916bea81b713193f7bcc0609a32d6fb30244973e1229ed71c58cf4938b58",
+        "8c563c145429781447f47350f22cf86f503226966f5d332f7ff7f64d4f75573d",
+        "666e36303b9959893b84d5fe7f507b16d0f3c8bcd1e3c951b0aa01f00b0c56e4",
+        "649aab504f3164dfcb93834ecdd4f9cf77189a9c272e2f96f7118fffdef7bbaa",
+        "68864d431828dbec96bf3a905498ddb285ed3008ec509a050e4f2df071eee0e1"
+      ],
+      "after_context_sha256": [
+        "ca88916bea81b713193f7bcc0609a32d6fb30244973e1229ed71c58cf4938b58",
+        "8c563c145429781447f47350f22cf86f503226966f5d332f7ff7f64d4f75573d",
+        "666e36303b9959893b84d5fe7f507b16d0f3c8bcd1e3c951b0aa01f00b0c56e4",
+        "649aab504f3164dfcb93834ecdd4f9cf77189a9c272e2f96f7118fffdef7bbaa",
+        "68864d431828dbec96bf3a905498ddb285ed3008ec509a050e4f2df071eee0e1"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 0.766
+    },
+    {
+      "id": "G20",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "3b95429ad1f0eead-2",
+        "mda4b98886c6-0",
+        "8af182dee53384c3-39",
+        "8af182dee53384c3-7",
+        "52cefac45fb9dffc-0"
+      ],
+      "after_ids": [
+        "3b95429ad1f0eead-2",
+        "mda4b98886c6-0",
+        "8af182dee53384c3-39",
+        "8af182dee53384c3-7",
+        "52cefac45fb9dffc-0"
+      ],
+      "before_context_sha256": [
+        "7de1a22738a9e1908b5eabb2ff2fe6aa9b005642943d9a035224c43fe6dfe1fb",
+        "e499d98cff5645a658a70d8e16df59783d3bd76c8fdbf5ff418eadaf58718fbf",
+        "a4fe7a2fe1efbd2df8515240dc6f1aab349465179b22089232bfe959404a6951",
+        "90c94c06ad732442301ff21578fa6d18e42f5fc3993cf854a405d0c3893b0338",
+        "22e69497503be5eb613fe4f493bc8fbbbfd48e75d817c3bf3d11c29a34ce4094"
+      ],
+      "after_context_sha256": [
+        "7de1a22738a9e1908b5eabb2ff2fe6aa9b005642943d9a035224c43fe6dfe1fb",
+        "ca905e7ed52f4eb5e37bb7e04265a76e4a3a09ac04537f529a6fa64818a0c206",
+        "a4fe7a2fe1efbd2df8515240dc6f1aab349465179b22089232bfe959404a6951",
+        "90c94c06ad732442301ff21578fa6d18e42f5fc3993cf854a405d0c3893b0338",
+        "22e69497503be5eb613fe4f493bc8fbbbfd48e75d817c3bf3d11c29a34ce4094"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 1,
+      "after_work_relevant_sources": 1,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 0.734
+    },
+    {
+      "id": "G21",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "md75cb01a49b-0",
+        "md73631db36f-0",
+        "md75cb01a49b-3",
+        "md73631db36f-11",
+        "md897d587d48-20"
+      ],
+      "after_ids": [
+        "md75cb01a49b-0",
+        "md73631db36f-0",
+        "md75cb01a49b-3",
+        "md73631db36f-11",
+        "md897d587d48-20"
+      ],
+      "before_context_sha256": [
+        "86bc560ac7cfff57ef137f342b76444fe4a9d0ef9d1733484fed33ae3b2fc511",
+        "24bd780c0e8a56dbb019fca87418aa8ba378efb4bae90186626f9dccc1200db0",
+        "464e511bb79b4f8dbe627aefe6c3d1c433725a1fd877fbfb04fddae12b723057",
+        "6b7f7ded0a2cebbece978496edc514506ffe7fa24e1fb1bd24a2ce6bf71c24c9",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5"
+      ],
+      "after_context_sha256": [
+        "b1d3e8d29b99b33425d6ca9a7ae9b5917e6ad7cdf0e649e30c41c2c464aa05e1",
+        "c51d58f58b7e3668f5f48adfa0da669b370382e08aabf848cc33870aa20a11ec",
+        "c2e5845aebbf9cd10cce9df34b15cf6436d7faea443404c8b66f4c237e2d5c81",
+        "6b7f7ded0a2cebbece978496edc514506ffe7fa24e1fb1bd24a2ce6bf71c24c9",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 1,
+      "after_work_relevant_sources": 1,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.547
+    },
+    {
+      "id": "G22",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "8af182dee53384c3-62",
+        "8af182dee53384c3-61",
+        "ann-5a0c1e00-0000-4000-8000-000000000003-1",
+        "f6777077282debf4-1",
+        "8a96a4cecacfc546-0"
+      ],
+      "after_ids": [
+        "8af182dee53384c3-62",
+        "8af182dee53384c3-61",
+        "ann-5a0c1e00-0000-4000-8000-000000000003-1",
+        "f6777077282debf4-1",
+        "8a96a4cecacfc546-0"
+      ],
+      "before_context_sha256": [
+        "300b3a8279bc948fe8fa97d6801edb9037411a893cc0a98d46a612033f584f67",
+        "63e8b71588ef24ffa6d9d80a66a5d0f2d6bbca8438f3e5ed791e57d1de0e639e",
+        "1f1a695b31ba6568c33d879e1e26ee2a0953fa675443981b6f831cdd3281f9f5",
+        "0d825eb0a35aa7e38c7931b2bd41583ea2dcfd6da56246783e8c7edfa79fb934",
+        "f185c4d391db8b0a2f8b03f8940e9d7204167f14dc9507e59a2967077e999bb1"
+      ],
+      "after_context_sha256": [
+        "300b3a8279bc948fe8fa97d6801edb9037411a893cc0a98d46a612033f584f67",
+        "63e8b71588ef24ffa6d9d80a66a5d0f2d6bbca8438f3e5ed791e57d1de0e639e",
+        "1f1a695b31ba6568c33d879e1e26ee2a0953fa675443981b6f831cdd3281f9f5",
+        "0d825eb0a35aa7e38c7931b2bd41583ea2dcfd6da56246783e8c7edfa79fb934",
+        "f185c4d391db8b0a2f8b03f8940e9d7204167f14dc9507e59a2967077e999bb1"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 0.875
+    },
+    {
+      "id": "G23",
+      "identity": "僑生",
+      "before_ids": [
+        "62546755ea36874a-6",
+        "mda4b98886c6-0",
+        "694ddc8efa604d15-2",
+        "9c0fe3789de4fa81-1",
+        "62546755ea36874a-5"
+      ],
+      "after_ids": [
+        "62546755ea36874a-6",
+        "mda4b98886c6-0",
+        "694ddc8efa604d15-2",
+        "9c0fe3789de4fa81-1",
+        "62546755ea36874a-5"
+      ],
+      "before_context_sha256": [
+        "ce43072974d9995f4688570a49dacc101916510c7b7f675c67affe397c388f83",
+        "e499d98cff5645a658a70d8e16df59783d3bd76c8fdbf5ff418eadaf58718fbf",
+        "711bd206a594843d2c5df3b00204d09c4df94ccafd732ff59cb745b18340de63",
+        "c6c5802c6aa5c98a924b216ddc7a2b779aea6dc7253adcd62c75b77da132ec32",
+        "594be13d013fdd24ed040ad1650c27f3ad3dd2e247539e2cd9b19a02f7cd4f52"
+      ],
+      "after_context_sha256": [
+        "ce43072974d9995f4688570a49dacc101916510c7b7f675c67affe397c388f83",
+        "ca905e7ed52f4eb5e37bb7e04265a76e4a3a09ac04537f529a6fa64818a0c206",
+        "711bd206a594843d2c5df3b00204d09c4df94ccafd732ff59cb745b18340de63",
+        "c6c5802c6aa5c98a924b216ddc7a2b779aea6dc7253adcd62c75b77da132ec32",
+        "594be13d013fdd24ed040ad1650c27f3ad3dd2e247539e2cd9b19a02f7cd4f52"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.125
+    },
+    {
+      "id": "G24",
+      "identity": "交換生",
+      "before_ids": [
+        "md897d587d48-20",
+        "md897d587d48-19",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md75cb01a49b-0"
+      ],
+      "after_ids": [
+        "md897d587d48-20",
+        "md897d587d48-19",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md75cb01a49b-0"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "63fee2d8a24987b9cc64549bca423d786ee9a4463f27af272fc75c9354bb6284",
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "b1d3e8d29b99b33425d6ca9a7ae9b5917e6ad7cdf0e649e30c41c2c464aa05e1"
+      ],
+      "after_context_sha256": [
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "b1d3e8d29b99b33425d6ca9a7ae9b5917e6ad7cdf0e649e30c41c2c464aa05e1"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.438
+    },
+    {
+      "id": "I01",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "12b5e67f79afb723-7",
+        "c244199dc51c383d-0",
+        "8af182dee53384c3-15",
+        "44fffda5250138c9-10"
+      ],
+      "after_ids": [
+        "c9fdd88183bc796c-0",
+        "1ad657e047538a27-6"
+      ],
+      "before_context_sha256": [
+        "7312825dcb06d282faed540df128c21bee5a1b50aba0c18e182604a94f650c12",
+        "88772ec07bfbc7224e2136f5921f6950aa0384474b79a0e4e67c1bc375def698",
+        "ca88916bea81b713193f7bcc0609a32d6fb30244973e1229ed71c58cf4938b58",
+        "6809fbc09cbb0587e24ec3afc4ae3f8ab4559bf083b28fb8f86c00d68897c869",
+        "6ea3042a6ad2a299ec551d8996bc98800d628e1463df729ffd6792abd011c814"
+      ],
+      "after_context_sha256": [
+        "4805b9a3216af2cb54baca111abf92ece8f1a106582404f96fed4b3cb0694630",
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 2,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.781
+    },
+    {
+      "id": "I02",
+      "identity": "交換生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "44fffda5250138c9-10",
+        "a756a2aad46d72ec-3",
+        "62546755ea36874a-10",
+        "a756a2aad46d72ec-0"
+      ],
+      "after_ids": [
+        "1ad657e047538a27-6",
+        "a20d7a7e9a628894-3"
+      ],
+      "before_context_sha256": [
+        "7312825dcb06d282faed540df128c21bee5a1b50aba0c18e182604a94f650c12",
+        "83c173a3312ba9f847adf4a1c20c4978c70f1a6239ad7e8b89e0f89dfc12e675",
+        "0fe8836d6d34fdd3d51539d8a65863c8f725e9ccae81fbc55a4aa9303cac33a6",
+        "7d7801da458c3bb69fecc0adf7132f6d73d4767e980b44273b989d0646b55475",
+        "e3f978b252cf5fe1f2f8030b824a1964a10f6650193f295fb3166097a6c02d1b"
+      ],
+      "after_context_sha256": [
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162",
+        "ba4bc994b6fd63b5a4e135e713b138f270e8512cf81208083abb2489d0dc03fc"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 2,
+      "before_official_work_page": false,
+      "after_official_work_page": true,
+      "before_work_source_rank": null,
+      "after_work_source_rank": 2,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.453
+    },
+    {
+      "id": "I03",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "694ddc8efa604d15-14",
+        "694ddc8efa604d15-35",
+        "md1771e3f80d-5",
+        "613f2e754e320e1d-2",
+        "799d5f1249c20668-19"
+      ],
+      "after_ids": [
+        "694ddc8efa604d15-14",
+        "694ddc8efa604d15-35",
+        "md1771e3f80d-5",
+        "613f2e754e320e1d-2",
+        "799d5f1249c20668-19"
+      ],
+      "before_context_sha256": [
+        "49f7c696b2f1d6ff859034cc0de74966d4fc45f08dc3d7dfacfd39c5e1528a58",
+        "94e7f0d45dc2ac27ae56674c5974b429952d141fac52b42ca59528c732ad6f89",
+        "ceccf58ac0d6847a070bbb8d2c2eb5c8f7ac851a6dd902d0c2d1c1ea5042d24f",
+        "a8bf5a13d76534b8dab2b6377e1d96c6bc3878e176fdacb86e7bb8edf713547d",
+        "b3121d65c3ffb4080eda6c7d66eef0dcb3d8be952740218ce20d7c73862345cf"
+      ],
+      "after_context_sha256": [
+        "49f7c696b2f1d6ff859034cc0de74966d4fc45f08dc3d7dfacfd39c5e1528a58",
+        "94e7f0d45dc2ac27ae56674c5974b429952d141fac52b42ca59528c732ad6f89",
+        "fb8e8e09d0894e24d64eb10f33ee6e8c449210a7d567e988237cbac02a485d39",
+        "a8bf5a13d76534b8dab2b6377e1d96c6bc3878e176fdacb86e7bb8edf713547d",
+        "b3121d65c3ffb4080eda6c7d66eef0dcb3d8be952740218ce20d7c73862345cf"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.672
+    },
+    {
+      "id": "I05",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "4b9b85a7b5c3353e-0",
+        "799d5f1249c20668-13",
+        "799d5f1249c20668-12",
+        "12b5e67f79afb723-2",
+        "447ffca6bae5380d-3"
+      ],
+      "after_ids": [
+        "4b9b85a7b5c3353e-0",
+        "799d5f1249c20668-13",
+        "799d5f1249c20668-12",
+        "12b5e67f79afb723-2",
+        "447ffca6bae5380d-3"
+      ],
+      "before_context_sha256": [
+        "a2d5b3d75a36d08d11ded7557384d2e3ef9a131b0a3b7d8a3bf4cac08f94a4f3",
+        "6f1f1fca3b472740e9036ee0da7fff23ee17fd88fa2fa27387a56e2f149e452d",
+        "77ca032d5e1b2847b9fcaffcf78e133dfa9e89997bd79ff2c409d37e1f5272b4",
+        "de9483f73c5066e54b83dad05277be9d5f8c40d54a1f0b4ce6e96de0fb9fe7cb",
+        "7854bc97531e5ace08bfb077c680fa6f7abd3d26749322fffeabba789d08e9a0"
+      ],
+      "after_context_sha256": [
+        "a2d5b3d75a36d08d11ded7557384d2e3ef9a131b0a3b7d8a3bf4cac08f94a4f3",
+        "6f1f1fca3b472740e9036ee0da7fff23ee17fd88fa2fa27387a56e2f149e452d",
+        "77ca032d5e1b2847b9fcaffcf78e133dfa9e89997bd79ff2c409d37e1f5272b4",
+        "de9483f73c5066e54b83dad05277be9d5f8c40d54a1f0b4ce6e96de0fb9fe7cb",
+        "7854bc97531e5ace08bfb077c680fa6f7abd3d26749322fffeabba789d08e9a0"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.031
+    },
+    {
+      "id": "I06",
+      "identity": "交換生",
+      "before_ids": [
+        "4b9b85a7b5c3353e-0",
+        "799d5f1249c20668-13",
+        "md897d587d48-20",
+        "799d5f1249c20668-12",
+        "447ffca6bae5380d-3"
+      ],
+      "after_ids": [
+        "4b9b85a7b5c3353e-0",
+        "799d5f1249c20668-13",
+        "md897d587d48-20",
+        "799d5f1249c20668-12",
+        "447ffca6bae5380d-3"
+      ],
+      "before_context_sha256": [
+        "a2d5b3d75a36d08d11ded7557384d2e3ef9a131b0a3b7d8a3bf4cac08f94a4f3",
+        "6f1f1fca3b472740e9036ee0da7fff23ee17fd88fa2fa27387a56e2f149e452d",
+        "50365ea46bf543f05f37993cd1387d469411dffb906eec21201d20e53b1daa4a",
+        "4e16db6e7cc48c0e1dd3dcc1d6f8e290551ddfa38621f7f2ef272fc6d1857340",
+        "7854bc97531e5ace08bfb077c680fa6f7abd3d26749322fffeabba789d08e9a0"
+      ],
+      "after_context_sha256": [
+        "a2d5b3d75a36d08d11ded7557384d2e3ef9a131b0a3b7d8a3bf4cac08f94a4f3",
+        "6f1f1fca3b472740e9036ee0da7fff23ee17fd88fa2fa27387a56e2f149e452d",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "4e16db6e7cc48c0e1dd3dcc1d6f8e290551ddfa38621f7f2ef272fc6d1857340",
+        "7854bc97531e5ace08bfb077c680fa6f7abd3d26749322fffeabba789d08e9a0"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.344
+    },
+    {
+      "id": "I07",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "md1771e3f80d-5",
+        "ann-5a0c1e00-0000-4000-8000-000000000003-1",
+        "c9fdd88183bc796c-2",
+        "694ddc8efa604d15-20",
+        "52bc3d64ab8adaa6-2"
+      ],
+      "after_ids": [
+        "md1771e3f80d-5",
+        "ann-5a0c1e00-0000-4000-8000-000000000003-1",
+        "c9fdd88183bc796c-2",
+        "694ddc8efa604d15-20",
+        "52bc3d64ab8adaa6-2"
+      ],
+      "before_context_sha256": [
+        "ceccf58ac0d6847a070bbb8d2c2eb5c8f7ac851a6dd902d0c2d1c1ea5042d24f",
+        "1f1a695b31ba6568c33d879e1e26ee2a0953fa675443981b6f831cdd3281f9f5",
+        "7f613bfdfbdd6a099df80850bc4c232caf4fdb9774e5b29a7a83617e6917751f",
+        "9d3fa3d37d3990e7231b5a3b8e340958476cbe9b00139d9f90b44c0eaecca9bb",
+        "f7ad0cb3530ffb7cdb1a79f0261ab801b21e19a088bb0000865169fabdf61d50"
+      ],
+      "after_context_sha256": [
+        "fb8e8e09d0894e24d64eb10f33ee6e8c449210a7d567e988237cbac02a485d39",
+        "1f1a695b31ba6568c33d879e1e26ee2a0953fa675443981b6f831cdd3281f9f5",
+        "7f613bfdfbdd6a099df80850bc4c232caf4fdb9774e5b29a7a83617e6917751f",
+        "9d3fa3d37d3990e7231b5a3b8e340958476cbe9b00139d9f90b44c0eaecca9bb",
+        "f7ad0cb3530ffb7cdb1a79f0261ab801b21e19a088bb0000865169fabdf61d50"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 1,
+      "after_work_relevant_sources": 1,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.672
+    },
+    {
+      "id": "I08",
+      "identity": "僑生",
+      "before_ids": [
+        "ann-5a0c1e00-0000-4000-8000-000000000003-1",
+        "138072c6e706053f-1",
+        "24f84f9fef699d10-6",
+        "138072c6e706053f-0",
+        "70f730617d67ea23-1"
+      ],
+      "after_ids": [
+        "ann-5a0c1e00-0000-4000-8000-000000000003-1",
+        "138072c6e706053f-1",
+        "24f84f9fef699d10-6",
+        "138072c6e706053f-0",
+        "70f730617d67ea23-1"
+      ],
+      "before_context_sha256": [
+        "1f1a695b31ba6568c33d879e1e26ee2a0953fa675443981b6f831cdd3281f9f5",
+        "515eb93f910cf7a5037fb25e7acd001ceab76b0b36134e7e64111a3d92ef2b68",
+        "89cf80da6c061e77df1790286fea46d1bc1999ad71ef6183eb01b290cfda8199",
+        "eb2c56386ef4a252e212d92bfadb0a30fcdf32cad093d78bcb889663d7fcbe50",
+        "ef41f5215a1a8a83080c89f44e89afabe23758e705e39507d76819d9a46c4742"
+      ],
+      "after_context_sha256": [
+        "1f1a695b31ba6568c33d879e1e26ee2a0953fa675443981b6f831cdd3281f9f5",
+        "515eb93f910cf7a5037fb25e7acd001ceab76b0b36134e7e64111a3d92ef2b68",
+        "89cf80da6c061e77df1790286fea46d1bc1999ad71ef6183eb01b290cfda8199",
+        "eb2c56386ef4a252e212d92bfadb0a30fcdf32cad093d78bcb889663d7fcbe50",
+        "ef41f5215a1a8a83080c89f44e89afabe23758e705e39507d76819d9a46c4742"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 2,
+      "after_work_relevant_sources": 2,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.922
+    },
+    {
+      "id": "I09",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "8af182dee53384c3-15",
+        "694ddc8efa604d15-16",
+        "8af182dee53384c3-42",
+        "44fffda5250138c9-12"
+      ],
+      "after_ids": [
+        "44fffda5250138c9-5",
+        "8af182dee53384c3-15",
+        "694ddc8efa604d15-16",
+        "8af182dee53384c3-42",
+        "44fffda5250138c9-12"
+      ],
+      "before_context_sha256": [
+        "7312825dcb06d282faed540df128c21bee5a1b50aba0c18e182604a94f650c12",
+        "09eba2dd702f1dda72443dd670a2900691f9bba9a2cdcc4047887df007338b1e",
+        "e3321af385e869e560b060ea6f6c5667d7b0cd30a643863dfebbcb77f05a0c2b",
+        "c0a87a0dbe6c5cbbd2a780f368d5646f52f2018ab59eda5ba74088faad20ff47",
+        "30428e99d723064b56c6c7176a8bea278f96fcd0c2ff3ade265b7b981ec174c6"
+      ],
+      "after_context_sha256": [
+        "7312825dcb06d282faed540df128c21bee5a1b50aba0c18e182604a94f650c12",
+        "09eba2dd702f1dda72443dd670a2900691f9bba9a2cdcc4047887df007338b1e",
+        "e3321af385e869e560b060ea6f6c5667d7b0cd30a643863dfebbcb77f05a0c2b",
+        "c0a87a0dbe6c5cbbd2a780f368d5646f52f2018ab59eda5ba74088faad20ff47",
+        "30428e99d723064b56c6c7176a8bea278f96fcd0c2ff3ade265b7b981ec174c6"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 0.812
+    },
+    {
+      "id": "I10",
+      "identity": "訪問研修生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "44fffda5250138c9-12",
+        "c1a247fe9849e2cd-7",
+        "c1a247fe9849e2cd-8",
+        "4987034956486642-4"
+      ],
+      "after_ids": [
+        "44fffda5250138c9-5",
+        "44fffda5250138c9-12",
+        "c1a247fe9849e2cd-7",
+        "c1a247fe9849e2cd-8",
+        "4987034956486642-4"
+      ],
+      "before_context_sha256": [
+        "7312825dcb06d282faed540df128c21bee5a1b50aba0c18e182604a94f650c12",
+        "6dca7ff2141753b655669315b5e167a94322b0734b0614353088d32bfc42149c",
+        "c7a4da6cfdb7c53e477d1599c74bdf327ca54546b5dc961c2ec66b7f8a4b00e4",
+        "5288fcf3d0b42c8a3a9da7c938ff91bd2380b3d62c63c9e17e7dc9211850d741",
+        "9dffb01c8fe8248a0cafbd197068ee65a3a9173a7b478df986dcbdd70ffa2262"
+      ],
+      "after_context_sha256": [
+        "7312825dcb06d282faed540df128c21bee5a1b50aba0c18e182604a94f650c12",
+        "6dca7ff2141753b655669315b5e167a94322b0734b0614353088d32bfc42149c",
+        "c7a4da6cfdb7c53e477d1599c74bdf327ca54546b5dc961c2ec66b7f8a4b00e4",
+        "5288fcf3d0b42c8a3a9da7c938ff91bd2380b3d62c63c9e17e7dc9211850d741",
+        "9dffb01c8fe8248a0cafbd197068ee65a3a9173a7b478df986dcbdd70ffa2262"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 0.656
+    },
+    {
+      "id": "I11",
+      "identity": "交換生",
+      "before_ids": [
+        "md75cb01a49b-0",
+        "md73631db36f-3",
+        "md73631db36f-4",
+        "07dc81053ea76f60-2",
+        "3782027e08f2431a-1"
+      ],
+      "after_ids": [
+        "md75cb01a49b-0",
+        "md73631db36f-3",
+        "md73631db36f-4",
+        "07dc81053ea76f60-2",
+        "3782027e08f2431a-1"
+      ],
+      "before_context_sha256": [
+        "86bc560ac7cfff57ef137f342b76444fe4a9d0ef9d1733484fed33ae3b2fc511",
+        "76b2896036ffad7d9a960844013c857e6b716dc80ee14339fd027a4531a6645d",
+        "ba12dd880afadb76419d65d3e1cf94e7bffdd5de0e3be42eba82fff54d02e1f1",
+        "f24adbd465e7d571d3549661b0ebef6cd34361622eba0f8bb9aa42299e3604ad",
+        "938a4cbe462a0ae00f7d6bb26354e6d43272af4a45a99eedea0b81bd182b1c27"
+      ],
+      "after_context_sha256": [
+        "b1d3e8d29b99b33425d6ca9a7ae9b5917e6ad7cdf0e649e30c41c2c464aa05e1",
+        "a3d038468c52d46c9d3502da37ff14f74f61405b3c28a10168334da1b88f571a",
+        "b1f00d48f4cf1e24c410435b57795c554cdd490c9bc992443995f42d1f3348d4",
+        "f24adbd465e7d571d3549661b0ebef6cd34361622eba0f8bb9aa42299e3604ad",
+        "938a4cbe462a0ae00f7d6bb26354e6d43272af4a45a99eedea0b81bd182b1c27"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 1,
+      "after_work_relevant_sources": 1,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.329
+    },
+    {
+      "id": "I12",
+      "identity": "陸生",
+      "before_ids": [
+        "md75cb01a49b-0",
+        "md73631db36f-3",
+        "md73631db36f-4",
+        "07dc81053ea76f60-2",
+        "3782027e08f2431a-1"
+      ],
+      "after_ids": [
+        "md75cb01a49b-0",
+        "md73631db36f-3",
+        "md73631db36f-4",
+        "07dc81053ea76f60-2",
+        "3782027e08f2431a-1"
+      ],
+      "before_context_sha256": [
+        "86bc560ac7cfff57ef137f342b76444fe4a9d0ef9d1733484fed33ae3b2fc511",
+        "76b2896036ffad7d9a960844013c857e6b716dc80ee14339fd027a4531a6645d",
+        "ba12dd880afadb76419d65d3e1cf94e7bffdd5de0e3be42eba82fff54d02e1f1",
+        "f24adbd465e7d571d3549661b0ebef6cd34361622eba0f8bb9aa42299e3604ad",
+        "938a4cbe462a0ae00f7d6bb26354e6d43272af4a45a99eedea0b81bd182b1c27"
+      ],
+      "after_context_sha256": [
+        "b1d3e8d29b99b33425d6ca9a7ae9b5917e6ad7cdf0e649e30c41c2c464aa05e1",
+        "a3d038468c52d46c9d3502da37ff14f74f61405b3c28a10168334da1b88f571a",
+        "b1f00d48f4cf1e24c410435b57795c554cdd490c9bc992443995f42d1f3348d4",
+        "f24adbd465e7d571d3549661b0ebef6cd34361622eba0f8bb9aa42299e3604ad",
+        "938a4cbe462a0ae00f7d6bb26354e6d43272af4a45a99eedea0b81bd182b1c27"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 1,
+      "after_work_relevant_sources": 1,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.265
+    },
+    {
+      "id": "F01",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "md1771e3f80d-5",
+        "799d5f1249c20668-14",
+        "799d5f1249c20668-13",
+        "md1771e3f80d-4",
+        "5b2d3a328b98f781-29"
+      ],
+      "after_ids": [
+        "md1771e3f80d-5",
+        "799d5f1249c20668-14",
+        "799d5f1249c20668-13",
+        "md1771e3f80d-4",
+        "5b2d3a328b98f781-29"
+      ],
+      "before_context_sha256": [
+        "bcf79ab8c0f3a94ae08c677bde6f3f0052ea63a7637afa46d4fb627687cc324c",
+        "12bd679bcdb72f88b9396b90494d169e09c895f384bdfab7aadc2c079e3d38e5",
+        "e21582ca9d3b81e651a83ac6e572a9bdc47cdc58ba6e42dedcbe49f6598e0fa3",
+        "581cf4d0bf054f8beabc3b953e86fcea0a047a24f8716522131957a14e1f9c67",
+        "1136b4b67ddc8bf9845fab63c41d61f9f3868f5fbf790ff77c985b2003975d2f"
+      ],
+      "after_context_sha256": [
+        "fb8e8e09d0894e24d64eb10f33ee6e8c449210a7d567e988237cbac02a485d39",
+        "12bd679bcdb72f88b9396b90494d169e09c895f384bdfab7aadc2c079e3d38e5",
+        "e21582ca9d3b81e651a83ac6e572a9bdc47cdc58ba6e42dedcbe49f6598e0fa3",
+        "581cf4d0bf054f8beabc3b953e86fcea0a047a24f8716522131957a14e1f9c67",
+        "1136b4b67ddc8bf9845fab63c41d61f9f3868f5fbf790ff77c985b2003975d2f"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.641
+    },
+    {
+      "id": "F02",
+      "identity": "交換生",
+      "before_ids": [
+        "9c0fe3789de4fa81-1",
+        "ann-5a0c1e00-0000-4000-8000-000000000003-1",
+        "02cecda04f71a49a-0",
+        "694ddc8efa604d15-16",
+        "c6b4257231173873-0"
+      ],
+      "after_ids": [
+        "9c0fe3789de4fa81-1",
+        "ann-5a0c1e00-0000-4000-8000-000000000003-1",
+        "02cecda04f71a49a-0",
+        "694ddc8efa604d15-16",
+        "c6b4257231173873-0"
+      ],
+      "before_context_sha256": [
+        "f138f77a5eff412bc9855e097cff827fee22a0e1d2db1a4036609fe131f65762",
+        "1f1a695b31ba6568c33d879e1e26ee2a0953fa675443981b6f831cdd3281f9f5",
+        "3e9d1d7974c1df774f91d970e10a80a349220f4ea73601066fb91384c734f9b7",
+        "efaf88a287cfc14d03944c19c9b72eca6dd2446a1de3619952d04322ef607387",
+        "cea46a430bd5157352243029eaf03d20284a83493aa8595c8b828f5538f9ce70"
+      ],
+      "after_context_sha256": [
+        "f138f77a5eff412bc9855e097cff827fee22a0e1d2db1a4036609fe131f65762",
+        "1f1a695b31ba6568c33d879e1e26ee2a0953fa675443981b6f831cdd3281f9f5",
+        "3e9d1d7974c1df774f91d970e10a80a349220f4ea73601066fb91384c734f9b7",
+        "efaf88a287cfc14d03944c19c9b72eca6dd2446a1de3619952d04322ef607387",
+        "cea46a430bd5157352243029eaf03d20284a83493aa8595c8b828f5538f9ce70"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 0.672
+    },
+    {
+      "id": "F03",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "md1771e3f80d-10",
+        "5b2d3a328b98f781-15",
+        "5b2d3a328b98f781-18",
+        "694ddc8efa604d15-15",
+        "694ddc8efa604d15-13"
+      ],
+      "after_ids": [],
+      "before_context_sha256": [
+        "67b1c69bac8d66ae1e116c3f912048b715bb7aa53caec1776517e833f96236fc",
+        "42f4663868e7211ad9d0f6e9af749cced1a4967100e50b341f2ae28fa168bdc5",
+        "26b85cb26c488ca0790590ba6c80a35c189d854ecfecf8748217130bc29d6819",
+        "9a8c6c40ed663b29b01c1d16322748695fa9333f2f3534935b5823be9b8b466d",
+        "5c29c7e971ea201ac8fa118fb5cfcd15d9582b0a6c2efcd0c54aec44f0e7545c"
+      ],
+      "after_context_sha256": [],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.703
+    },
+    {
+      "id": "F04",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "mda4b98886c6-6",
+        "694ddc8efa604d15-17",
+        "mda4b98886c6-5",
+        "md1771e3f80d-5",
+        "694ddc8efa604d15-18"
+      ],
+      "after_ids": [
+        "mda4b98886c6-6",
+        "694ddc8efa604d15-17",
+        "mda4b98886c6-5",
+        "md1771e3f80d-5",
+        "694ddc8efa604d15-18"
+      ],
+      "before_context_sha256": [
+        "863408ebd99d43b0ff514fcaf70bcec5bda59145e2c7702f0658ea2e0859e88b",
+        "8c0415f5bb9e63a08a1ce64d25b56ae577da0439344ca0395279bd15b5ea4cc8",
+        "e90ae324daa08eea4d284ba6194c0374d52e793192f4d5372a98b43fe0f0340d",
+        "fb8e8e09d0894e24d64eb10f33ee6e8c449210a7d567e988237cbac02a485d39",
+        "29641bffb5f3b47ef11a1a7578709e4473a3151216a7f73106a13616d843f4bd"
+      ],
+      "after_context_sha256": [
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "8c0415f5bb9e63a08a1ce64d25b56ae577da0439344ca0395279bd15b5ea4cc8",
+        "73d334e8091eae46c6e9c5bd3e9ceb31abaf99a79ffed81154af0e463801e1f1",
+        "fb8e8e09d0894e24d64eb10f33ee6e8c449210a7d567e988237cbac02a485d39",
+        "29641bffb5f3b47ef11a1a7578709e4473a3151216a7f73106a13616d843f4bd"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.64
+    },
+    {
+      "id": "U01",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "mda4b98886c6-5",
+        "mda4b98886c6-6",
+        "694ddc8efa604d15-18",
+        "694ddc8efa604d15-17",
+        "5b2d3a328b98f781-26"
+      ],
+      "after_ids": [
+        "mda4b98886c6-5",
+        "mda4b98886c6-6",
+        "694ddc8efa604d15-18",
+        "694ddc8efa604d15-17",
+        "5b2d3a328b98f781-26"
+      ],
+      "before_context_sha256": [
+        "e90ae324daa08eea4d284ba6194c0374d52e793192f4d5372a98b43fe0f0340d",
+        "863408ebd99d43b0ff514fcaf70bcec5bda59145e2c7702f0658ea2e0859e88b",
+        "324576de1adf4099b8213f83c2143591383faad57e17e459b59f377d075a09c5",
+        "ab942b6731e40b205ded6403d7594e36f618ede2960c7841d529928c27a7f61d",
+        "c6fd443f4c366b997b2b17131aaff77a4eea23f8333aede479cbd3592819663c"
+      ],
+      "after_context_sha256": [
+        "73d334e8091eae46c6e9c5bd3e9ceb31abaf99a79ffed81154af0e463801e1f1",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "324576de1adf4099b8213f83c2143591383faad57e17e459b59f377d075a09c5",
+        "ab942b6731e40b205ded6403d7594e36f618ede2960c7841d529928c27a7f61d",
+        "c6fd443f4c366b997b2b17131aaff77a4eea23f8333aede479cbd3592819663c"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.454
+    },
+    {
+      "id": "U02",
+      "identity": "交換生",
+      "before_ids": [
+        "c6b4257231173873-0",
+        "a756a2aad46d72ec-4",
+        "a756a2aad46d72ec-3",
+        "694ddc8efa604d15-16",
+        "be157ea743f16ac0-0"
+      ],
+      "after_ids": [
+        "c6b4257231173873-0",
+        "a756a2aad46d72ec-4",
+        "a756a2aad46d72ec-3",
+        "694ddc8efa604d15-16",
+        "be157ea743f16ac0-0"
+      ],
+      "before_context_sha256": [
+        "cea46a430bd5157352243029eaf03d20284a83493aa8595c8b828f5538f9ce70",
+        "556853e74177a62a1d26ef4572506dd334874e8cb167b77340057a624615068c",
+        "c9909e877e75dfd3e022e6227294d7d9f1d0bd4f3eaf0f56dedc4f1bf18a3882",
+        "efaf88a287cfc14d03944c19c9b72eca6dd2446a1de3619952d04322ef607387",
+        "486dec208bf8b33459dcb02153bf9dc28dfcdd6260d6154ad064b9ce5311993a"
+      ],
+      "after_context_sha256": [
+        "cea46a430bd5157352243029eaf03d20284a83493aa8595c8b828f5538f9ce70",
+        "556853e74177a62a1d26ef4572506dd334874e8cb167b77340057a624615068c",
+        "c9909e877e75dfd3e022e6227294d7d9f1d0bd4f3eaf0f56dedc4f1bf18a3882",
+        "efaf88a287cfc14d03944c19c9b72eca6dd2446a1de3619952d04322ef607387",
+        "486dec208bf8b33459dcb02153bf9dc28dfcdd6260d6154ad064b9ce5311993a"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 0.609
+    },
+    {
+      "id": "U03",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "md73631db36f-0",
+        "ann-5a0c1e00-0000-4000-8000-000000000002-2",
+        "md75cb01a49b-0",
+        "md75cb01a49b-1",
+        "694ddc8efa604d15-2"
+      ],
+      "after_ids": [
+        "md73631db36f-0",
+        "ann-5a0c1e00-0000-4000-8000-000000000002-2",
+        "md75cb01a49b-0",
+        "md75cb01a49b-1",
+        "694ddc8efa604d15-2"
+      ],
+      "before_context_sha256": [
+        "24bd780c0e8a56dbb019fca87418aa8ba378efb4bae90186626f9dccc1200db0",
+        "c0fae5bcba8646f119f47549b2df07abedddf968cae1a5bf46e47c28a442d8be",
+        "b1d3e8d29b99b33425d6ca9a7ae9b5917e6ad7cdf0e649e30c41c2c464aa05e1",
+        "5fb4215fb78fde65e56a1bd9d84b1e3264c7bb7b51cca8e8362c543706f22ec8",
+        "e638b7abee48e6f97fe5d780e15473bd3e0a2d4744a78832ee64e563473599c8"
+      ],
+      "after_context_sha256": [
+        "c51d58f58b7e3668f5f48adfa0da669b370382e08aabf848cc33870aa20a11ec",
+        "c0fae5bcba8646f119f47549b2df07abedddf968cae1a5bf46e47c28a442d8be",
+        "b1d3e8d29b99b33425d6ca9a7ae9b5917e6ad7cdf0e649e30c41c2c464aa05e1",
+        "5fb4215fb78fde65e56a1bd9d84b1e3264c7bb7b51cca8e8362c543706f22ec8",
+        "e638b7abee48e6f97fe5d780e15473bd3e0a2d4744a78832ee64e563473599c8"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.969
+    },
+    {
+      "id": "U04",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "md1771e3f80d-4",
+        "md1771e3f80d-5",
+        "799d5f1249c20668-13",
+        "799d5f1249c20668-14",
+        "12b5e67f79afb723-2"
+      ],
+      "after_ids": [
+        "md1771e3f80d-4",
+        "md1771e3f80d-5",
+        "799d5f1249c20668-13",
+        "799d5f1249c20668-14",
+        "12b5e67f79afb723-2"
+      ],
+      "before_context_sha256": [
+        "25606d4ffb1fedb0ef3c1c10e472396917cde47778c08e97880a89082ad0ee3f",
+        "bcf79ab8c0f3a94ae08c677bde6f3f0052ea63a7637afa46d4fb627687cc324c",
+        "e21582ca9d3b81e651a83ac6e572a9bdc47cdc58ba6e42dedcbe49f6598e0fa3",
+        "d52d3558f6e0730ae786dcf9160ecf80bd8a25587090367faf046c7ddb3ffd28",
+        "de9483f73c5066e54b83dad05277be9d5f8c40d54a1f0b4ce6e96de0fb9fe7cb"
+      ],
+      "after_context_sha256": [
+        "581cf4d0bf054f8beabc3b953e86fcea0a047a24f8716522131957a14e1f9c67",
+        "fb8e8e09d0894e24d64eb10f33ee6e8c449210a7d567e988237cbac02a485d39",
+        "e21582ca9d3b81e651a83ac6e572a9bdc47cdc58ba6e42dedcbe49f6598e0fa3",
+        "d52d3558f6e0730ae786dcf9160ecf80bd8a25587090367faf046c7ddb3ffd28",
+        "de9483f73c5066e54b83dad05277be9d5f8c40d54a1f0b4ce6e96de0fb9fe7cb"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.031
+    },
+    {
+      "id": "U05",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "mda4b98886c6-8",
+        "md897d587d48-19",
+        "mda4b98886c6-1",
+        "md897d587d48-20",
+        "a4cf2561a9c3e679-0"
+      ],
+      "after_ids": [
+        "mda4b98886c6-8",
+        "md897d587d48-19",
+        "mda4b98886c6-1",
+        "md897d587d48-20",
+        "a4cf2561a9c3e679-0"
+      ],
+      "before_context_sha256": [
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "63fee2d8a24987b9cc64549bca423d786ee9a4463f27af272fc75c9354bb6284",
+        "c81f10d409a05c2906aaed32ccd1d2f3f3944a4e6531236bb12eb40dd644c9db",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "after_context_sha256": [
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665",
+        "3eb45e25e786b454fdf743deaf9e162656d8c5c04845a6364afa6e5740d1f910",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.625
+    },
+    {
+      "id": "U06",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "e90988d012ed3be2-3",
+        "62546755ea36874a-11",
+        "8a96a4cecacfc546-0",
+        "8af182dee53384c3-1",
+        "694ddc8efa604d15-19"
+      ],
+      "after_ids": [
+        "e90988d012ed3be2-3",
+        "62546755ea36874a-11",
+        "8a96a4cecacfc546-0",
+        "8af182dee53384c3-1",
+        "694ddc8efa604d15-19"
+      ],
+      "before_context_sha256": [
+        "f11720a011b588f3acc8954d0f4a21d13e5c42c0d18a5e74143c9caa22095879",
+        "feb266e9b24758f6b119b2f879e6b4b43806451a5867c7563d7aff0f904adddf",
+        "f185c4d391db8b0a2f8b03f8940e9d7204167f14dc9507e59a2967077e999bb1",
+        "26fbe45f551c2c755cd492b66cac42a893ee055879e4c824f68f5eb0f181326a",
+        "7c35382b858ebd07947d677cc4e30d159aeb326764ab17c61fc3f7663558db4d"
+      ],
+      "after_context_sha256": [
+        "f11720a011b588f3acc8954d0f4a21d13e5c42c0d18a5e74143c9caa22095879",
+        "feb266e9b24758f6b119b2f879e6b4b43806451a5867c7563d7aff0f904adddf",
+        "f185c4d391db8b0a2f8b03f8940e9d7204167f14dc9507e59a2967077e999bb1",
+        "26fbe45f551c2c755cd492b66cac42a893ee055879e4c824f68f5eb0f181326a",
+        "7c35382b858ebd07947d677cc4e30d159aeb326764ab17c61fc3f7663558db4d"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 0.781
+    },
+    {
+      "id": "U07",
+      "identity": "交換生",
+      "before_ids": [
+        "mdbd3011989d-0",
+        "mdbd3011989d-5",
+        "mdbd3011989d-1",
+        "mdbd3011989d-6",
+        "mdbd3011989d-4"
+      ],
+      "after_ids": [
+        "mdbd3011989d-0",
+        "mdbd3011989d-5",
+        "mdbd3011989d-1",
+        "mdbd3011989d-6",
+        "mdbd3011989d-4"
+      ],
+      "before_context_sha256": [
+        "922e39e0d7e93ab7c3483cd19a53c8f09985dcdf452cf867d2843bf0a46e9f81",
+        "82440cd617f80a3086aebdc4add988108acfaef60d478da4be5edfdea362724d",
+        "61ae55e3af52a7d8ecd5bef1dd9cf9d8fc6bec502134be36f36bd26d7f221827",
+        "31b1aef7c078fe5bc622385f0e91f8acbdfc0c61fa811f4bd262a76b29095cbd",
+        "8424c2ad71dd4dacef9bb8fe20a61c6d67ef950fcdb64ece277aeb4206791a9b"
+      ],
+      "after_context_sha256": [
+        "922e39e0d7e93ab7c3483cd19a53c8f09985dcdf452cf867d2843bf0a46e9f81",
+        "82440cd617f80a3086aebdc4add988108acfaef60d478da4be5edfdea362724d",
+        "2cf2c2cc6d6d9bca9e1d1233d5f8b8c7dc555dcd9fdccd7bf7b40d1b0439ffae",
+        "31b1aef7c078fe5bc622385f0e91f8acbdfc0c61fa811f4bd262a76b29095cbd",
+        "8424c2ad71dd4dacef9bb8fe20a61c6d67ef950fcdb64ece277aeb4206791a9b"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.406
+    },
+    {
+      "id": "U08",
+      "identity": "交換生",
+      "before_ids": [
+        "md1bab4d15d3-4",
+        "md1bab4d15d3-0",
+        "md897d587d48-20",
+        "md1bab4d15d3-6",
+        "md1bab4d15d3-7"
+      ],
+      "after_ids": [
+        "md1bab4d15d3-4",
+        "md1bab4d15d3-0",
+        "md897d587d48-20",
+        "md1bab4d15d3-6",
+        "md1bab4d15d3-7"
+      ],
+      "before_context_sha256": [
+        "6d501fabb23962989c1d1e4207e295aa0025df7b0a3cfcfb964cdadf8fa98525",
+        "91f3d77ff3de68055a4460f7939140e5f60361171d230f6f357cf4d8d064686a",
+        "50365ea46bf543f05f37993cd1387d469411dffb906eec21201d20e53b1daa4a",
+        "508af1872c54274b4c6bb4c20a42feafb01950ceb24e4727672646fd3811426f",
+        "b3dfd54e051836acdca3c6d272d1025f544e35cdf83956ec7cba456b4f7a36af"
+      ],
+      "after_context_sha256": [
+        "1af73c9531dc3f93bf515a7e8a72d41014ba33fac86e3b0e78903422d6b27573",
+        "eb2e26ad34c8cd22a10db6fe3603849457631d65082de0cceb9b0fd20d302bd6",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "508af1872c54274b4c6bb4c20a42feafb01950ceb24e4727672646fd3811426f",
+        "b3dfd54e051836acdca3c6d272d1025f544e35cdf83956ec7cba456b4f7a36af"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.454
+    }
+  ],
+  "fee_variants": [
+    {
+      "variant": "fees",
+      "identity": null,
+      "before_ids": [
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-20",
+        "58773c60f5d8a7cd-1",
+        "a4cf2561a9c3e679-0"
+      ],
+      "after_ids": [
+        "8af182dee53384c3-34",
+        "8af182dee53384c3-33",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "61da978350069ab0-0"
+      ],
+      "before_context_sha256": [
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "cba38f7b6440a266f9735ece36d338530f990c541a90e75677e23470589ed7c7",
+        "50365ea46bf543f05f37993cd1387d469411dffb906eec21201d20e53b1daa4a",
+        "029ebfc9d899ee98ff4fe9c40b101f8afcb1f4f7acce42c796f3d7c38a35eb67",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "after_context_sha256": [
+        "bfd3dc769d04a2be5fcc6b2e87119367e05c42bcd37355c940e6fa76287417e6",
+        "ea1253a6b44a373e1b86356ef58122a705a143dc097c5113ba71d059f37a0382",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 1.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.906,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": true
+    },
+    {
+      "variant": "cost",
+      "identity": null,
+      "before_ids": [
+        "md897d587d48-20",
+        "mda4b98886c6-6",
+        "mda4b98886c6-5",
+        "md897d587d48-19",
+        "md897d587d48-4"
+      ],
+      "after_ids": [
+        "8af182dee53384c3-33",
+        "8af182dee53384c3-34",
+        "58773c60f5d8a7cd-8",
+        "mda4b98886c6-6",
+        "mda4b98886c6-5"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "863408ebd99d43b0ff514fcaf70bcec5bda59145e2c7702f0658ea2e0859e88b",
+        "e90ae324daa08eea4d284ba6194c0374d52e793192f4d5372a98b43fe0f0340d",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6"
+      ],
+      "after_context_sha256": [
+        "ea1253a6b44a373e1b86356ef58122a705a143dc097c5113ba71d059f37a0382",
+        "bfd3dc769d04a2be5fcc6b2e87119367e05c42bcd37355c940e6fa76287417e6",
+        "780ed9c1d9321c5fc92446a33d95a91f52f124de768f4f07874f92a627b1c01c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "73d334e8091eae46c6e9c5bd3e9ceb31abaf99a79ffed81154af0e463801e1f1"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 1.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 3.312,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": true
+    },
+    {
+      "variant": "charges",
+      "identity": null,
+      "before_ids": [
+        "md897d587d48-20",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-19",
+        "a4cf2561a9c3e679-0"
+      ],
+      "after_ids": [
+        "8af182dee53384c3-34",
+        "8af182dee53384c3-33",
+        "mda4b98886c6-8",
+        "61da978350069ab0-0",
+        "mda4b98886c6-6"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "cba38f7b6440a266f9735ece36d338530f990c541a90e75677e23470589ed7c7",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "after_context_sha256": [
+        "bfd3dc769d04a2be5fcc6b2e87119367e05c42bcd37355c940e6fa76287417e6",
+        "ea1253a6b44a373e1b86356ef58122a705a143dc097c5113ba71d059f37a0382",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 1.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 3.016,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": true
+    },
+    {
+      "variant": "rates",
+      "identity": null,
+      "before_ids": [
+        "md897d587d48-20",
+        "md897d587d48-19",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md1bc9e437aa-6"
+      ],
+      "after_ids": [
+        "8af182dee53384c3-33",
+        "8af182dee53384c3-34",
+        "mda4b98886c6-8",
+        "61da978350069ab0-0",
+        "md897d587d48-20"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "63fee2d8a24987b9cc64549bca423d786ee9a4463f27af272fc75c9354bb6284",
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "e7f8bfdb907a9f1644fc462f986180b4f90a66c2543f60caa030ef8b31d2e2c4"
+      ],
+      "after_context_sha256": [
+        "ea1253a6b44a373e1b86356ef58122a705a143dc097c5113ba71d059f37a0382",
+        "bfd3dc769d04a2be5fcc6b2e87119367e05c42bcd37355c940e6fa76287417e6",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 1.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 3.031,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": true
+    },
+    {
+      "variant": "Chinese",
+      "identity": null,
+      "before_ids": [
+        "mda4b98886c6-6",
+        "md4546b8687e-3",
+        "mda4b98886c6-8",
+        "md897d587d48-17",
+        "md897d587d48-4"
+      ],
+      "after_ids": [
+        "3b32819208450c61-18",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-17",
+        "md897d587d48-4"
+      ],
+      "before_context_sha256": [
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "15022d990df1349d65ced50c0c98969b93cdb8929cd7dec6e7b13105258237eb",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "3319f6e12ba9fc261e3b24e3f63a7fa86495e902c8905b32eb6012bf28dd0871",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6"
+      ],
+      "after_context_sha256": [
+        "b96697bf8f7fb6bd48fb97b9c332b010d95c05b823b51858788d9399ef827f7f",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "3319f6e12ba9fc261e3b24e3f63a7fa86495e902c8905b32eb6012bf28dd0871",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.547,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": true
+    },
+    {
+      "variant": "fees",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-20",
+        "58773c60f5d8a7cd-1",
+        "a4cf2561a9c3e679-0"
+      ],
+      "after_ids": [
+        "8af182dee53384c3-34",
+        "8af182dee53384c3-33",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "61da978350069ab0-0"
+      ],
+      "before_context_sha256": [
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "cba38f7b6440a266f9735ece36d338530f990c541a90e75677e23470589ed7c7",
+        "50365ea46bf543f05f37993cd1387d469411dffb906eec21201d20e53b1daa4a",
+        "029ebfc9d899ee98ff4fe9c40b101f8afcb1f4f7acce42c796f3d7c38a35eb67",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "after_context_sha256": [
+        "bfd3dc769d04a2be5fcc6b2e87119367e05c42bcd37355c940e6fa76287417e6",
+        "ea1253a6b44a373e1b86356ef58122a705a143dc097c5113ba71d059f37a0382",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 1.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.063,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": true
+    },
+    {
+      "variant": "cost",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "md897d587d48-20",
+        "mda4b98886c6-6",
+        "mda4b98886c6-5",
+        "md897d587d48-19",
+        "md897d587d48-4"
+      ],
+      "after_ids": [
+        "8af182dee53384c3-33",
+        "8af182dee53384c3-34",
+        "58773c60f5d8a7cd-8",
+        "mda4b98886c6-6",
+        "mda4b98886c6-5"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "863408ebd99d43b0ff514fcaf70bcec5bda59145e2c7702f0658ea2e0859e88b",
+        "e90ae324daa08eea4d284ba6194c0374d52e793192f4d5372a98b43fe0f0340d",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6"
+      ],
+      "after_context_sha256": [
+        "ea1253a6b44a373e1b86356ef58122a705a143dc097c5113ba71d059f37a0382",
+        "bfd3dc769d04a2be5fcc6b2e87119367e05c42bcd37355c940e6fa76287417e6",
+        "780ed9c1d9321c5fc92446a33d95a91f52f124de768f4f07874f92a627b1c01c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "73d334e8091eae46c6e9c5bd3e9ceb31abaf99a79ffed81154af0e463801e1f1"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 1.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.453,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": true
+    },
+    {
+      "variant": "charges",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "md897d587d48-20",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-19",
+        "a4cf2561a9c3e679-0"
+      ],
+      "after_ids": [
+        "8af182dee53384c3-34",
+        "8af182dee53384c3-33",
+        "mda4b98886c6-8",
+        "61da978350069ab0-0",
+        "mda4b98886c6-6"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "cba38f7b6440a266f9735ece36d338530f990c541a90e75677e23470589ed7c7",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "after_context_sha256": [
+        "bfd3dc769d04a2be5fcc6b2e87119367e05c42bcd37355c940e6fa76287417e6",
+        "ea1253a6b44a373e1b86356ef58122a705a143dc097c5113ba71d059f37a0382",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 1.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.922,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": true
+    },
+    {
+      "variant": "rates",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "md897d587d48-20",
+        "md897d587d48-19",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "61da978350069ab0-0"
+      ],
+      "after_ids": [
+        "8af182dee53384c3-33",
+        "8af182dee53384c3-34",
+        "mda4b98886c6-8",
+        "61da978350069ab0-0",
+        "md897d587d48-20"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "63fee2d8a24987b9cc64549bca423d786ee9a4463f27af272fc75c9354bb6284",
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77"
+      ],
+      "after_context_sha256": [
+        "ea1253a6b44a373e1b86356ef58122a705a143dc097c5113ba71d059f37a0382",
+        "bfd3dc769d04a2be5fcc6b2e87119367e05c42bcd37355c940e6fa76287417e6",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 1.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.671,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": true
+    },
+    {
+      "variant": "Chinese",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "mda4b98886c6-6",
+        "mda4b98886c6-8",
+        "md897d587d48-17",
+        "md897d587d48-4",
+        "8928cb695e532cf2-0"
+      ],
+      "after_ids": [
+        "3b32819208450c61-18",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-17",
+        "md897d587d48-4"
+      ],
+      "before_context_sha256": [
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "cfe359275c29659285c878fb0a5f9f63d69d4dffa8668b42c7ae04a8ba8d05e7",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6",
+        "82090a13821b5658bda23c90bd398f241317eb26d788eb6035fe32e5fbec8fbb"
+      ],
+      "after_context_sha256": [
+        "b96697bf8f7fb6bd48fb97b9c332b010d95c05b823b51858788d9399ef827f7f",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "3319f6e12ba9fc261e3b24e3f63a7fa86495e902c8905b32eb6012bf28dd0871",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.688,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": true
+    },
+    {
+      "variant": "fees",
+      "identity": "交換生",
+      "before_ids": [
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-20",
+        "58773c60f5d8a7cd-1",
+        "a4cf2561a9c3e679-0"
+      ],
+      "after_ids": [
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "61da978350069ab0-0",
+        "58773c60f5d8a7cd-1",
+        "a4cf2561a9c3e679-0"
+      ],
+      "before_context_sha256": [
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "cba38f7b6440a266f9735ece36d338530f990c541a90e75677e23470589ed7c7",
+        "50365ea46bf543f05f37993cd1387d469411dffb906eec21201d20e53b1daa4a",
+        "029ebfc9d899ee98ff4fe9c40b101f8afcb1f4f7acce42c796f3d7c38a35eb67",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "after_context_sha256": [
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "029ebfc9d899ee98ff4fe9c40b101f8afcb1f4f7acce42c796f3d7c38a35eb67",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.266,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "cost",
+      "identity": "交換生",
+      "before_ids": [
+        "md897d587d48-20",
+        "mda4b98886c6-6",
+        "mda4b98886c6-5",
+        "md897d587d48-19",
+        "md897d587d48-4"
+      ],
+      "after_ids": [
+        "58773c60f5d8a7cd-8",
+        "mda4b98886c6-6",
+        "mda4b98886c6-5",
+        "md4546b8687e-3",
+        "61da978350069ab0-0"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "863408ebd99d43b0ff514fcaf70bcec5bda59145e2c7702f0658ea2e0859e88b",
+        "e90ae324daa08eea4d284ba6194c0374d52e793192f4d5372a98b43fe0f0340d",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6"
+      ],
+      "after_context_sha256": [
+        "780ed9c1d9321c5fc92446a33d95a91f52f124de768f4f07874f92a627b1c01c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "73d334e8091eae46c6e9c5bd3e9ceb31abaf99a79ffed81154af0e463801e1f1",
+        "1cecd17420c9878e7fd4e54942dc1f9166ec4320181da4441b7fb0fabc850ce3",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.14,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "charges",
+      "identity": "交換生",
+      "before_ids": [
+        "md897d587d48-20",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-19",
+        "a4cf2561a9c3e679-0"
+      ],
+      "after_ids": [
+        "mda4b98886c6-8",
+        "61da978350069ab0-0",
+        "mda4b98886c6-6",
+        "md897d587d48-20",
+        "694ddc8efa604d15-18"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "cba38f7b6440a266f9735ece36d338530f990c541a90e75677e23470589ed7c7",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "after_context_sha256": [
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "29641bffb5f3b47ef11a1a7578709e4473a3151216a7f73106a13616d843f4bd"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.047,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "rates",
+      "identity": "交換生",
+      "before_ids": [
+        "md897d587d48-20",
+        "md897d587d48-19",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md75cb01a49b-0"
+      ],
+      "after_ids": [
+        "mda4b98886c6-8",
+        "61da978350069ab0-0",
+        "md897d587d48-20",
+        "mda4b98886c6-6",
+        "58773c60f5d8a7cd-8"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "63fee2d8a24987b9cc64549bca423d786ee9a4463f27af272fc75c9354bb6284",
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "b1d3e8d29b99b33425d6ca9a7ae9b5917e6ad7cdf0e649e30c41c2c464aa05e1"
+      ],
+      "after_context_sha256": [
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "af6c8304c3083359a9f594230e91439f7f7df600e09a7ee624fcc07bddbe671f"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.578,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "Chinese",
+      "identity": "交換生",
+      "before_ids": [
+        "mda4b98886c6-6",
+        "md4546b8687e-3",
+        "mda4b98886c6-8",
+        "md897d587d48-17",
+        "md897d587d48-4"
+      ],
+      "after_ids": [
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-17",
+        "md897d587d48-4",
+        "md4546b8687e-3"
+      ],
+      "before_context_sha256": [
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "15022d990df1349d65ced50c0c98969b93cdb8929cd7dec6e7b13105258237eb",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "3319f6e12ba9fc261e3b24e3f63a7fa86495e902c8905b32eb6012bf28dd0871",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6"
+      ],
+      "after_context_sha256": [
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "3319f6e12ba9fc261e3b24e3f63a7fa86495e902c8905b32eb6012bf28dd0871",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6",
+        "1cecd17420c9878e7fd4e54942dc1f9166ec4320181da4441b7fb0fabc850ce3"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.594,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "fees",
+      "identity": "僑生",
+      "before_ids": [
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-20",
+        "58773c60f5d8a7cd-1",
+        "a4cf2561a9c3e679-0"
+      ],
+      "after_ids": [
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "61da978350069ab0-0",
+        "58773c60f5d8a7cd-1",
+        "a4cf2561a9c3e679-0"
+      ],
+      "before_context_sha256": [
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "cba38f7b6440a266f9735ece36d338530f990c541a90e75677e23470589ed7c7",
+        "50365ea46bf543f05f37993cd1387d469411dffb906eec21201d20e53b1daa4a",
+        "029ebfc9d899ee98ff4fe9c40b101f8afcb1f4f7acce42c796f3d7c38a35eb67",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "after_context_sha256": [
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "029ebfc9d899ee98ff4fe9c40b101f8afcb1f4f7acce42c796f3d7c38a35eb67",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.375,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "cost",
+      "identity": "僑生",
+      "before_ids": [
+        "md897d587d48-20",
+        "mda4b98886c6-6",
+        "mda4b98886c6-5",
+        "md897d587d48-19",
+        "md897d587d48-4"
+      ],
+      "after_ids": [
+        "58773c60f5d8a7cd-8",
+        "mda4b98886c6-6",
+        "mda4b98886c6-5",
+        "61da978350069ab0-0",
+        "58773c60f5d8a7cd-1"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "863408ebd99d43b0ff514fcaf70bcec5bda59145e2c7702f0658ea2e0859e88b",
+        "e90ae324daa08eea4d284ba6194c0374d52e793192f4d5372a98b43fe0f0340d",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6"
+      ],
+      "after_context_sha256": [
+        "780ed9c1d9321c5fc92446a33d95a91f52f124de768f4f07874f92a627b1c01c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "73d334e8091eae46c6e9c5bd3e9ceb31abaf99a79ffed81154af0e463801e1f1",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "029ebfc9d899ee98ff4fe9c40b101f8afcb1f4f7acce42c796f3d7c38a35eb67"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.797,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "charges",
+      "identity": "僑生",
+      "before_ids": [
+        "md897d587d48-20",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-19",
+        "a4cf2561a9c3e679-0"
+      ],
+      "after_ids": [
+        "mda4b98886c6-8",
+        "61da978350069ab0-0",
+        "mda4b98886c6-6",
+        "md897d587d48-20",
+        "694ddc8efa604d15-18"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "cba38f7b6440a266f9735ece36d338530f990c541a90e75677e23470589ed7c7",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "after_context_sha256": [
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "29641bffb5f3b47ef11a1a7578709e4473a3151216a7f73106a13616d843f4bd"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.937,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "rates",
+      "identity": "僑生",
+      "before_ids": [
+        "md897d587d48-20",
+        "md897d587d48-19",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md1bc9e437aa-6"
+      ],
+      "after_ids": [
+        "mda4b98886c6-8",
+        "61da978350069ab0-0",
+        "md897d587d48-20",
+        "mda4b98886c6-6",
+        "58773c60f5d8a7cd-8"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "63fee2d8a24987b9cc64549bca423d786ee9a4463f27af272fc75c9354bb6284",
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "e7f8bfdb907a9f1644fc462f986180b4f90a66c2543f60caa030ef8b31d2e2c4"
+      ],
+      "after_context_sha256": [
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "af6c8304c3083359a9f594230e91439f7f7df600e09a7ee624fcc07bddbe671f"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.938,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "Chinese",
+      "identity": "僑生",
+      "before_ids": [
+        "mda4b98886c6-6",
+        "mda4b98886c6-8",
+        "md897d587d48-17",
+        "md897d587d48-4",
+        "8928cb695e532cf2-0"
+      ],
+      "after_ids": [
+        "3b32819208450c61-18",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-17",
+        "md897d587d48-4"
+      ],
+      "before_context_sha256": [
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "cfe359275c29659285c878fb0a5f9f63d69d4dffa8668b42c7ae04a8ba8d05e7",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6",
+        "82090a13821b5658bda23c90bd398f241317eb26d788eb6035fe32e5fbec8fbb"
+      ],
+      "after_context_sha256": [
+        "b96697bf8f7fb6bd48fb97b9c332b010d95c05b823b51858788d9399ef827f7f",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "3319f6e12ba9fc261e3b24e3f63a7fa86495e902c8905b32eb6012bf28dd0871",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.078,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "fees",
+      "identity": "陸生",
+      "before_ids": [
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-20",
+        "58773c60f5d8a7cd-1",
+        "a4cf2561a9c3e679-0"
+      ],
+      "after_ids": [
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "61da978350069ab0-0",
+        "58773c60f5d8a7cd-1",
+        "a4cf2561a9c3e679-0"
+      ],
+      "before_context_sha256": [
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "cba38f7b6440a266f9735ece36d338530f990c541a90e75677e23470589ed7c7",
+        "50365ea46bf543f05f37993cd1387d469411dffb906eec21201d20e53b1daa4a",
+        "029ebfc9d899ee98ff4fe9c40b101f8afcb1f4f7acce42c796f3d7c38a35eb67",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "after_context_sha256": [
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "029ebfc9d899ee98ff4fe9c40b101f8afcb1f4f7acce42c796f3d7c38a35eb67",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.641,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "cost",
+      "identity": "陸生",
+      "before_ids": [
+        "md897d587d48-20",
+        "mda4b98886c6-6",
+        "mda4b98886c6-5",
+        "md897d587d48-19",
+        "md897d587d48-4"
+      ],
+      "after_ids": [
+        "58773c60f5d8a7cd-8",
+        "mda4b98886c6-6",
+        "mda4b98886c6-5",
+        "61da978350069ab0-0",
+        "58773c60f5d8a7cd-1"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "863408ebd99d43b0ff514fcaf70bcec5bda59145e2c7702f0658ea2e0859e88b",
+        "e90ae324daa08eea4d284ba6194c0374d52e793192f4d5372a98b43fe0f0340d",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6"
+      ],
+      "after_context_sha256": [
+        "780ed9c1d9321c5fc92446a33d95a91f52f124de768f4f07874f92a627b1c01c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "73d334e8091eae46c6e9c5bd3e9ceb31abaf99a79ffed81154af0e463801e1f1",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "029ebfc9d899ee98ff4fe9c40b101f8afcb1f4f7acce42c796f3d7c38a35eb67"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.781,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "charges",
+      "identity": "陸生",
+      "before_ids": [
+        "md897d587d48-20",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-19",
+        "a4cf2561a9c3e679-0"
+      ],
+      "after_ids": [
+        "mda4b98886c6-8",
+        "61da978350069ab0-0",
+        "mda4b98886c6-6",
+        "md897d587d48-20",
+        "694ddc8efa604d15-18"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "cba38f7b6440a266f9735ece36d338530f990c541a90e75677e23470589ed7c7",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "after_context_sha256": [
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "29641bffb5f3b47ef11a1a7578709e4473a3151216a7f73106a13616d843f4bd"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.0,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "rates",
+      "identity": "陸生",
+      "before_ids": [
+        "md897d587d48-20",
+        "md897d587d48-19",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md75cb01a49b-0"
+      ],
+      "after_ids": [
+        "mda4b98886c6-8",
+        "61da978350069ab0-0",
+        "md897d587d48-20",
+        "mda4b98886c6-6",
+        "58773c60f5d8a7cd-8"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "63fee2d8a24987b9cc64549bca423d786ee9a4463f27af272fc75c9354bb6284",
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "b1d3e8d29b99b33425d6ca9a7ae9b5917e6ad7cdf0e649e30c41c2c464aa05e1"
+      ],
+      "after_context_sha256": [
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "af6c8304c3083359a9f594230e91439f7f7df600e09a7ee624fcc07bddbe671f"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.812,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "Chinese",
+      "identity": "陸生",
+      "before_ids": [
+        "mda4b98886c6-6",
+        "mda4b98886c6-8",
+        "md897d587d48-17",
+        "md897d587d48-4",
+        "md897d587d48-1"
+      ],
+      "after_ids": [
+        "3b32819208450c61-18",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-17",
+        "md897d587d48-4"
+      ],
+      "before_context_sha256": [
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "cfe359275c29659285c878fb0a5f9f63d69d4dffa8668b42c7ae04a8ba8d05e7",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6",
+        "0b22c0ba4c7399e222032815dbc46cb19433d078aaf5b335399e9a6e22f930da"
+      ],
+      "after_context_sha256": [
+        "b96697bf8f7fb6bd48fb97b9c332b010d95c05b823b51858788d9399ef827f7f",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "3319f6e12ba9fc261e3b24e3f63a7fa86495e902c8905b32eb6012bf28dd0871",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.61,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "fees",
+      "identity": "訪問研修生",
+      "before_ids": [
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-20",
+        "58773c60f5d8a7cd-1",
+        "a4cf2561a9c3e679-0"
+      ],
+      "after_ids": [
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "61da978350069ab0-0",
+        "58773c60f5d8a7cd-1",
+        "md897d587d48-20"
+      ],
+      "before_context_sha256": [
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "cba38f7b6440a266f9735ece36d338530f990c541a90e75677e23470589ed7c7",
+        "50365ea46bf543f05f37993cd1387d469411dffb906eec21201d20e53b1daa4a",
+        "029ebfc9d899ee98ff4fe9c40b101f8afcb1f4f7acce42c796f3d7c38a35eb67",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "after_context_sha256": [
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "029ebfc9d899ee98ff4fe9c40b101f8afcb1f4f7acce42c796f3d7c38a35eb67",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.422,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "cost",
+      "identity": "訪問研修生",
+      "before_ids": [
+        "md897d587d48-20",
+        "mda4b98886c6-6",
+        "mda4b98886c6-5",
+        "md897d587d48-19",
+        "md897d587d48-4"
+      ],
+      "after_ids": [
+        "58773c60f5d8a7cd-8",
+        "mda4b98886c6-6",
+        "mda4b98886c6-5",
+        "61da978350069ab0-0",
+        "58773c60f5d8a7cd-1"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "863408ebd99d43b0ff514fcaf70bcec5bda59145e2c7702f0658ea2e0859e88b",
+        "e90ae324daa08eea4d284ba6194c0374d52e793192f4d5372a98b43fe0f0340d",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6"
+      ],
+      "after_context_sha256": [
+        "780ed9c1d9321c5fc92446a33d95a91f52f124de768f4f07874f92a627b1c01c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "73d334e8091eae46c6e9c5bd3e9ceb31abaf99a79ffed81154af0e463801e1f1",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "029ebfc9d899ee98ff4fe9c40b101f8afcb1f4f7acce42c796f3d7c38a35eb67"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.312,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "charges",
+      "identity": "訪問研修生",
+      "before_ids": [
+        "md897d587d48-20",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-19",
+        "a4cf2561a9c3e679-0"
+      ],
+      "after_ids": [
+        "mda4b98886c6-8",
+        "61da978350069ab0-0",
+        "mda4b98886c6-6",
+        "md897d587d48-20",
+        "md897d587d48-19"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "cba38f7b6440a266f9735ece36d338530f990c541a90e75677e23470589ed7c7",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665",
+        "e1f11acc91be681fdbd304bea87b3cbaeb675bc7679fc1ae41f0d2d265c38a3f"
+      ],
+      "after_context_sha256": [
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.266,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "rates",
+      "identity": "訪問研修生",
+      "before_ids": [
+        "md897d587d48-20",
+        "md897d587d48-19",
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md75cb01a49b-0"
+      ],
+      "after_ids": [
+        "mda4b98886c6-8",
+        "61da978350069ab0-0",
+        "md897d587d48-20",
+        "mda4b98886c6-6",
+        "md897d587d48-19"
+      ],
+      "before_context_sha256": [
+        "42594f66b191ba9b9ba6004264be67d31f8e771a397242945699b59bd67a0eea",
+        "63fee2d8a24987b9cc64549bca423d786ee9a4463f27af272fc75c9354bb6284",
+        "8b06f68779624a9c4b0aaf274c1bb356ecc83f4517b9b4967799bbcf20e165d5",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "b1d3e8d29b99b33425d6ca9a7ae9b5917e6ad7cdf0e649e30c41c2c464aa05e1"
+      ],
+      "after_context_sha256": [
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "b3d975853a71c0778de0b30bf66585fc2f7c1475b92fd20d88d39d31c372ee77",
+        "3549f42511a195b0bb7cb3d24112d98981d044904da0db26d6f006a37a84cea5",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "e1b46b0c24e0ad9650f394822557cca410853edc7ab29aa26ecbceea7cc6d665"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.172,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    },
+    {
+      "variant": "Chinese",
+      "identity": "訪問研修生",
+      "before_ids": [
+        "mda4b98886c6-6",
+        "mda4b98886c6-8",
+        "md897d587d48-17",
+        "md897d587d48-4",
+        "md897d587d48-1"
+      ],
+      "after_ids": [
+        "mda4b98886c6-8",
+        "mda4b98886c6-6",
+        "md897d587d48-17",
+        "md897d587d48-4",
+        "58773c60f5d8a7cd-1"
+      ],
+      "before_context_sha256": [
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "cfe359275c29659285c878fb0a5f9f63d69d4dffa8668b42c7ae04a8ba8d05e7",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6",
+        "0b22c0ba4c7399e222032815dbc46cb19433d078aaf5b335399e9a6e22f930da"
+      ],
+      "after_context_sha256": [
+        "f7aa36b58da71508e8053c33992f33e70f93a797c1bfd41697e86f2c1b7fe17c",
+        "6f37e0fd564e17a639d246b6a5ec55568c229a4a6baabb100729b5aa020793ee",
+        "3319f6e12ba9fc261e3b24e3f63a7fa86495e902c8905b32eb6012bf28dd0871",
+        "fc914ff4cd664d582d64c766d4f89312e6e70e2ac678f0e192f840c0b378c8d6",
+        "029ebfc9d899ee98ff4fe9c40b101f8afcb1f4f7acce42c796f3d7c38a35eb67"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 0,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.078,
+      "fixed_handbook_golden_allowed_by_snapshot_identity": false
+    }
+  ],
+  "work_variants": [
+    {
+      "variant": "work permit",
+      "identity": null,
+      "before_ids": [
+        "c9fdd88183bc796c-0",
+        "md1771e3f80d-10",
+        "mda4b98886c6-6",
+        "1ad657e047538a27-6",
+        "5b2d3a328b98f781-1"
+      ],
+      "after_ids": [
+        "c9fdd88183bc796c-0",
+        "1ad657e047538a27-6",
+        "a20d7a7e9a628894-3"
+      ],
+      "before_context_sha256": [
+        "4805b9a3216af2cb54baca111abf92ece8f1a106582404f96fed4b3cb0694630",
+        "67b1c69bac8d66ae1e116c3f912048b715bb7aa53caec1776517e833f96236fc",
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "680b9520cb954b788f45033600be29b0d17013fe1a11d87496b59bd82f9377d5",
+        "2337d8fb2692eb579a3c78f2c697fa941d3203ef7d03c14e277e89fa022f297f"
+      ],
+      "after_context_sha256": [
+        "4805b9a3216af2cb54baca111abf92ece8f1a106582404f96fed4b3cb0694630",
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162",
+        "ba4bc994b6fd63b5a4e135e713b138f270e8512cf81208083abb2489d0dc03fc"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 2,
+      "after_work_relevant_sources": 3,
+      "before_official_work_page": false,
+      "after_official_work_page": true,
+      "before_work_source_rank": null,
+      "after_work_source_rank": 3,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.109
+    },
+    {
+      "variant": "permission to work",
+      "identity": null,
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "12b5e67f79afb723-7",
+        "c244199dc51c383d-0",
+        "8af182dee53384c3-15",
+        "44fffda5250138c9-10"
+      ],
+      "after_ids": [
+        "c9fdd88183bc796c-0",
+        "1ad657e047538a27-6"
+      ],
+      "before_context_sha256": [
+        "7312825dcb06d282faed540df128c21bee5a1b50aba0c18e182604a94f650c12",
+        "88772ec07bfbc7224e2136f5921f6950aa0384474b79a0e4e67c1bc375def698",
+        "ca88916bea81b713193f7bcc0609a32d6fb30244973e1229ed71c58cf4938b58",
+        "6809fbc09cbb0587e24ec3afc4ae3f8ab4559bf083b28fb8f86c00d68897c869",
+        "6ea3042a6ad2a299ec551d8996bc98800d628e1463df729ffd6792abd011c814"
+      ],
+      "after_context_sha256": [
+        "4805b9a3216af2cb54baca111abf92ece8f1a106582404f96fed4b3cb0694630",
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 2,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.25
+    },
+    {
+      "variant": "employment authorization",
+      "identity": null,
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "8af182dee53384c3-15",
+        "12b5e67f79afb723-7",
+        "44fffda5250138c9-4",
+        "12b5e67f79afb723-15"
+      ],
+      "after_ids": [
+        "c9fdd88183bc796c-0",
+        "1ad657e047538a27-6"
+      ],
+      "before_context_sha256": [
+        "d6e968dd564554e0649c5b91ecb6c9c477fa92a1561933c3b6794b81b87dc123",
+        "09eba2dd702f1dda72443dd670a2900691f9bba9a2cdcc4047887df007338b1e",
+        "88772ec07bfbc7224e2136f5921f6950aa0384474b79a0e4e67c1bc375def698",
+        "03d93a75b599211a253688ab822698665bdb7cc485f8ec967bde768c4ff69b43",
+        "5c753adc96e0a9d1fa64645cde1e9add9e21b033361bb529b37f3c070bffe915"
+      ],
+      "after_context_sha256": [
+        "4805b9a3216af2cb54baca111abf92ece8f1a106582404f96fed4b3cb0694630",
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 2,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.609
+    },
+    {
+      "variant": "authorisation to work",
+      "identity": null,
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "8af182dee53384c3-15",
+        "12b5e67f79afb723-7",
+        "62546755ea36874a-10",
+        "8af182dee53384c3-11"
+      ],
+      "after_ids": [
+        "c9fdd88183bc796c-0",
+        "1ad657e047538a27-6"
+      ],
+      "before_context_sha256": [
+        "7312825dcb06d282faed540df128c21bee5a1b50aba0c18e182604a94f650c12",
+        "09eba2dd702f1dda72443dd670a2900691f9bba9a2cdcc4047887df007338b1e",
+        "88772ec07bfbc7224e2136f5921f6950aa0384474b79a0e4e67c1bc375def698",
+        "7d7801da458c3bb69fecc0adf7132f6d73d4767e980b44273b989d0646b55475",
+        "fec0e800fc01b1c7a5f9423dfec624e689a2ddb07e2a899493d0d744df1b4242"
+      ],
+      "after_context_sha256": [
+        "4805b9a3216af2cb54baca111abf92ece8f1a106582404f96fed4b3cb0694630",
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 2,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.36
+    },
+    {
+      "variant": "work permit",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "c9fdd88183bc796c-0",
+        "md1771e3f80d-10",
+        "mda4b98886c6-6",
+        "1ad657e047538a27-6",
+        "5b2d3a328b98f781-1"
+      ],
+      "after_ids": [
+        "c9fdd88183bc796c-0",
+        "1ad657e047538a27-6",
+        "a20d7a7e9a628894-3"
+      ],
+      "before_context_sha256": [
+        "4805b9a3216af2cb54baca111abf92ece8f1a106582404f96fed4b3cb0694630",
+        "67b1c69bac8d66ae1e116c3f912048b715bb7aa53caec1776517e833f96236fc",
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "680b9520cb954b788f45033600be29b0d17013fe1a11d87496b59bd82f9377d5",
+        "2337d8fb2692eb579a3c78f2c697fa941d3203ef7d03c14e277e89fa022f297f"
+      ],
+      "after_context_sha256": [
+        "4805b9a3216af2cb54baca111abf92ece8f1a106582404f96fed4b3cb0694630",
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162",
+        "ba4bc994b6fd63b5a4e135e713b138f270e8512cf81208083abb2489d0dc03fc"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 2,
+      "after_work_relevant_sources": 3,
+      "before_official_work_page": false,
+      "after_official_work_page": true,
+      "before_work_source_rank": null,
+      "after_work_source_rank": 3,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.781
+    },
+    {
+      "variant": "permission to work",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "12b5e67f79afb723-7",
+        "c244199dc51c383d-0",
+        "8af182dee53384c3-15",
+        "44fffda5250138c9-10"
+      ],
+      "after_ids": [
+        "c9fdd88183bc796c-0",
+        "1ad657e047538a27-6"
+      ],
+      "before_context_sha256": [
+        "7312825dcb06d282faed540df128c21bee5a1b50aba0c18e182604a94f650c12",
+        "88772ec07bfbc7224e2136f5921f6950aa0384474b79a0e4e67c1bc375def698",
+        "ca88916bea81b713193f7bcc0609a32d6fb30244973e1229ed71c58cf4938b58",
+        "6809fbc09cbb0587e24ec3afc4ae3f8ab4559bf083b28fb8f86c00d68897c869",
+        "6ea3042a6ad2a299ec551d8996bc98800d628e1463df729ffd6792abd011c814"
+      ],
+      "after_context_sha256": [
+        "4805b9a3216af2cb54baca111abf92ece8f1a106582404f96fed4b3cb0694630",
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 2,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.578
+    },
+    {
+      "variant": "employment authorization",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "8af182dee53384c3-15",
+        "12b5e67f79afb723-7",
+        "44fffda5250138c9-4",
+        "12b5e67f79afb723-15"
+      ],
+      "after_ids": [
+        "c9fdd88183bc796c-0",
+        "1ad657e047538a27-6"
+      ],
+      "before_context_sha256": [
+        "d6e968dd564554e0649c5b91ecb6c9c477fa92a1561933c3b6794b81b87dc123",
+        "09eba2dd702f1dda72443dd670a2900691f9bba9a2cdcc4047887df007338b1e",
+        "88772ec07bfbc7224e2136f5921f6950aa0384474b79a0e4e67c1bc375def698",
+        "03d93a75b599211a253688ab822698665bdb7cc485f8ec967bde768c4ff69b43",
+        "5c753adc96e0a9d1fa64645cde1e9add9e21b033361bb529b37f3c070bffe915"
+      ],
+      "after_context_sha256": [
+        "4805b9a3216af2cb54baca111abf92ece8f1a106582404f96fed4b3cb0694630",
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 2,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.813
+    },
+    {
+      "variant": "authorisation to work",
+      "identity": "外籍學位生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "8af182dee53384c3-15",
+        "12b5e67f79afb723-7",
+        "62546755ea36874a-10",
+        "8af182dee53384c3-11"
+      ],
+      "after_ids": [
+        "c9fdd88183bc796c-0",
+        "1ad657e047538a27-6"
+      ],
+      "before_context_sha256": [
+        "7312825dcb06d282faed540df128c21bee5a1b50aba0c18e182604a94f650c12",
+        "09eba2dd702f1dda72443dd670a2900691f9bba9a2cdcc4047887df007338b1e",
+        "88772ec07bfbc7224e2136f5921f6950aa0384474b79a0e4e67c1bc375def698",
+        "7d7801da458c3bb69fecc0adf7132f6d73d4767e980b44273b989d0646b55475",
+        "fec0e800fc01b1c7a5f9423dfec624e689a2ddb07e2a899493d0d744df1b4242"
+      ],
+      "after_context_sha256": [
+        "4805b9a3216af2cb54baca111abf92ece8f1a106582404f96fed4b3cb0694630",
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 2,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.203
+    },
+    {
+      "variant": "work permit",
+      "identity": "交換生",
+      "before_ids": [
+        "mda4b98886c6-6",
+        "1ad657e047538a27-6",
+        "5b2d3a328b98f781-1",
+        "5b2d3a328b98f781-28",
+        "cce5808c4bae1268-1"
+      ],
+      "after_ids": [
+        "1ad657e047538a27-6",
+        "a20d7a7e9a628894-3",
+        "a20d7a7e9a628894-0"
+      ],
+      "before_context_sha256": [
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162",
+        "afcfb772d559d4aecf7b756c2762a91d89af51d3753bfb702766cab0dd508035",
+        "49c5bff57d26c87b50f4a9a546f393d6f8fd5712103be209fe4082185d82cb83",
+        "a67d8b773b53e4fae6dd3ce612a139ec1d5e84c4aeafb7650c6ee3319bc2fd79"
+      ],
+      "after_context_sha256": [
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162",
+        "ba4bc994b6fd63b5a4e135e713b138f270e8512cf81208083abb2489d0dc03fc",
+        "69ef98989f0df4b28b295d1562d5b3b499b5872eecf9c401fc01c46181d3d25f"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 1,
+      "after_work_relevant_sources": 3,
+      "before_official_work_page": false,
+      "after_official_work_page": true,
+      "before_work_source_rank": null,
+      "after_work_source_rank": 2,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.359
+    },
+    {
+      "variant": "permission to work",
+      "identity": "交換生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "44fffda5250138c9-10",
+        "a756a2aad46d72ec-3",
+        "62546755ea36874a-10",
+        "a756a2aad46d72ec-0"
+      ],
+      "after_ids": [
+        "1ad657e047538a27-6",
+        "a20d7a7e9a628894-3"
+      ],
+      "before_context_sha256": [
+        "7312825dcb06d282faed540df128c21bee5a1b50aba0c18e182604a94f650c12",
+        "83c173a3312ba9f847adf4a1c20c4978c70f1a6239ad7e8b89e0f89dfc12e675",
+        "0fe8836d6d34fdd3d51539d8a65863c8f725e9ccae81fbc55a4aa9303cac33a6",
+        "7d7801da458c3bb69fecc0adf7132f6d73d4767e980b44273b989d0646b55475",
+        "e3f978b252cf5fe1f2f8030b824a1964a10f6650193f295fb3166097a6c02d1b"
+      ],
+      "after_context_sha256": [
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162",
+        "ba4bc994b6fd63b5a4e135e713b138f270e8512cf81208083abb2489d0dc03fc"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 2,
+      "before_official_work_page": false,
+      "after_official_work_page": true,
+      "before_work_source_rank": null,
+      "after_work_source_rank": 2,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.375
+    },
+    {
+      "variant": "employment authorization",
+      "identity": "交換生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "44fffda5250138c9-4",
+        "62546755ea36874a-10",
+        "694ddc8efa604d15-16",
+        "a756a2aad46d72ec-3"
+      ],
+      "after_ids": [
+        "1ad657e047538a27-6"
+      ],
+      "before_context_sha256": [
+        "d6e968dd564554e0649c5b91ecb6c9c477fa92a1561933c3b6794b81b87dc123",
+        "4617972058e4ef184eda1e0324900cb33f898705a0cc9e6d204f62233a4e6163",
+        "666e36303b9959893b84d5fe7f507b16d0f3c8bcd1e3c951b0aa01f00b0c56e4",
+        "efaf88a287cfc14d03944c19c9b72eca6dd2446a1de3619952d04322ef607387",
+        "65c9b19bbff0b33b7f83c5571a63d0657a3db970fcd293273c9eb30b4e0131ac"
+      ],
+      "after_context_sha256": [
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 1,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.11
+    },
+    {
+      "variant": "authorisation to work",
+      "identity": "交換生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "62546755ea36874a-10",
+        "44fffda5250138c9-12",
+        "694ddc8efa604d15-16",
+        "a756a2aad46d72ec-0"
+      ],
+      "after_ids": [
+        "1ad657e047538a27-6"
+      ],
+      "before_context_sha256": [
+        "7312825dcb06d282faed540df128c21bee5a1b50aba0c18e182604a94f650c12",
+        "666e36303b9959893b84d5fe7f507b16d0f3c8bcd1e3c951b0aa01f00b0c56e4",
+        "6dca7ff2141753b655669315b5e167a94322b0734b0614353088d32bfc42149c",
+        "efaf88a287cfc14d03944c19c9b72eca6dd2446a1de3619952d04322ef607387",
+        "e3f978b252cf5fe1f2f8030b824a1964a10f6650193f295fb3166097a6c02d1b"
+      ],
+      "after_context_sha256": [
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 1,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.562
+    },
+    {
+      "variant": "work permit",
+      "identity": "僑生",
+      "before_ids": [
+        "mda4b98886c6-6",
+        "1ad657e047538a27-6",
+        "5b2d3a328b98f781-1",
+        "5b2d3a328b98f781-28",
+        "cce5808c4bae1268-1"
+      ],
+      "after_ids": [
+        "1ad657e047538a27-6",
+        "a20d7a7e9a628894-3",
+        "a20d7a7e9a628894-0"
+      ],
+      "before_context_sha256": [
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162",
+        "afcfb772d559d4aecf7b756c2762a91d89af51d3753bfb702766cab0dd508035",
+        "49c5bff57d26c87b50f4a9a546f393d6f8fd5712103be209fe4082185d82cb83",
+        "a67d8b773b53e4fae6dd3ce612a139ec1d5e84c4aeafb7650c6ee3319bc2fd79"
+      ],
+      "after_context_sha256": [
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162",
+        "ba4bc994b6fd63b5a4e135e713b138f270e8512cf81208083abb2489d0dc03fc",
+        "69ef98989f0df4b28b295d1562d5b3b499b5872eecf9c401fc01c46181d3d25f"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 1,
+      "after_work_relevant_sources": 3,
+      "before_official_work_page": false,
+      "after_official_work_page": true,
+      "before_work_source_rank": null,
+      "after_work_source_rank": 2,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.938
+    },
+    {
+      "variant": "permission to work",
+      "identity": "僑生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "44fffda5250138c9-10",
+        "62546755ea36874a-10",
+        "a20d7a7e9a628894-3",
+        "c1a247fe9849e2cd-7"
+      ],
+      "after_ids": [
+        "1ad657e047538a27-6",
+        "a20d7a7e9a628894-3"
+      ],
+      "before_context_sha256": [
+        "7312825dcb06d282faed540df128c21bee5a1b50aba0c18e182604a94f650c12",
+        "83c173a3312ba9f847adf4a1c20c4978c70f1a6239ad7e8b89e0f89dfc12e675",
+        "666e36303b9959893b84d5fe7f507b16d0f3c8bcd1e3c951b0aa01f00b0c56e4",
+        "ba4bc994b6fd63b5a4e135e713b138f270e8512cf81208083abb2489d0dc03fc",
+        "21a56e17ed912365802359df924783946780e6f713b8d391cd1604d086c47a31"
+      ],
+      "after_context_sha256": [
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162",
+        "ba4bc994b6fd63b5a4e135e713b138f270e8512cf81208083abb2489d0dc03fc"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 1,
+      "after_work_relevant_sources": 2,
+      "before_official_work_page": true,
+      "after_official_work_page": true,
+      "before_work_source_rank": 4,
+      "after_work_source_rank": 2,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.812
+    },
+    {
+      "variant": "employment authorization",
+      "identity": "僑生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "44fffda5250138c9-4",
+        "62546755ea36874a-10",
+        "fe9ac9f9ef0ddfd1-0",
+        "694ddc8efa604d15-16"
+      ],
+      "after_ids": [
+        "1ad657e047538a27-6"
+      ],
+      "before_context_sha256": [
+        "d6e968dd564554e0649c5b91ecb6c9c477fa92a1561933c3b6794b81b87dc123",
+        "4617972058e4ef184eda1e0324900cb33f898705a0cc9e6d204f62233a4e6163",
+        "666e36303b9959893b84d5fe7f507b16d0f3c8bcd1e3c951b0aa01f00b0c56e4",
+        "948f56cf69862016e0b99be808dd53a4c1eb89aa1166efb1815342ee881ebbc3",
+        "efaf88a287cfc14d03944c19c9b72eca6dd2446a1de3619952d04322ef607387"
+      ],
+      "after_context_sha256": [
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 1,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 4.109
+    },
+    {
+      "variant": "authorisation to work",
+      "identity": "僑生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "62546755ea36874a-10",
+        "44fffda5250138c9-12",
+        "694ddc8efa604d15-16",
+        "fe9ac9f9ef0ddfd1-0"
+      ],
+      "after_ids": [
+        "1ad657e047538a27-6"
+      ],
+      "before_context_sha256": [
+        "7312825dcb06d282faed540df128c21bee5a1b50aba0c18e182604a94f650c12",
+        "666e36303b9959893b84d5fe7f507b16d0f3c8bcd1e3c951b0aa01f00b0c56e4",
+        "6dca7ff2141753b655669315b5e167a94322b0734b0614353088d32bfc42149c",
+        "efaf88a287cfc14d03944c19c9b72eca6dd2446a1de3619952d04322ef607387",
+        "948f56cf69862016e0b99be808dd53a4c1eb89aa1166efb1815342ee881ebbc3"
+      ],
+      "after_context_sha256": [
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 1,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 3.719
+    },
+    {
+      "variant": "work permit",
+      "identity": "陸生",
+      "before_ids": [
+        "mda4b98886c6-6",
+        "1ad657e047538a27-6",
+        "5b2d3a328b98f781-1",
+        "5b2d3a328b98f781-28",
+        "cce5808c4bae1268-1"
+      ],
+      "after_ids": [
+        "1ad657e047538a27-6",
+        "a20d7a7e9a628894-3",
+        "a20d7a7e9a628894-0"
+      ],
+      "before_context_sha256": [
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162",
+        "afcfb772d559d4aecf7b756c2762a91d89af51d3753bfb702766cab0dd508035",
+        "49c5bff57d26c87b50f4a9a546f393d6f8fd5712103be209fe4082185d82cb83",
+        "a67d8b773b53e4fae6dd3ce612a139ec1d5e84c4aeafb7650c6ee3319bc2fd79"
+      ],
+      "after_context_sha256": [
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162",
+        "ba4bc994b6fd63b5a4e135e713b138f270e8512cf81208083abb2489d0dc03fc",
+        "69ef98989f0df4b28b295d1562d5b3b499b5872eecf9c401fc01c46181d3d25f"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 1,
+      "after_work_relevant_sources": 3,
+      "before_official_work_page": false,
+      "after_official_work_page": true,
+      "before_work_source_rank": null,
+      "after_work_source_rank": 2,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 2.422
+    },
+    {
+      "variant": "permission to work",
+      "identity": "陸生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "44fffda5250138c9-10",
+        "62546755ea36874a-10",
+        "a20d7a7e9a628894-3",
+        "c1a247fe9849e2cd-7"
+      ],
+      "after_ids": [
+        "1ad657e047538a27-6",
+        "a20d7a7e9a628894-3"
+      ],
+      "before_context_sha256": [
+        "7312825dcb06d282faed540df128c21bee5a1b50aba0c18e182604a94f650c12",
+        "83c173a3312ba9f847adf4a1c20c4978c70f1a6239ad7e8b89e0f89dfc12e675",
+        "666e36303b9959893b84d5fe7f507b16d0f3c8bcd1e3c951b0aa01f00b0c56e4",
+        "ba4bc994b6fd63b5a4e135e713b138f270e8512cf81208083abb2489d0dc03fc",
+        "21a56e17ed912365802359df924783946780e6f713b8d391cd1604d086c47a31"
+      ],
+      "after_context_sha256": [
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162",
+        "ba4bc994b6fd63b5a4e135e713b138f270e8512cf81208083abb2489d0dc03fc"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 1,
+      "after_work_relevant_sources": 2,
+      "before_official_work_page": true,
+      "after_official_work_page": true,
+      "before_work_source_rank": 4,
+      "after_work_source_rank": 2,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.813
+    },
+    {
+      "variant": "employment authorization",
+      "identity": "陸生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "44fffda5250138c9-4",
+        "62546755ea36874a-10",
+        "694ddc8efa604d15-16",
+        "16566d07e653a075-2"
+      ],
+      "after_ids": [
+        "1ad657e047538a27-6"
+      ],
+      "before_context_sha256": [
+        "d6e968dd564554e0649c5b91ecb6c9c477fa92a1561933c3b6794b81b87dc123",
+        "4617972058e4ef184eda1e0324900cb33f898705a0cc9e6d204f62233a4e6163",
+        "666e36303b9959893b84d5fe7f507b16d0f3c8bcd1e3c951b0aa01f00b0c56e4",
+        "efaf88a287cfc14d03944c19c9b72eca6dd2446a1de3619952d04322ef607387",
+        "23bedccba50ee767878ea12aa1de1145c38abf21307584b112b3834cb121df05"
+      ],
+      "after_context_sha256": [
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 1,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.703
+    },
+    {
+      "variant": "authorisation to work",
+      "identity": "陸生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "62546755ea36874a-10",
+        "44fffda5250138c9-12",
+        "694ddc8efa604d15-16",
+        "16566d07e653a075-2"
+      ],
+      "after_ids": [
+        "1ad657e047538a27-6"
+      ],
+      "before_context_sha256": [
+        "7312825dcb06d282faed540df128c21bee5a1b50aba0c18e182604a94f650c12",
+        "666e36303b9959893b84d5fe7f507b16d0f3c8bcd1e3c951b0aa01f00b0c56e4",
+        "6dca7ff2141753b655669315b5e167a94322b0734b0614353088d32bfc42149c",
+        "efaf88a287cfc14d03944c19c9b72eca6dd2446a1de3619952d04322ef607387",
+        "23bedccba50ee767878ea12aa1de1145c38abf21307584b112b3834cb121df05"
+      ],
+      "after_context_sha256": [
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 1,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.687
+    },
+    {
+      "variant": "work permit",
+      "identity": "訪問研修生",
+      "before_ids": [
+        "mda4b98886c6-6",
+        "1ad657e047538a27-6",
+        "5b2d3a328b98f781-1",
+        "5b2d3a328b98f781-28",
+        "cce5808c4bae1268-1"
+      ],
+      "after_ids": [
+        "1ad657e047538a27-6",
+        "a20d7a7e9a628894-3",
+        "a20d7a7e9a628894-0"
+      ],
+      "before_context_sha256": [
+        "c3a284e9bbba15f04d72b3ebae0602167bf618908e8a4d90876892fd198795fa",
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162",
+        "afcfb772d559d4aecf7b756c2762a91d89af51d3753bfb702766cab0dd508035",
+        "49c5bff57d26c87b50f4a9a546f393d6f8fd5712103be209fe4082185d82cb83",
+        "a67d8b773b53e4fae6dd3ce612a139ec1d5e84c4aeafb7650c6ee3319bc2fd79"
+      ],
+      "after_context_sha256": [
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162",
+        "ba4bc994b6fd63b5a4e135e713b138f270e8512cf81208083abb2489d0dc03fc",
+        "69ef98989f0df4b28b295d1562d5b3b499b5872eecf9c401fc01c46181d3d25f"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 1,
+      "after_work_relevant_sources": 3,
+      "before_official_work_page": false,
+      "after_official_work_page": true,
+      "before_work_source_rank": null,
+      "after_work_source_rank": 2,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.344
+    },
+    {
+      "variant": "permission to work",
+      "identity": "訪問研修生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "44fffda5250138c9-10",
+        "62546755ea36874a-10",
+        "a20d7a7e9a628894-3",
+        "c1a247fe9849e2cd-7"
+      ],
+      "after_ids": [
+        "1ad657e047538a27-6",
+        "a20d7a7e9a628894-3"
+      ],
+      "before_context_sha256": [
+        "7312825dcb06d282faed540df128c21bee5a1b50aba0c18e182604a94f650c12",
+        "83c173a3312ba9f847adf4a1c20c4978c70f1a6239ad7e8b89e0f89dfc12e675",
+        "666e36303b9959893b84d5fe7f507b16d0f3c8bcd1e3c951b0aa01f00b0c56e4",
+        "ba4bc994b6fd63b5a4e135e713b138f270e8512cf81208083abb2489d0dc03fc",
+        "21a56e17ed912365802359df924783946780e6f713b8d391cd1604d086c47a31"
+      ],
+      "after_context_sha256": [
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162",
+        "ba4bc994b6fd63b5a4e135e713b138f270e8512cf81208083abb2489d0dc03fc"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 1,
+      "after_work_relevant_sources": 2,
+      "before_official_work_page": true,
+      "after_official_work_page": true,
+      "before_work_source_rank": 4,
+      "after_work_source_rank": 2,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.109
+    },
+    {
+      "variant": "employment authorization",
+      "identity": "訪問研修生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "44fffda5250138c9-4",
+        "62546755ea36874a-10",
+        "16566d07e653a075-2",
+        "5b2d3a328b98f781-1"
+      ],
+      "after_ids": [
+        "1ad657e047538a27-6"
+      ],
+      "before_context_sha256": [
+        "d6e968dd564554e0649c5b91ecb6c9c477fa92a1561933c3b6794b81b87dc123",
+        "4617972058e4ef184eda1e0324900cb33f898705a0cc9e6d204f62233a4e6163",
+        "666e36303b9959893b84d5fe7f507b16d0f3c8bcd1e3c951b0aa01f00b0c56e4",
+        "23bedccba50ee767878ea12aa1de1145c38abf21307584b112b3834cb121df05",
+        "2337d8fb2692eb579a3c78f2c697fa941d3203ef7d03c14e277e89fa022f297f"
+      ],
+      "after_context_sha256": [
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 1,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.141
+    },
+    {
+      "variant": "authorisation to work",
+      "identity": "訪問研修生",
+      "before_ids": [
+        "44fffda5250138c9-5",
+        "62546755ea36874a-10",
+        "44fffda5250138c9-12",
+        "16566d07e653a075-2",
+        "c1a247fe9849e2cd-7"
+      ],
+      "after_ids": [
+        "1ad657e047538a27-6"
+      ],
+      "before_context_sha256": [
+        "7312825dcb06d282faed540df128c21bee5a1b50aba0c18e182604a94f650c12",
+        "666e36303b9959893b84d5fe7f507b16d0f3c8bcd1e3c951b0aa01f00b0c56e4",
+        "6dca7ff2141753b655669315b5e167a94322b0734b0614353088d32bfc42149c",
+        "23bedccba50ee767878ea12aa1de1145c38abf21307584b112b3834cb121df05",
+        "21a56e17ed912365802359df924783946780e6f713b8d391cd1604d086c47a31"
+      ],
+      "after_context_sha256": [
+        "4e2facf18f6b0a83d3be317bad35406dcae82dc7f7133a8ef11206be0ce99162"
+      ],
+      "before_fee_table_recall": 0.0,
+      "after_fee_table_recall": 0.0,
+      "before_work_relevant_sources": 0,
+      "after_work_relevant_sources": 1,
+      "before_official_work_page": false,
+      "after_official_work_page": false,
+      "before_work_source_rank": null,
+      "after_work_source_rank": null,
+      "after_context_has_legacy_arc_fragment": false,
+      "after_context_has_known_obsolete_claim": false,
+      "elapsed_seconds": 1.234
+    }
+  ],
+  "model_calibration": [
+    {
+      "diagnostic": "q1",
+      "query_cosine_to_captured": 0.9999999999835314
+    },
+    {
+      "diagnostic": "q2",
+      "query_cosine_to_captured": 0.9999999999848642
+    },
+    {
+      "diagnostic": "q3",
+      "query_cosine_to_captured": 0.9999999999842586
+    },
+    {
+      "diagnostic": "q4",
+      "query_cosine_to_captured": 0.9999999999832356
+    },
+    {
+      "diagnostic": "q5",
+      "query_cosine_to_captured": 0.9999999999843888
+    },
+    {
+      "diagnostic": "q6",
+      "query_cosine_to_captured": 0.9999999999838168
+    },
+    {
+      "diagnostic": "q7",
+      "query_cosine_to_captured": 0.999525425604771
+    },
+    {
+      "diagnostic": "q8",
+      "query_cosine_to_captured": 0.9999999999843895
+    }
+  ],
+  "limitations": [
+    "No generation or answer pass-rate measurement.",
+    "New fixed-snapshot replay; redacted passages and model/runtime may differ from historical production.",
+    "No production PostgREST/connection-pool/latency test.",
+    "No synthetic policy approvals were added; current regulated claims without review stay excluded."
+  ]
+}

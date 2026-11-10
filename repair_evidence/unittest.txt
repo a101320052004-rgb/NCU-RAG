@@ -1,0 +1,30 @@
+請先完成 reliability v2 SQL 的隔離驗收及核准部署；停止上傳。
+reliability v2 SQL 尚未就緒；停止上傳。
+test_fee_rescue_is_scoped_and_threshold_and_k_unchanged (test_reliability.ContextAndRetrievalTests.test_fee_rescue_is_scoped_and_threshold_and_k_unchanged) ... ok
+test_identity_not_removed_from_main_rpc_or_partner_shortcut (test_reliability.ContextAndRetrievalTests.test_identity_not_removed_from_main_rpc_or_partner_shortcut) ... ok
+test_ineligible_primary_context_rejected (test_reliability.ContextAndRetrievalTests.test_ineligible_primary_context_rejected) ... ok
+test_neighbors_use_same_eligibility_and_keep_legal_neighbor (test_reliability.ContextAndRetrievalTests.test_neighbors_use_same_eligibility_and_keep_legal_neighbor) ... ok
+test_normal_queries_keep_existing_score_and_document_cap (test_reliability.ContextAndRetrievalTests.test_normal_queries_keep_existing_score_and_document_cap) ... ok
+test_source_dates_survive_supabase_iso_and_local_integer_metadata (test_reliability.ContextAndRetrievalTests.test_source_dates_survive_supabase_iso_and_local_integer_metadata) ... ok
+test_synonyms_expand_but_preserve_original_question (test_reliability.ContextAndRetrievalTests.test_synonyms_expand_but_preserve_original_question) ... ok
+test_F03_G15_G16_obsolete_claims_blocked_after_fresh_crawl (test_reliability.GovernanceTests.test_F03_G15_G16_obsolete_claims_blocked_after_fresh_crawl) ... ok
+test_each_identity_and_time_status_boundary (test_reliability.GovernanceTests.test_each_identity_and_time_status_boundary) ... ok
+test_fresh_fetch_is_not_human_review (test_reliability.GovernanceTests.test_fresh_fetch_is_not_human_review) ... ok
+test_ingest_uses_same_policy_before_timestamp_logic (test_reliability.GovernanceTests.test_ingest_uses_same_policy_before_timestamp_logic) ... ok
+test_new_and_old_policy_conflict_is_not_auto_approved (test_reliability.GovernanceTests.test_new_and_old_policy_conflict_is_not_auto_approved) ... ok
+test_unrelated_visa_and_insurance_durations_not_misclassified (test_reliability.GovernanceTests.test_unrelated_visa_and_insurance_durations_not_misclassified) ... ok
+test_year_alone_does_not_expire_valid_document (test_reliability.GovernanceTests.test_year_alone_does_not_expire_valid_document) ... ok
+test_H07_H08_handoff_without_generation (test_reliability.SafetyTests.test_H07_H08_handoff_without_generation) ... ok
+test_educational_and_ordinary_third_person_questions (test_reliability.SafetyTests.test_educational_and_ordinary_third_person_questions) ... ok
+test_explicit_negation_does_not_handoff (test_reliability.SafetyTests.test_explicit_negation_does_not_handoff) ... ok
+test_identity_override_and_persisted_identity_reach_rag (test_reliability.SafetyTests.test_identity_override_and_persisted_identity_reach_rag) ... ok
+test_negation_does_not_hide_later_urgent_clause (test_reliability.SafetyTests.test_negation_does_not_hide_later_urgent_clause) ... ok
+test_third_person_real_risk_is_not_ignored (test_reliability.SafetyTests.test_third_person_real_risk_is_not_ignored) ... ok
+test_answer_passes_identity_and_filtered_context_to_generation (test_reliability.UploadAndGenerationTests.test_answer_passes_identity_and_filtered_context_to_generation) ... ok
+test_numeric_substrings_do_not_become_obsolete_rules (test_reliability.UploadAndGenerationTests.test_numeric_substrings_do_not_become_obsolete_rules) ... ok
+test_upload_stops_before_embeddings_when_sql_is_not_ready (test_reliability.UploadAndGenerationTests.test_upload_stops_before_embeddings_when_sql_is_not_ready) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 0.131s
+
+OK

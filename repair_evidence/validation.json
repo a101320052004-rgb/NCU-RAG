@@ -1,0 +1,40 @@
+{
+  "base_commit": "164083292fa518e85ee2073a198dbb7ecbde9d7c",
+  "unittest_methods": 23,
+  "unittest_passed": true,
+  "originals_preserved": [
+    {
+      "file": "NCU_RAG_DIAGNOSTIC_PACKAGE.zip",
+      "sha256": "08359088055ec12048f82e5f3b8010c241f82802ed343ad091e5d5cde8f0c6f5",
+      "unchanged": true
+    },
+    {
+      "file": "ncu 國際生 二.xlsx",
+      "sha256": "15b8b10f430e3ccbd4daa838acd7c48c37614bab191af1cfca8662d6201a2074",
+      "unchanged": true
+    },
+    {
+      "file": "RAG_failure_analysis.xlsx",
+      "sha256": "5233d1446eec8a145e11f315d74dca4702ffa941a38a7f67ba010d23738f5836",
+      "unchanged": true
+    },
+    {
+      "file": "RAG_diagnosis_report.md",
+      "sha256": "f23c3786ea108c2af43f4264cb1281fcb6148236c5e7b217abca9560f162e29e",
+      "unchanged": true
+    },
+    {
+      "file": "RAG_improvement_plan.md",
+      "sha256": "8e45989f1cbb41e456effb2fdcfbb40a2dd9c190bdaf5b2536c7955eef39a31c",
+      "unchanged": true
+    }
+  ],
+  "diagnostic_source_hash_checks": 35,
+  "captured_replay_queries": 5,
+  "changed_code_ast_parse": "passed",
+  "token_shape_scan": "no matches",
+  "native_postgresql_executed": false,
+  "claude_calls": 0,
+  "production_database_writes": 0,
+  "production_deployments_requested": 0
+}

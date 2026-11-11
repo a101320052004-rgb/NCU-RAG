@@ -171,12 +171,16 @@ def _partner_hits(question: str, identity: str | None = None, topic: str | None 
 # 11/12 實測：保險、工作證、獎學金、就醫的官方頁面明明在知識庫裡，向量排名卻被手冊、行事曆擠掉，回答變成「沒有資料」。
 # 指定的段落照樣要通過時效與法規檢查（例如工作證效期那兩段待人工核准，核准前不會被放進來）。
 PINNED = [
-    ("insurance", re.compile(r"insurance|\bnhi\b|health card|cathay|保險|健保|國泰", re.I),
+    ("insurance", re.compile(r"(?<!labor )(?<!labour )insurance|\bnhi\b|health card|cathay|(?<!勞工)保險|健保|國泰", re.I),
      # 11/11 補：健保怎麼用與自付額、健保資格與保費（人工整理 sheet-rights-1111）、國際處保險頁
      ["sheet-rights-1111-2", "sheet-rights-1111-1", "d56b81c706265a59-0", "d56b81c706265a59-2", "sheet-rights-1111-3"]),
     ("work_permit", re.compile(r"work permit|permission to work|work while studying|part[- ]time (?:job|work)|"
                                r"(?:work|employment) authori[sz]ation|工作證|工作許可|打工", re.I),
      ["a20d7a7e9a628894-0", "a20d7a7e9a628894-1", "a20d7a7e9a628894-2", "a20d7a7e9a628894-3"]),
+    # 打工權益：最低工資、勞保、欠薪（11/11 實測：「Does my employer have to give me labor insurance?」被當成校外問題）
+    ("labor", re.compile(r"labou?r (?:insurance|law|rights?|dispute)|minimum wage|\bwages?\b|salary|unpaid|employer|\bboss\b|"
+                         r"勞保|勞工保險|最低工資|基本工資|薪水|薪資|欠薪|雇主|老闆|勞資", re.I),
+     ["sheet-rights-1111-4", "sheet-rights-1111-5"]),
     ("scholarship", re.compile(r"scholarship|financial aid|stipend|獎學金|獎助", re.I),
      ["12b5e67f79afb723-2", "12b5e67f79afb723-3", "12b5e67f79afb723-0"]),
     ("medical", re.compile(r"medical (?:help|assistance|care|service)|doctor|clinic|\bsick\b|health (?:center|centre|service)|"

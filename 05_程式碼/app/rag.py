@@ -180,26 +180,42 @@ PINNED = [
      ["12b5e67f79afb723-2", "12b5e67f79afb723-3", "12b5e67f79afb723-0"]),
     ("medical", re.compile(r"medical (?:help|assistance|care|service)|doctor|clinic|\bsick\b|health (?:center|centre|service)|"
                            r"first aid|see a doctor|看醫生|生病|就醫|衛保|保健組", re.I),
-     ["163d19b21b0c6dca-0", "163d19b21b0c6dca-1"]),
+     ["8af182dee53384c3-57", "163d19b21b0c6dca-0", "163d19b21b0c6dca-1"]),
     ("counseling", re.compile(r"counsel|mental health|psycholog|therap|諮商|心理", re.I),
      ["ebc593e9b9048487-2", "ebc593e9b9048487-3"]),
+    # 繳費：學雜費繳費單從 Portal 下載，ATM／信用卡／超商／第一銀行都能繳（Registration Calendar），出納組在行政大樓一樓（新生手冊）
+    ("payment", re.compile(r"\bpay(?:ing|ment)?\b|繳費|繳交|怎麼繳|如何繳|繳費單", re.I),
+     ["694ddc8efa604d15-7", "694ddc8efa604d15-11", "8af182dee53384c3-56"]),
     ("emergency", re.compile(r"emergenc|campus security|security (?:center|centre|office)|24[- ]hour|校安|緊急", re.I),
      ["163d19b21b0c6dca-0", "163d19b21b0c6dca-1"]),
 ]
 
 
-def pinned_ids(question: str) -> list[str]:
+# 依身分換成該身分的辦法：陸生、僑生的獎學金是另一套規定，不能拿外籍生獎學金回答
+PINNED_BY_IDENTITY = {
+    ("scholarship", "陸生"): ["657db3ed38bca9bb-0", "657db3ed38bca9bb-1"],
+    ("scholarship", "僑生"): ["31aa0d4899e6700b-0", "31aa0d4899e6700b-1"],
+}
+# 已知身分時，檢索多查一次加上身分說法的版本，讓該身分專屬的資料浮上來
+IDENTITY_TERMS = {"外籍學位生": "international degree students 外籍生 外籍學位生",
+                  "交換生": "exchange students 交換生",
+                  "僑生": "overseas Chinese students Hong Kong Macau 僑生 港澳生",
+                  "陸生": "Mainland Chinese students 陸生 大陸地區人民",
+                  "訪問研修生": "visiting students 訪問研修生"}
+
+
+def pinned_ids(question: str, identity: str | None = None) -> list[str]:
     ids = []
     for name, pat, chunk_ids in PINNED:
         if pat.search(question):
             if name == "medical" and PINNED[0][1].search(question):
                 continue  # 問醫療保險時不要把緊急電話表塞進來
-            ids += chunk_ids
+            ids += PINNED_BY_IDENTITY.get((name, identity), chunk_ids)
     return list(dict.fromkeys(ids))
 
 
-def _pinned_hits(question: str, topic: str | None = None) -> list[dict]:
-    ids = pinned_ids(question)
+def _pinned_hits(question: str, topic: str | None = None, identity: str | None = None) -> list[dict]:
+    ids = pinned_ids(question, identity)
     if config.STORE != "supabase" or not ids:
         return []
     try:
@@ -280,7 +296,7 @@ def follow_up_context(history: list[dict] | None) -> str:
 
 
 def retrieve(question: str, identity: str | None, lang: str, topic: str | None = None,
-             context: str | None = None) -> list[dict]:
+             context: str | None = None, identity_hint: str | None = None) -> list[dict]:
     exact = _partner_hits(question, identity, topic)
     search = expand_query(question)
     expanded = search != question
@@ -288,6 +304,8 @@ def retrieve(question: str, identity: str | None, lang: str, topic: str | None =
     # 追問時再用「前一題＋這一句」查一次，和原句的結果合併；原句的結果照樣保留
     if context and is_follow_up(question):
         queries.append(expand_query(f"{context} {question}"))
+    if identity_hint in IDENTITY_TERMS:
+        queries.append(f"{search} {IDENTITY_TERMS[identity_hint]}")
     # 補了英文的版本和原本的問題各查一次再合併：補字幫英文資料浮上來，但不能把剛好對題的中文資料（例如公告）擠掉
     rows, seen, original_rank = [], {}, {}
     for q in queries:
@@ -329,7 +347,7 @@ def retrieve(question: str, identity: str | None, lang: str, topic: str | None =
                                 original_rank.get(h['meta'].get('id'), 10**6)
                                 if _dorm_fee_payload(h['text'], h['meta']) else h['score'],
                                 h['score']))
-    pinned = _pinned_hits(question, topic)
+    pinned = _pinned_hits(question, topic, identity_hint)
     if pinned:
         ids = {h["meta"]["id"] for h in pinned}
         hits = pinned + [h for h in hits if h["meta"].get("id") not in ids]
@@ -594,12 +612,15 @@ def answer(question: str, identity: str | None, lang: str | None = None,
            topic: str | None = None, history: list[dict] | None = None, quota_key: str = "anon",
            search: str | None = None) -> dict:
     lang = lang or detect_lang(question)
+    # 學生沒設定身分、但問題裡自己講了（As an exchange student…），就照問題裡的身分回答和轉接
+    identity = identity or contacts.guess_identity(question)
     contact = contacts.contact_line(identity, lang, question)  # 依身分轉給負責的承辦人
     # 回答語言固定（預設英文），但檢索要看問題本身是哪種語言，中文問題才找得到中文資料。
     # 檢索不分身分（國際處原則）：資料上的身分標籤是自動標的、不可靠（例如保險頁只標了交換生），
     # 用身分篩選會讓學位生查不到保險頁。身分只拿來決定轉給哪位承辦人。
     hits = retrieve(search or question, None, detect_lang(question), topic,
-                    context=None if search else follow_up_context(history))  # 選單用關鍵字檢索，比問句準
+                    context=None if search else follow_up_context(history),  # 選單用關鍵字檢索，比問句準
+                    identity_hint=identity)
     if not hits:
         return {"answer": no_data_answer(lang, contact), "route": "no_data", "sources": []}
     footer, used = source_footer(hits, lang)

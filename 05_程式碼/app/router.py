@@ -160,6 +160,10 @@ DEFAULT_LANG = "en"
 # 只打「fee」「費用」這種一兩個字，檢索分不出是哪一種費用，先請學生選
 VAGUE_FEE = re.compile(r"^\s*(?:the\s+|any\s+)?(?:fees?|costs?|prices?|charges?|payments?|expenses?|how much|費用|收費|多少錢|繳費|要繳什麼錢)\s*[?？!！.。]*\s*$", re.I)
 FEE_CHOICES = ["Dorm fees", "Tuition fees", "ARC fee", "Health insurance fee"]
+# 只問「How do I pay?」「怎麼繳費」：先請學生選要繳什麼（11/12 實測：直接檢索會抓到不相干的頁面）
+VAGUE_PAY = re.compile(r"^\s*(?:how|where|when)\s+(?:do|can|should|will)\s+i\s+pay(?:\s+(?:it|them|this|that|fees?|the fees?|my fees?))?"
+                       r"\s*[?？.!！]*\s*$|^\s*(?:請問)?(?:怎麼|如何|去哪裡?|在哪裡?)繳(?:費|錢)?[?？]*\s*$", re.I)
+PAY_CHOICES = ["Pay tuition fees", "Pay credit fees", "Pay dorm fees", "Pay health insurance"]
 
 
 SWITCH_ID = {"身分", "身份", "切換身分", "切換身份", "更改身分", "identity", "change identity", "切換身分 change id"}
@@ -171,11 +175,20 @@ def identity_chips() -> list[str]:
 
 
 def parse_identity(text: str) -> str | None:
-    m = re.match(r"^(身分|identity|i am|i'm)\s*[:：]?\s*(.+)$", text, re.I)
+    m = re.match(r"^(身分|identity|i am|i'm|im(?=\s))\s*[:：]?\s*(.+)$", text, re.I)
     if not m:
         return None
     rest = m.group(2).lower()
-    return next((i for i in config.IDENTITIES if i in rest or ID_EN[i].lower() in rest), None)
+    found = next((i for i in config.IDENTITIES if i in rest or ID_EN[i].lower() in rest), None)
+    return found or contacts.guess_identity(rest)
+
+
+def only_identity(text: str) -> bool:
+    """「I'm an exchange student」這種只是在講身分；後面還接著問問題就要照樣回答。
+    11/12 實測：「I'm an exchange student. Can I apply for a scholarship?」只回了「Got it: Exchange student」，問題被吃掉。"""
+    first = re.split(r"[.?!,;。？！，；\n]", text.strip(), maxsplit=1)
+    rest = first[1].strip() if len(first) > 1 else ""
+    return not rest and "?" not in text and "？" not in text and len(text.split()) <= 8
 
 
 # 依情況補上的求助管道（來源：住宿服務組「學生安全與緊急聯絡」頁、中大電子報「心理資源求助專區」，2026-11 查核）
@@ -244,10 +257,12 @@ def handle(user_id: str, text: str, channel: str = "line", identity_override: st
     new_id = parse_identity(text)
     if new_id:
         db.set_user(uh, identity=new_id)
-        result.update(answer=(f"好的，已設定為「{new_id}」。有問題直接打字，或點下方選單。" if lang == "zh" else
-                              f"Got it: {ID_EN[new_id]}. Type your question or tap the menu."),
-                      route="setting", sources=[])
-        return result
+        known = new_id
+        if only_identity(text):
+            result.update(answer=(f"好的，已設定為「{new_id}」。有問題直接打字，或點下方選單。" if lang == "zh" else
+                                  f"Got it: {ID_EN[new_id]}. Type your question or tap the menu."),
+                          route="setting", sources=[])
+            return result
     if text.lower() in SWITCH_ID:
         cur = f"目前身分：{known}。" if known else ""
         cur_en = f"Current: {ID_EN[known]}. " if known else ""
@@ -303,6 +318,10 @@ def handle(user_id: str, text: str, channel: str = "line", identity_override: st
             result["quick_replies"] = zh_q if lang == "zh" else en_q
         result["route"] = "menu" if result["route"] == "rag" else result["route"]
     # 4. 問得太籠統的費用問題：先請學生選是哪一種費用
+    elif VAGUE_PAY.match(text):
+        result.update(answer="What do you need to pay? Tap one below, or type your question in full "
+                             "(for example: How do I pay my tuition fees?).",
+                      route="menu", sources=[], quick_replies=PAY_CHOICES)
     elif VAGUE_FEE.match(text):
         result.update(answer="Which fee do you mean? Tap one below, or type your question in full "
                              "(for example: How much is the dorm fee?).",

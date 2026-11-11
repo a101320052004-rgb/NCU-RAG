@@ -39,15 +39,18 @@ DEGREE_TOPIC_WORDS = ("保險", "健保", "工作證", "工作許可", "打工",
 
 
 # 學生還沒選身分、但問題裡自己講了（「我是外籍學位生…」），就照問題裡的身分轉接
-IDENTITY_WORDS = (("外籍學位生", ("外籍學位生", "外籍生", "degree student")),
+IDENTITY_WORDS = (("外籍學位生", ("外籍學位生", "外籍生", "degree student", "degree-seeking", "international student")),
                   ("交換生", ("交換生", "exchange student")),
-                  ("僑生", ("僑生", "港澳生", "overseas chinese")),
-                  ("陸生", ("陸生", "大陸學生", "mainland")))
+                  ("僑生", ("僑生", "港澳生", "overseas chinese", "hong kong student", "macau student")),
+                  ("陸生", ("陸生", "大陸學生", "mainland")),
+                  ("訪問研修生", ("訪問研修生", "visiting student")))
 
 
 def guess_identity(text: str) -> str | None:
     low = (text or "").lower()
     found = [name for name, words in IDENTITY_WORDS if any(w in low for w in words)]
+    if len(found) == 2 and "外籍學位生" in found:  # 「international student」是泛稱，有更具體的身分就用具體的
+        found.remove("外籍學位生")
     return found[0] if len(found) == 1 else None  # 問題裡提到兩種身分（例如在比較）就不猜
 
 

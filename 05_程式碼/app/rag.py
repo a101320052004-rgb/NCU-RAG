@@ -626,7 +626,7 @@ def answer(question: str, identity: str | None, lang: str | None = None,
     if knowledge_policy.policy_claim(reply)[1]:
         log_error("obsolete-policy-in-answer", RuntimeError(reply[:200]))
         return no_info_answer("", hits, lang, contact)
-    if REGULATED_Q.search(question) or REGULATED_Q.search(reply):
+    if REGULATED_Q.search(question):  # 只看問題：答案順帶提到 ARC（例如報到要帶的文件）不用加
         reply += "\n\n" + REGULATED_NOTE[lang]
     footer, used = source_footer(rank_by_answer(context, reply), lang)
     return {"answer": f"{reply}\n\n{footer}", "route": "rag", "sources": used}

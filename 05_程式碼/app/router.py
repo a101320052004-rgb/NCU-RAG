@@ -179,6 +179,8 @@ def parse_identity(text: str) -> str | None:
 
 
 # 依情況補上的求助管道（來源：住宿服務組「學生安全與緊急聯絡」頁、中大電子報「心理資源求助專區」，2026-11 查核）
+# 英文回答用的校安電話（環境變數 SECURITY_PHONE 是中文寫法，英文回答裡會整串中文）
+SECURITY_EN = "03-280-5666 or mobile 0911-949-630 (campus ext. 57212)"
 HEALTH_CENTER = {"zh": "衛生保健組（上班時間）：分機 57270／03-280-4814",
                  "en": "Health Center (office hours): ext. 57270 or 03-280-4814"}
 COUNSELING = {"zh": "諮商中心（週一至週五 9:00–17:00）：03-422-7151 分機 57263／57264，或在 NCU Portal 的「個別諮商」預約",
@@ -204,7 +206,7 @@ def handoff_message(category: str, lang: str, identity: str | None = None, text:
     lines = ["This matters, and a real person should help you with it rather than general information from me."]
     if category in ("自我傷害", "受傷就醫"):
         lines.append("- If your life is in danger or the injury is serious, call 119 (ambulance) now.")
-    lines.append(f"- In an emergency, call the Campus Security 24-hour line now: {config.SECURITY_PHONE}")
+    lines.append(f"- In an emergency, call the Campus Security 24-hour line now: {SECURITY_EN}")
     if category == "自我傷害":
         lines.append("- If you're struggling right now, call 1925 (Taiwan's 24-hour free support line). Someone will talk with you.")
     if category in ("自我傷害", "心理困擾"):

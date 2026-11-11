@@ -18,6 +18,7 @@ from __future__ import annotations
 import hashlib
 import logging
 import time
+from datetime import datetime, timezone
 
 from fastapi import BackgroundTasks, FastAPI, Header, HTTPException, Request
 from fastapi.responses import FileResponse
@@ -241,7 +242,7 @@ class AnnounceEdit(BaseModel):
     notify_text: str | None = None
     deadline: str | None = None
     audience: str | None = None
-    channels: dict | None = None  # {"line": bool, "email": bool, "kb": bool}；IG 暫緩
+    channels: dict | None = None  # {"line": bool, "email": bool, "kb": bool, "ig": bool, "ig_card": {...}}
 
 
 class AnnounceCompose(BaseModel):
@@ -304,6 +305,33 @@ def announce_assist(body: AssistIn, x_admin_key: str = Header(default="")):
     return {k: d.get(k) for k in ("summary_en", "notify_text", "deadline", "topics")}
 
 
+def _send_email(announce, key: str, a: dict, base: str) -> dict:
+    """寄信＋每日上限。失敗只記在 Email 這個管道，不影響 LINE 和知識庫。"""
+    cfg = announce.email_config()
+    if cfg["on"]:
+        done = announce.sent_today(_admin_rpc("admin_announce_list", {"p_key": key}))
+        if done >= cfg["cap"]:
+            return {"mode": "error", "text": f"今天已經寄了 {done} 則，達到每日上限 {cfg['cap']} 則，明天再按重試"}
+    try:
+        res = announce.send_email(a, base)
+    except RuntimeError as e:
+        res = {"mode": "error", "text": f"寄信失敗：{e}"}
+    except Exception as e:  # noqa: BLE001
+        res = {"mode": "error", "text": f"寄信失敗：{type(e).__name__}"}
+    res["at"] = datetime.now(timezone.utc).isoformat()
+    return res
+
+
+@app.get("/api/admin/email-config")
+def email_config_view(x_admin_key: str = Header(default="")):
+    """後台 Email 勾選說明和預覽用：只回遮住的信箱，不回密碼。"""
+    import announce
+    _admin_key(x_admin_key)
+    cfg = announce.email_config()
+    return {"on": cfg["on"], "ready": cfg["ready"], "from": announce.mask(cfg["user"]) if cfg["user"] else "",
+            "to": [announce.mask(x) for x in cfg["to"][:3]], "to_count": len(cfg["to"]), "cap": cfg["cap"]}
+
+
 @app.post("/api/admin/announce/{aid}/publish")
 def announce_publish(aid: str, body: AnnounceEdit, request: Request, x_admin_key: str = Header(default="")):
     """確認發布：LINE 預設會發（demo 為模擬）；勾了 Email 就寄（demo 為模擬）；勾了知識庫就寫進去。"""
@@ -312,7 +340,8 @@ def announce_publish(aid: str, body: AnnounceEdit, request: Request, x_admin_key
     edits = {k: v for k, v in body.model_dump().items() if v is not None and k != "channels"}
     if "deadline" in edits and not edits["deadline"]:
         edits["deadline"] = ""
-    want = {"line": True, "email": True, "kb": True, **(body.channels or {})}
+    want = {"line": True, "email": True, "kb": True, "ig": False, **(body.channels or {})}
+    card = announce.ig_card(want.pop("ig_card", None))
     a = _admin_rpc("admin_announce_save", {"p_key": key, "p_row": {"id": aid, "subject": "", "raw_body": "", **edits}})
     base = _base_url(request)
     a["checks"] = announce.checks(a["raw_body"], a)
@@ -323,14 +352,10 @@ def announce_publish(aid: str, body: AnnounceEdit, request: Request, x_admin_key
             line = announce.push_line(a, base)
         except Exception as e:  # noqa: BLE001  一個管道失敗不影響其他管道
             line = {"mode": "error", "text": f"LINE 推播失敗：{type(e).__name__}"}
-    channels = {"line": line, "ig": {"mode": "paused", "text": "IG 暫緩"}}
-    if want.get("email"):
-        try:
-            channels["email"] = announce.send_email(a, base)
-        except Exception as e:  # noqa: BLE001
-            channels["email"] = {"mode": "error", "text": f"寄信失敗：{type(e).__name__}"}
-    else:
-        channels["email"] = {"mode": "off", "text": "沒勾 Email"}
+    channels = {"line": line,
+                "ig": {"mode": "manual", "text": "圖卡已產生；IG API 還沒串接，請下載圖卡後手動發文", "card": card}
+                if want.get("ig") else {"mode": "off", "text": "沒勾 IG"}}
+    channels["email"] = _send_email(announce, key, a, base) if want.get("email") else {"mode": "off", "text": "沒勾 Email"}
     channels["kb"] = {"mode": "on" if want.get("kb") else "off"}
     rows = announce.kb_rows(a, base) if want.get("kb") else []
     a = _admin_rpc("admin_announce_publish", {"p_key": key, "p_id": aid, "p_rows": rows, "p_line": line,
@@ -346,10 +371,7 @@ def announce_retry_email(aid: str, request: Request, x_admin_key: str = Header(d
     a = next((x for x in _admin_rpc("admin_announce_list", {"p_key": key}) if x["id"] == aid), None)
     if not a:
         raise HTTPException(404)
-    try:
-        res = announce.send_email(a, _base_url(request))
-    except Exception as e:  # noqa: BLE001
-        res = {"mode": "error", "text": f"寄信失敗：{type(e).__name__}"}
+    res = _send_email(announce, key, a, _base_url(request))
     return _admin_rpc("admin_announce_channel", {"p_key": key, "p_id": aid, "p_name": "email", "p_val": res})
 
 
@@ -455,7 +477,8 @@ p{margin:0} .due{background:#fff8e6;color:#7a5200;border:1px solid #f0d9a0;borde
 </style></head><body><header>國際處公告｜OIA Notice</header><main>{body}</main></body></html>"""
 
 
-WEB_ASSETS = {"backoffice.js": "application/javascript", "backoffice.css": "text/css"}
+WEB_ASSETS = {"backoffice.js": "application/javascript", "backoffice.css": "text/css",
+              "ig-logo.jpg": "image/jpeg", "ig-badge.jpg": "image/jpeg"}
 
 
 @app.get("/web/{name}")

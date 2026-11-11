@@ -217,7 +217,250 @@
     return {load};
   }
 
-  // ---------------------------------------------------------------- 發布公告（LINE 為主；Email、知識庫用勾選；IG 暫緩）
+  // ---------------------------------------------------------------- IG 圖卡（照國際處現有 IG 模板畫；API 還沒串接，下載後手動發文）
+  const IG = (() => {
+    const W = 1080, H = 1350;
+    const NAVY = "#2f4a78", INK = "#1b1b1b", GREY = "#4d5a63";
+    const TITLE = "'Baloo 2', 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif";
+    const HAND = "Gaegu, 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif";
+    const SANS = "'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif";
+    const THEMES = {blue: {bg: "#ebf8fe", panel: "#faf5df", dots: ["#ebf8fe", "#faf5df"]},
+                    cream: {bg: "#faf5df", panel: "#ebf8fe", dots: ["#faf5df", "#ebf8fe"]}};
+    let cssReady = null;
+    const imgs = {};
+    function css() {  // 第一次用到才載入手寫字型；載不到就用系統字型，不影響產生圖卡
+      if (cssReady) return cssReady;
+      cssReady = new Promise(res => {
+        const l = document.createElement("link");
+        l.rel = "stylesheet"; l.onload = l.onerror = () => res();
+        l.href = "https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Gaegu:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap";
+        document.head.appendChild(l);
+        setTimeout(res, 2500);
+      });
+      return cssReady;
+    }
+    async function fonts(text) {
+      await css();
+      const t = text || "Aa";
+      await Promise.all([`800 80px 'Baloo 2'`, `700 40px Gaegu`, `400 40px Gaegu`, `900 40px 'Noto Sans TC'`, `700 40px 'Noto Sans TC'`, `500 40px 'Noto Sans TC'`]
+        .map(f => document.fonts?.load(f, t).catch(() => {}))).catch(() => {});
+    }
+    const img = src => imgs[src] ||= new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src; });
+
+    // 斷行：英文以單字為單位，中文一個字一個字斷
+    const tokens = s => s.match(/[A-Za-z0-9@#&'’.,:;!?()\-\/%+$]+\s*|\s+|./gu) || [];
+    function wrap(ctx, text, maxW, maxLines = 99) {
+      const out = [];
+      for (const para of String(text || "").split(/\n/)) {
+        let cur = "";
+        for (const t of tokens(para)) {
+          if (/^[，。、；：！？）」』】,.!?;:)]/.test(t)) { cur += t; continue; }  // 標點不放行首
+          if (cur && ctx.measureText(cur + t.trimEnd()).width > maxW) { out.push(cur.trimEnd()); cur = t.trimStart(); }
+          else cur += t;
+        }
+        out.push(cur.trimEnd());
+      }
+      const lines = out.filter((l, i) => l || i < out.length - 1);
+      if (lines.length > maxLines) {
+        lines.length = maxLines;
+        let last = lines[maxLines - 1];
+        while (last && ctx.measureText(last + "…").width > maxW) last = last.slice(0, -1);
+        lines[maxLines - 1] = last + "…";
+      }
+      return lines;
+    }
+    function fit(ctx, text, {w, lines, max, min, weight, family}) {
+      for (let s = max; s >= min; s -= 2) {
+        ctx.font = `${weight} ${s}px ${family}`;
+        const ls = wrap(ctx, text, w);
+        if (ls.length <= lines) return {size: s, ls};
+      }
+      ctx.font = `${weight} ${min}px ${family}`;
+      return {size: min, ls: wrap(ctx, text, w, lines)};
+    }
+    function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, h, r) : ctx.rect(x, y, w, h); }
+    function center(ctx, ls, cx, y, lh) { ls.forEach((l, i) => ctx.fillText(l, cx, y + i * lh)); return y + ls.length * lh; }
+
+    // 小圖示（橘色系，對應海報模板的日曆、時鐘、定位點）
+    function icon(ctx, kind, cx, cy) {
+      const O = "#e8926f";
+      ctx.save(); ctx.lineWidth = 4; ctx.strokeStyle = O; ctx.fillStyle = O;
+      if (kind === "date") {
+        ctx.beginPath(); ctx.arc(cx, cy, 24, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#fff"; rr(ctx, cx - 12, cy - 10, 24, 22, 3); ctx.fill();
+        ctx.fillStyle = O; ctx.fillRect(cx - 12, cy - 10, 24, 6);
+        for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) ctx.fillRect(cx - 8 + i * 6.5, cy - 1 + j * 6, 4, 3.5);
+      } else if (kind === "time") {
+        ctx.beginPath(); ctx.arc(cx, cy, 21, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx, cy - 12); ctx.lineTo(cx, cy); ctx.lineTo(cx + 9, cy + 6); ctx.stroke();
+      } else {
+        ctx.beginPath(); ctx.moveTo(cx, cy + 26);
+        ctx.bezierCurveTo(cx - 6, cy + 12, cx - 20, cy, cx - 20, cy - 10);
+        ctx.arc(cx, cy - 10, 20, Math.PI, 0); ctx.bezierCurveTo(cx + 20, cy, cx + 6, cy + 12, cx, cy + 26); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(cx, cy - 10, 7, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    async function poster(ctx, c, a, illus) {
+      ctx.fillStyle = "#e1f2fc"; ctx.fillRect(0, 0, W, H);
+      const logo = await img("/web/ig-logo.jpg");
+      if (logo) ctx.drawImage(logo, (W - 340) / 2, 40, 340, 340 * logo.height / logo.width);
+      const X = 108, Y = 196, CW = 864, CH = 968;
+      ctx.fillStyle = "#fff"; rr(ctx, X, Y, CW, CH, 26); ctx.fill();
+      ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+      let y = Y + 54;
+      if (c.kicker) {  // 標題上面的小標籤（模板裡灰藍色圓角框那一行）
+        ctx.font = `800 44px ${TITLE}`;
+        const tw = Math.min(ctx.measureText(c.kicker).width, 700);
+        ctx.fillStyle = "#dde4ef"; rr(ctx, W / 2 - tw / 2 - 34, y, tw + 68, 84, 20); ctx.fill();
+        ctx.fillStyle = NAVY; ctx.fillText(c.kicker, W / 2, y + 58, 700);
+        y += 84 + 30;
+      }
+      const t = fit(ctx, c.title || "（圖卡標題）", {w: 760, lines: 3, max: 84, min: 44, weight: 800, family: TITLE});
+      ctx.fillStyle = NAVY;
+      y = center(ctx, t.ls, W / 2, y + t.size, t.size * 1.22) - t.size * 0.22 + 40;
+      const rows = [["date", c.date], ["time", c.time], ["place", c.place]].filter(r => (r[1] || "").trim());
+      if (rows.length) {
+        ctx.font = `700 36px ${HAND}`;
+        const bw = Math.min(760, Math.max(460, ...rows.map(r => ctx.measureText(r[1]).width + 170)));
+        const bh = 40 + rows.length * 72, bx = (W - bw) / 2;
+        ctx.fillStyle = "#edeae1"; ctx.fillRect(bx, y, bw, bh);
+        const tape = (x, yy, ang) => { ctx.save(); ctx.translate(x, yy); ctx.rotate(ang); ctx.fillStyle = "rgba(214,202,172,.85)"; ctx.fillRect(-52, -14, 104, 28); ctx.restore(); };
+        tape(bx + bw - 10, y + 6, 0.5); tape(bx + 14, y + bh - 4, 0.5);
+        ctx.textAlign = "left"; ctx.fillStyle = NAVY;
+        rows.forEach(([k, v], i) => {
+          const cy = y + 20 + 36 + i * 72;
+          icon(ctx, k, bx + 62, cy);
+          ctx.fillStyle = NAVY; ctx.font = `700 36px ${HAND}`; ctx.fillText(v, bx + 112, cy + 12, bw - 140);
+        });
+        ctx.textAlign = "center";
+        y += bh + 40;
+      }
+      const bottom = Y + CH - 40, room = bottom - y;
+      if (illus && room > 120) {  // 有上傳插圖就放插圖（模板裡的人物插畫位置）
+        const s = Math.min(760 / illus.width, room / illus.height);
+        ctx.drawImage(illus, (W - illus.width * s) / 2, y + (room - illus.height * s) / 2, illus.width * s, illus.height * s);
+      } else if (room > 60) {  // 沒插圖就放公告內容：中文優先，剩下的空間放英文
+        ctx.fillStyle = "#43556b";
+        const zhMax = Math.max(1, Math.floor((a.summary_en && room > 260 ? room * 0.55 : room) / 50));
+        const zh = fit(ctx, a.summary_zh || "", {w: 720, lines: zhMax, max: 34, min: 26, weight: 500, family: SANS});
+        center(ctx, zh.ls, W / 2, y + zh.size, zh.size * 1.5);
+        const end = y + zh.ls.length * zh.size * 1.5 + 18;
+        const enMax = Math.floor((bottom - end) / 38);
+        if (a.summary_en && enMax >= 1) {
+          ctx.fillStyle = "#6b7a8c";
+          const en = fit(ctx, a.summary_en, {w: 720, lines: enMax, max: 28, min: 22, weight: 500, family: SANS});
+          center(ctx, en.ls, W / 2, end + en.size, en.size * 1.38);
+        }
+      }
+    }
+
+    function glyph(ctx, kind, cx, cy) {  // 生活指南卡底下四顆按鈕的圖示
+      ctx.save(); ctx.fillStyle = INK; ctx.beginPath();
+      if (kind === 0) {  // 愛心
+        ctx.moveTo(cx, cy + 24); ctx.bezierCurveTo(cx - 40, cy - 4, cx - 22, cy - 34, cx, cy - 14);
+        ctx.bezierCurveTo(cx + 22, cy - 34, cx + 40, cy - 4, cx, cy + 24);
+      } else if (kind === 1) {  // 對話框
+        ctx.arc(cx, cy - 2, 26, 0, Math.PI * 2); ctx.moveTo(cx - 22, cy + 10); ctx.lineTo(cx - 28, cy + 28); ctx.lineTo(cx - 8, cy + 20);
+      } else if (kind === 2) {  // 紙飛機
+        ctx.moveTo(cx - 30, cy - 18); ctx.lineTo(cx + 30, cy - 26); ctx.lineTo(cx + 2, cy + 30); ctx.lineTo(cx - 4, cy + 2); ctx.closePath();
+        ctx.fill(); ctx.strokeStyle = "#fcfbf6"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(cx - 4, cy + 2); ctx.lineTo(cx + 26, cy - 23); ctx.stroke();
+        ctx.restore(); return;
+      } else {  // 書籤
+        ctx.moveTo(cx - 18, cy - 28); ctx.lineTo(cx + 18, cy - 28); ctx.lineTo(cx + 18, cy + 28); ctx.lineTo(cx, cy + 14); ctx.lineTo(cx - 18, cy + 28); ctx.closePath();
+      }
+      ctx.fill(); ctx.restore();
+    }
+
+    async function guide(ctx, c) {
+      const th = THEMES[c.theme] || THEMES.blue;
+      ctx.fillStyle = th.bg; ctx.fillRect(0, 0, W, H);
+      const X = 84, Y = 78, CW = 912, CH = 1184, PANEL = 886;
+      rr(ctx, X, Y, CW, CH, 64); ctx.fillStyle = "#fcfbf6"; ctx.fill();
+      ctx.save(); rr(ctx, X, Y, CW, CH, 64); ctx.clip();
+      ctx.fillStyle = th.panel; ctx.fillRect(X, PANEL, CW, Y + CH - PANEL); ctx.restore();
+      ctx.lineWidth = 4; ctx.strokeStyle = INK; rr(ctx, X, Y, CW, CH, 64); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(X, PANEL); ctx.lineTo(X + CW, PANEL); ctx.stroke();
+      ctx.textAlign = "center"; ctx.fillStyle = "#5d6670"; ctx.font = `400 38px ${SANS}`;
+      ctx.fillText("@ncuoia.lifeguide", W / 2, 150);
+      ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(135, 190); ctx.lineTo(945, 190); ctx.stroke();
+      const t = fit(ctx, c.title || "（圖卡標題）", {w: 790, lines: 2, max: 96, min: 54, weight: 800, family: TITLE});
+      ctx.fillStyle = INK;
+      let y = center(ctx, t.ls, W / 2, 236 + t.size, t.size * 1.12) + 28;
+      const pts = (c.points || "").split("\n").map(s => s.trim()).filter(Boolean).slice(0, 4);
+      const LIMIT = PANEL - 128;  // 圓形標誌上緣，重點不能壓到
+      const height = (ls, sz) => ls.reduce((s, l) => s + l.length * sz * 1.25 + 24, 0);
+      let size = 50, layout = [];
+      for (; size >= 30; size -= 2) {  // 重點太多就把字縮小
+        ctx.font = `700 ${size}px ${HAND}`;
+        layout = pts.map(p => wrap(ctx, p, 640, 2));
+        if (y + height(layout, size) <= LIMIT) break;
+      }
+      size = Math.max(size, 30);
+      while (layout.length > 1 && y + height(layout, size) > LIMIT) layout.pop();  // 還是太多就只放前幾點
+      ctx.textAlign = "left";
+      layout.forEach((ls, i) => {
+        const cy = y + size * 0.65;
+        ctx.beginPath(); ctx.arc(196, cy - size * 0.32, 22, 0, Math.PI * 2);
+        ctx.fillStyle = th.dots[i % 2]; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = "#9aa3a8"; ctx.stroke();
+        ctx.fillStyle = GREY; ctx.font = `700 ${size}px ${HAND}`;
+        ls.forEach((l, j) => ctx.fillText(l, 248, cy + j * size * 1.25));
+        y += ls.length * size * 1.25 + 24;
+      });
+      // 中間的國際處圓形標誌
+      const badge = await img("/web/ig-badge.jpg");
+      ctx.beginPath(); ctx.arc(W / 2, PANEL, 108, 0, Math.PI * 2); ctx.fillStyle = "#fcfbf6"; ctx.fill();
+      ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.stroke();
+      if (badge) { ctx.save(); ctx.beginPath(); ctx.arc(W / 2, PANEL, 96, 0, Math.PI * 2); ctx.clip(); ctx.drawImage(badge, W / 2 - 96, PANEL - 96, 192, 192); ctx.restore(); }
+      ["Like", "Comment", "Share", "Save"].forEach((label, i) => {
+        const bx = 136 + i * 212, by = 1046;
+        rr(ctx, bx, by, 184, 168, 28); ctx.fillStyle = "#fcfbf6"; ctx.fill(); ctx.lineWidth = 3.5; ctx.strokeStyle = INK; ctx.stroke();
+        glyph(ctx, i, bx + 92, by + 64);
+        ctx.textAlign = "center"; ctx.fillStyle = INK; ctx.font = `500 32px ${SANS}`; ctx.fillText(label, bx + 92, by + 140);
+      });
+    }
+
+    async function draw(canvas, c, a = {}, illus = null) {
+      canvas.width = W; canvas.height = H;
+      await fonts([c.title, c.kicker, c.date, c.time, c.place, c.points, a.summary_zh, a.summary_en, "@ncuoia.lifeguide LikeCommentShareSave"].join(""));
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, W, H);
+      await (c.tpl === "guide" ? guide(ctx, c) : poster(ctx, c, a, illus));
+      return canvas;
+    }
+    async function download(c, a, illus) {
+      const cv = await draw(document.createElement("canvas"), c, a, illus);
+      const blob = await new Promise(r => cv.toBlob(r, "image/png"));
+      const url = URL.createObjectURL(blob), link = document.createElement("a");
+      link.href = url; link.download = `IG圖卡_${(c.title || "公告").replace(/[\\/:*?"<>|\s]+/g, "_").slice(0, 30)}.png`;
+      document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+    }
+    async function copy(text) {
+      try { await navigator.clipboard.writeText(text); return true; }
+      catch {
+        const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select();
+        const ok = document.execCommand("copy"); t.remove(); return ok;
+      }
+    }
+    // 依公告內容產生預設值；承辦人改過的欄位就不再自動帶
+    function defaults(f) {
+      const dl = f.deadline ? new Date(f.deadline + "T00:00:00") : null;
+      const dlTxt = dl && !isNaN(dl) ? dl.toLocaleDateString("en-GB", {weekday: "short", day: "numeric", month: "short", year: "numeric"}) : "";
+      const zhPts = (f.summary_zh || "").split(/(?<=[。！？!?；])\s*/).map(s => s.replace(/[。；]$/, "").trim()).filter(Boolean).slice(0, 3);
+      return {
+        title: f.title || "", kicker: "OIA Notice", date: dlTxt ? `Deadline · ${dlTxt}` : "", time: "", place: "",
+        points: [...zhPts, ...(f.deadline ? [`截止 Deadline：${md(f.deadline)}`] : [])].slice(0, 4).join("\n"),
+        caption: [f.title, f.summary_zh, f.summary_en, f.deadline ? `截止 Deadline：${f.deadline}` : "",
+                  "完整公告請看國際處 LINE 官方帳號（IG 貼文裡的連結點不開）\nFull notice: OIA LINE official account",
+                  "#NCU #國立中央大學 #NCUOIA #InternationalStudents"].filter(Boolean).join("\n\n"),
+      };
+    }
+    return {draw, download, copy, defaults};
+  })();
+
+  // ---------------------------------------------------------------- 發布公告（LINE 為主；Email、IG 圖卡、知識庫用勾選）
   const AUD = ["全體境外生", "外籍學位生", "交換生", "僑生", "陸生"];
   const todayStr = () => new Date().toLocaleDateString("sv-SE", {timeZone: "Asia/Taipei"});
   const md = d => d ? `${+d.slice(5, 7)}/${+d.slice(8, 10)}` : "";
@@ -237,20 +480,28 @@
              : !a.kb_chunks ? ["", "—"]
              : a.deadline && a.deadline < todayStr() ? ["", "已過期停用"]
              : ["ok", a.deadline ? `有效至 ${md(a.deadline)}` : "有效（沒有截止日）"];
-    return {line, email, ig: ["", "暫緩"], kb};
+    const g = c.ig || {};
+    const ig = g.mode === "manual" ? ["ok", "✓ 圖卡已產生"] : g.mode === "off" ? ["", "沒勾"] : g.mode === "paused" ? ["", "暫緩"] : ["", "—"];
+    return {line, email, ig, kb};
   }
   const st = ([c, t]) => `<span class="${c}">${esc(t)}</span>`;
 
   // opts.onPublished(a)：發布成功後呼叫（demo 頁用它把卡片放進模擬手機）；opts.openHistory()：切到發布紀錄
   function Publish(el, opts = {}) {
     let list = [], cur = null, done = null, importOpen = false, pv = "line", msg = "", busy = false;
-    let ch = {line: true, email: true, kb: true};
+    let ch = {line: true, email: true, ig: false, kb: true};
+    let mail = null;  // 寄信設定（遮住的收件人），用來顯示 Email 勾選說明和預覽
+    let ig = {tpl: "poster", theme: "blue"}, igDirty = {}, illus = null, igTimer = null;
+    const IG_KEYS = ["title", "kicker", "date", "time", "place", "points", "caption"];
+    const igCard = () => { const d = IG.defaults(form); const c = {tpl: ig.tpl, theme: ig.theme};
+                           IG_KEYS.forEach(k => c[k] = igDirty[k] ? (ig[k] ?? "") : d[k]); return c; };
     let form = {title: "", summary_zh: "", summary_en: "", deadline: "", audience: AUD[0]};
     const fromItem = a => ({title: a.title || "", summary_zh: a.summary_zh || "", summary_en: a.summary_en || "",
                             deadline: a.deadline || "", audience: a.audience || AUD[0]});
     async function load() {
       try {
         list = await api("/api/admin/announce");
+        if (!mail) mail = await api("/api/admin/email-config").catch(() => ({on: false}));
         if (cur) cur = list.find(a => a.id === cur.id && a.status === "pending") || null;
         render();
       } catch (e) {
@@ -322,9 +573,10 @@
               <span><span class="t">LINE 官方帳號 <span class="bo-tag">主要管道</span></span>
               <span class="d">推播卡片訊息，附「查看全文」按鈕（demo 還沒有正式帳號金鑰，只在學生端畫面顯示）</span></span></label>
             <label class="bo-ch"><input type="checkbox" id="bo-ch-email" ${ch.email ? "checked" : ""}>
-              <span><span class="t">Email</span><span class="d">寄到國際生群組信箱，主旨自動加「【國際處公告】」，內文中英對照加全文連結（demo 為模擬寄出）</span></span></label>
-            <label class="bo-ch off"><input type="checkbox" disabled>
-              <span><span class="t">Instagram（暫緩）</span><span class="d">IG 一定要配圖，之後用公告卡片自動產生；開放後就能勾</span></span></label>
+              <span><span class="t">Email${mail?.on ? ` <span class="bo-tag">${mail.ready ? "會真的寄出" : "設定不完整"}</span>` : ""}</span><span class="d">${mailDesc()}</span></span></label>
+            <label class="bo-ch"><input type="checkbox" id="bo-ch-ig" ${ch.ig ? "checked" : ""}>
+              <span><span class="t">Instagram 圖卡</span><span class="d">用國際處 IG 模板自動產生圖卡和貼文說明；IG 還沒串接 API，發布後下載圖卡手動發文</span></span></label>
+            ${ch.ig ? igForm() : ""}
             <label class="bo-ch"><input type="checkbox" id="bo-ch-kb" ${ch.kb ? "checked" : ""}>
               <span><span class="t">小幫手知識庫</span><span class="d">學生之後問到時小幫手可以回答，截止日後自動停用</span></span></label>
           </div>
@@ -337,6 +589,43 @@
         ${busy ? '<p class="bo-small">處理中，AI 改寫或寫入知識庫約需 5 到 15 秒…</p>' : ""}
         ${msg ? `<p class="bo-small">${msg}</p>` : ""}`;
     }
+    function mailDesc() {
+      if (!mail?.on) return "寄到國際生群組信箱，主旨自動加「【國際處公告】」，內文中英對照加全文連結（demo 為模擬寄出）";
+      if (!mail.ready) return "Email 已開啟，但寄件帳號或密碼還沒設定好，按發布會在結果顯示失敗原因";
+      return `寄到 ${mail.to.join("、")}${mail.to_count > 3 ? ` 等 ${mail.to_count} 人` : ""}（目前是測試收件人，正式上線改成國際生群組信箱）。主旨自動加「【國際處公告】」，內文中英對照加全文連結；每天最多 ${mail.cap} 則`;
+    }
+    function igForm() {
+      const c = igCard(), v = k => esc(c[k]);
+      const inp = (k, label, ph = "") => `<div><label for="ig-${k}">${label}</label><input id="ig-${k}" data-ig="${k}" type="text" value="${v(k)}" placeholder="${ph}"></div>`;
+      return `<div class="bo-igform">
+        <div class="bo-lab"><strong>IG 圖卡設定</strong><span class="bo-small">右邊「IG」預覽會跟著變</span></div>
+        <div class="bo-seg" role="group" aria-label="圖卡版型" style="display:inline-flex;margin:6px 0 2px">
+          <button type="button" data-igtpl="poster" aria-pressed="${ig.tpl === "poster"}">活動海報</button>
+          <button type="button" data-igtpl="guide" aria-pressed="${ig.tpl === "guide"}">生活指南卡</button></div>
+        <div class="bo-form">
+          <div class="bo-grid2">${inp("title", "圖卡標題", "預設用公告標題，可以改成英文")}${ig.tpl === "poster" ? inp("kicker", "標題上方小標籤", "例如 OIA Notice") :
+            `<div><label for="ig-theme">底色</label><select id="ig-theme">${[["blue", "淺藍"], ["cream", "米黃"]].map(([k, t]) => `<option value="${k}"${ig.theme === k ? " selected" : ""}>${t}</option>`).join("")}</select></div>`}</div>
+          ${ig.tpl === "poster" ? `<div class="bo-grid3">${inp("date", "日期", "Wed, 11 Nov 2026")}${inp("time", "時間", "9:00 AM – 5:30 PM")}${inp("place", "地點", "Sanxia, New Taipei City")}</div>
+            <div><label for="ig-illus">插圖（選填，放在下半部；沒放就顯示公告內容）</label>
+              <input id="ig-illus" type="file" accept="image/png,image/jpeg,image/webp">${illus ? ' <button type="button" class="bo-link" data-act="igclear">拿掉插圖</button>' : ""}</div>`
+          : `<div><label for="ig-points">重點（一行一點，最多 4 點）</label><textarea id="ig-points" data-ig="points" rows="4">${v("points")}</textarea></div>`}
+          <div><div class="bo-lab"><label for="ig-caption">貼文說明</label><button type="button" class="bo-link" data-act="igreset">全部恢復自動產生</button></div>
+            <textarea id="ig-caption" data-ig="caption" rows="5">${v("caption")}</textarea></div>
+        </div></div>`;
+    }
+    function igSync() {  // 公告內容改了，沒手動改過的 IG 欄位跟著更新
+      const c = igCard();
+      el.querySelectorAll("[data-ig]").forEach(i => { if (!igDirty[i.dataset.ig]) i.value = c[i.dataset.ig]; });
+    }
+    const igTools = () => `<div class="bo-actions" style="margin-top:8px"><button type="button" class="bo-primary" data-igdl>下載圖卡 PNG</button>
+        <button type="button" data-igcopy>複製貼文說明</button><span class="bo-small" data-ignote></span></div>`;
+    function wireIgTools(box, c, a) {
+      box.querySelector("[data-igdl]")?.addEventListener("click", () => IG.download(c, a, illus));
+      box.querySelector("[data-igcopy]")?.addEventListener("click", async () => {
+        const ok = await IG.copy(c.caption || "");
+        const n = box.querySelector("[data-ignote]"); if (n) n.textContent = ok ? "貼文說明已複製" : "複製失敗，請手動選取";
+      });
+    }
     function resultView(a) {
       const s = chState(a), c = a.channels || {};
       return `<h3 style="margin-top:0">已發布：${esc(a.title)}</h3>
@@ -346,8 +635,9 @@
           <tr><td>Email</td><td>${st(s.email)}</td><td>${esc((c.email || {}).text || "")}</td></tr>
           <tr><td>小幫手知識庫</td><td>${st(s.kb)}</td><td>${a.kb_chunks ? `切成 ${a.kb_chunks} 段${a.deadline ? `，${esc(a.deadline)} 之後自動停用` : ""}` : "沒有加入"}</td></tr>
           <tr><td>全文頁</td><td><span class="ok">✓ 已建立</span></td><td><a href="/notice/${a.id}" target="_blank" rel="noopener">開啟學生看到的全文頁 ↗</a></td></tr>
-          <tr><td>Instagram</td><td>暫緩</td><td>尚未開放</td></tr>
+          <tr><td>Instagram 圖卡</td><td>${st(s.ig)}</td><td>${c.ig?.mode === "manual" ? "IG 還沒串接 API，請下載圖卡、複製說明後手動發文" : esc((c.ig || {}).text || "")}</td></tr>
         </tbody></table></div>
+        ${c.ig?.mode === "manual" ? `<div class="bo-igdone">${igTools()}</div>` : ""}
         <p class="bo-small">任何一個管道失敗，其他管道照樣完成；失敗的會在「發布紀錄」標紅，可以重試。</p>
         <div class="bo-actions">
           ${opts.openHistory ? '<button type="button" class="bo-primary" data-act="history">到發布紀錄</button>' : ""}
@@ -373,7 +663,7 @@
           <div class="bo-note"><strong>手機通知列只顯示一行</strong><div class="bo-muted">【國際處公告】${esc(t)}</div></div>`;
       } else if (pv === "email") {
         const on = done ? ["demo", "sent", "error"].includes((done.channels?.email || {}).mode) : ch.email;
-        box.innerHTML = on ? `<div class="bo-mail"><div class="h"><div><span class="bo-muted">收件人：</span>[國際生群組信箱]</div>
+        box.innerHTML = on ? `<div class="bo-mail"><div class="h"><div><span class="bo-muted">收件人：</span>${mail?.on ? esc(mail.to.join("、") || "（還沒設定）") + (mail.to_count > 3 ? ` 等 ${mail.to_count} 人` : "") : "[國際生群組信箱]"}</div>
             <strong>【國際處公告】${esc(t)}</strong></div>
           <div class="b"><span>${esc(a.summary_zh || "")}</span>${a.summary_en ? `<span class="bo-muted">${esc(a.summary_en)}</span>` : ""}
             ${a.deadline ? `<span class="warn"><strong>截止 Deadline：${esc(a.deadline)}</strong></span>` : ""}
@@ -381,12 +671,25 @@
             <span class="bo-small">這封信也同步發在國際處 LINE 官方帳號。</span></div></div>`
           : '<div class="bo-dash">這次沒勾 Email，不會寄信。</div>';
       } else {
-        box.innerHTML = `<div class="bo-dash"><strong>Instagram 暫緩</strong><br>IG 一定要配圖，貼文裡的連結也點不開。開放後會把公告卡片轉成一張正方形圖，文字放在貼文說明。</div>`;
+        const card = done ? done.channels?.ig?.card : (ch.ig ? igCard() : null);
+        if (!card) {
+          box.innerHTML = `<div class="bo-dash">${done ? "這次沒勾 IG。" : "還沒勾「Instagram 圖卡」。勾選後會用國際處 IG 模板（活動海報或生活指南卡）產生 1080×1350 的圖卡。"}</div>`;
+          return;
+        }
+        if (!box.querySelector("canvas")) {
+          box.innerHTML = `<canvas class="bo-igcv" width="1080" height="1350" aria-label="IG 圖卡預覽"></canvas><div data-igtools></div>
+            <details class="bo-small" style="margin-top:6px"><summary>貼文說明</summary><div class="bo-answer" data-igcap></div></details>`;
+        }
+        box.querySelector("[data-igcap]").textContent = card.caption || "";
+        const tools = box.querySelector("[data-igtools]"); tools.innerHTML = igTools();
+        wireIgTools(tools, card, a);
+        clearTimeout(igTimer);
+        igTimer = setTimeout(() => IG.draw(box.querySelector("canvas"), card, a, illus), 120);
       }
     }
     function summary() {
       const s = el.querySelector("#bo-sum");
-      if (s) s.textContent = [ch.line && "LINE", ch.email && "Email", ch.kb && "小幫手知識庫"].filter(Boolean).join("、") || "（都沒勾）";
+      if (s) s.textContent = [ch.line && "LINE", ch.email && "Email", ch.ig && "IG 圖卡（手動發文）", ch.kb && "小幫手知識庫"].filter(Boolean).join("、") || "（都沒勾）";
     }
     function wire() {
       const on = (sel, fn) => el.querySelectorAll(sel).forEach(b => b.addEventListener("click", fn));
@@ -395,12 +698,26 @@
       el.querySelector("#bo-ch-line")?.addEventListener("change", e => { ch.line = e.target.checked; summary(); preview(); });
       el.querySelector("#bo-ch-email")?.addEventListener("change", e => { ch.email = e.target.checked; summary(); preview(); });
       el.querySelector("#bo-ch-kb")?.addEventListener("change", e => { ch.kb = e.target.checked; summary(); });
-      el.querySelectorAll(".bo-main input, .bo-main textarea").forEach(i => i.addEventListener("input", preview));
+      el.querySelector("#bo-ch-ig")?.addEventListener("change", e => { readForm(); ch.ig = e.target.checked; if (ch.ig) pv = "ig"; render(); });
+      ["#bo-title", "#bo-zh", "#bo-en", "#bo-due"].forEach(id => el.querySelector(id)?.addEventListener("input", () => { readForm(); igSync(); preview(); }));
+      el.querySelector("#bo-aud")?.addEventListener("change", preview);
+      el.querySelectorAll("[data-ig]").forEach(i => i.addEventListener("input", () => { ig[i.dataset.ig] = i.value; igDirty[i.dataset.ig] = true; preview(); }));
+      on("[data-igtpl]", e => { readForm(); ig.tpl = e.currentTarget.dataset.igtpl; pv = "ig"; render(); });
+      el.querySelector("#ig-theme")?.addEventListener("change", e => { ig.theme = e.target.value; preview(); });
+      el.querySelector("#ig-illus")?.addEventListener("change", e => {
+        const f = e.target.files?.[0];
+        if (!f) return;
+        const i = new Image(); i.onload = () => { illus = i; readForm(); pv = "ig"; render(); }; i.src = URL.createObjectURL(f);
+      });
+      on("[data-act=igclear]", () => { illus = null; readForm(); render(); });
+      on("[data-act=igreset]", () => { readForm(); IG_KEYS.forEach(k => { delete igDirty[k]; delete ig[k]; }); render(); });
       on("[data-pick]", e => { cur = list.find(a => a.id === e.currentTarget.dataset.pick); form = fromItem(cur); importOpen = false; msg = "已帶入，請檢查內容再按確認發布。"; render(); el.querySelector("#bo-title")?.focus(); });
       on("[data-act=new]", () => { cur = null; msg = ""; readForm(); render(); });
-      on("[data-act=clearform]", () => { cur = null; msg = ""; form = {title: "", summary_zh: "", summary_en: "", deadline: "", audience: AUD[0]}; render(); });
-      on("[data-act=again]", () => { done = null; cur = null; msg = ""; form = {title: "", summary_zh: "", summary_en: "", deadline: "", audience: AUD[0]}; render(); });
+      on("[data-act=clearform]", () => { cur = null; msg = ""; igDirty = {}; ig = {tpl: ig.tpl, theme: ig.theme}; illus = null; form = {title: "", summary_zh: "", summary_en: "", deadline: "", audience: AUD[0]}; render(); });
+      on("[data-act=again]", () => { done = null; cur = null; msg = ""; igDirty = {}; ig = {tpl: ig.tpl, theme: ig.theme}; illus = null; form = {title: "", summary_zh: "", summary_en: "", deadline: "", audience: AUD[0]}; render(); });
       on("[data-act=history]", () => opts.openHistory && opts.openHistory());
+      const igDone = el.querySelector(".bo-igdone");
+      if (igDone && done?.channels?.ig?.card) wireIgTools(igDone, done.channels.ig.card, done);
       on("[data-act=draft]", () => {
         const subject = el.querySelector("#bo-subject").value, raw_body = el.querySelector("#bo-raw").value;
         act(() => api("/api/admin/announce", {method: "POST", body: JSON.stringify({subject, raw_body})}),
@@ -420,7 +737,7 @@
         readForm();
         if (!form.title.trim() || !form.summary_zh.trim()) { msg = '<span class="warn">標題和中文內容都要填。</span>'; return render(); }
         if (!ch.line && !ch.email) { msg = '<span class="warn">LINE 和 Email 至少要勾一個，學生才收得到。</span>'; return render(); }
-        const body = {...form, channels: {...ch}};
+        const body = {...form, channels: {...ch, ...(ch.ig ? {ig_card: igCard()} : {})}};
         act(async () => {
               const id = cur ? cur.id : (await api("/api/admin/announce/compose", {method: "POST", body: JSON.stringify(form)})).id;
               return api(`/api/admin/announce/${id}/publish`, {method: "POST", body: JSON.stringify(body)});
@@ -525,7 +842,8 @@
           <div><div class="bo-table"><table><thead><tr><th>管道</th><th>結果</th><th>細節</th><th><span class="bo-sr">動作</span></th></tr></thead><tbody>
             ${row("LINE", s.line, (c.line || a.line_result || {}).text)}
             ${row("Email", s.email, (c.email || {}).text, s.email[0] === "crit" ? btn("retry", "重試") : "")}
-            ${row("Instagram", s.ig, "尚未開放")}
+            ${row("Instagram 圖卡", s.ig, c.ig?.mode === "manual" ? "IG 還沒串接 API，手動發文" : (c.ig || {}).text,
+                  c.ig?.mode === "manual" ? '<button type="button" data-igdl>下載圖卡</button> <button type="button" data-igcopy>複製說明</button>' : "")}
             ${row("小幫手知識庫", s.kb, a.kb_chunks ? `${a.kb_chunks} 段${a.deadline ? `，${a.deadline} 後自動停用` : ""}` : "",
                   s.kb[0] === "ok" ? btn("kbrm", "提早下架") : "")}
           </tbody></table></div>
@@ -535,10 +853,14 @@
               <div class="bo-card"><span class="bo-muted">學生問小幫手時用到</span><b>${a.asks || 0} 次</b></div></div>
               <a href="/notice/${a.id}" target="_blank" rel="noopener">開啟全文頁 ↗</a>` : ""}</div>
         </div></div>`;
+      if (c.ig?.mode === "manual") {
+        box.querySelector("[data-igdl]")?.addEventListener("click", () => IG.download(c.ig.card, a));
+        box.querySelector("[data-igcopy]")?.addEventListener("click", async e => { const b = e.currentTarget; b.textContent = (await IG.copy(c.ig.card.caption || "")) ? "已複製" : "複製失敗"; });
+      }
       box.querySelectorAll("[data-d]").forEach(b => b.addEventListener("click", () => {
         const d = b.dataset.d;
         if (armed !== d) { armed = d; return detail(); }
-        if (d === "retry") act(() => api(`/api/admin/announce/${a.id}/retry-email`, {method: "POST"}), "Email 已重新寄出（demo 為模擬）。");
+        if (d === "retry") act(() => api(`/api/admin/announce/${a.id}/retry-email`, {method: "POST"}), "已重新寄信，結果看上面 Email 那一列。");
         if (d === "kbrm") act(() => api(`/api/admin/announce/${a.id}/kb-remove`, {method: "POST"}), "已從知識庫下架，小幫手不會再用這則回答。");
       }));
     }
@@ -556,5 +878,5 @@
   }
 
   // demo 期間後台不需要金鑰（資料庫設定 admin_open=on）；改回 off 時，頁面會自動要求輸入金鑰
-  window.Backoffice = {Stats, Messages, Publish, History, noticeCard, hasKey: () => true};
+  window.Backoffice = {Stats, Messages, Publish, History, noticeCard, IG, hasKey: () => true};
 })();

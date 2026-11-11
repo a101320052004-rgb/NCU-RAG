@@ -117,3 +117,10 @@
 .bo .bo-detail{margin-top:14px;border:1px solid var(--bo-line);border-radius:4px;padding:12px 14px}
 .bo .bo-detail td button{white-space:nowrap}
 @media (max-width:600px){.bo .bo-grid2{grid-template-columns:minmax(0,1fr)}}
+.bo .bo-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.bo .bo-grid3 > div{display:flex;flex-direction:column;gap:4px}
+.bo .bo-igform{padding:10px 12px 12px 42px;border-top:1px solid var(--bo-line);background:var(--bo-hover);display:flex;flex-direction:column;gap:6px}
+.bo .bo-igform .bo-form{margin-top:4px}
+.bo .bo-igform .bo-form > div:not(.bo-grid2):not(.bo-grid3){display:flex;flex-direction:column;gap:4px}
+.bo .bo-igcv{display:block;width:100%;height:auto;border:1px solid var(--bo-line);border-radius:6px;background:#e1f2fc}
+@media (max-width:600px){.bo .bo-grid3{grid-template-columns:minmax(0,1fr)}.bo .bo-igform{padding-left:12px}}

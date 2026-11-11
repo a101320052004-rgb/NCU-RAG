@@ -178,12 +178,123 @@ def push_line(a: dict, base_url: str) -> dict:
     return {"mode": "broadcast", "text": "已群發給所有好友"}
 
 
+# ---------------------------------------------------------------- Email
+# ANNOUNCE_EMAIL=on 才真的寄。用 SMTP（預設 Gmail，需要 16 碼「應用程式密碼」，密碼只放在 Vercel 環境變數）：
+#   SMTP_USER=寄件帳號  SMTP_PASSWORD=應用程式密碼  ANNOUNCE_EMAIL_TO=收件人（逗號分隔）
+#   選填：SMTP_HOST（smtp.gmail.com）、SMTP_PORT（465）、ANNOUNCE_EMAIL_FROM_NAME、ANNOUNCE_EMAIL_REPLY_TO、
+#         ANNOUNCE_EMAIL_DAILY_CAP（每天最多寄幾則，預設 20，避免 demo 期間被亂按）
+def email_config() -> dict:
+    to = [x.strip() for x in os.getenv("ANNOUNCE_EMAIL_TO", "").split(",") if "@" in x]
+    user = os.getenv("SMTP_USER", "").strip()
+    return {"on": os.getenv("ANNOUNCE_EMAIL", "off") == "on", "user": user, "to": to,
+            "ready": bool(user and os.getenv("SMTP_PASSWORD") and to),
+            "cap": int(os.getenv("ANNOUNCE_EMAIL_DAILY_CAP", "20") or 20)}
+
+
+def mask(addr: str) -> str:
+    """後台畫面只顯示遮住的信箱：a101320052004@gmail.com → a10***@gmail.com"""
+    name, _, dom = addr.partition("@")
+    return f"{name[:3]}***@{dom}" if dom else "***"
+
+
+def email_subject(a: dict) -> str:
+    return f"【國際處公告】{a.get('title') or a.get('subject')}"
+
+
+def email_bodies(a: dict, base_url: str) -> tuple[str, str]:
+    """純文字＋HTML 兩個版本。版面和後台「Email 預覽」一樣：中文、英文、截止日、全文連結。"""
+    from html import escape as h
+    url = f"{base_url.rstrip('/')}/notice/{a['id']}"
+    title, zh, en, due = a.get("title") or a.get("subject") or "", a.get("summary_zh") or "", a.get("summary_en") or "", a.get("deadline")
+    foot_zh = "這封信也同步發在國際處 LINE 官方帳號。有問題請洽國際事務處 ncuoia@ncu.edu.tw"
+    foot_en = "This notice is also posted on the OIA LINE official account. Questions: ncuoia@ncu.edu.tw"
+    text = "\n\n".join(x for x in [title, zh, en, f"截止 Deadline：{due}" if due else "",
+                                  f"查看全文與附件 Full notice：{url}", f"{foot_zh}\n{foot_en}"] if x)
+    html = f"""<!DOCTYPE html><html><body style="margin:0;background:#f4f6f7;padding:20px 0;font-family:'Noto Sans TC','PingFang TC','Microsoft JhengHei',Arial,sans-serif">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+<table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#fff;border:1px solid #dfe5e8;border-radius:8px;overflow:hidden">
+<tr><td style="background:#0d7a6a;color:#fff;font-size:14px;padding:10px 18px">國際處公告｜OIA Notice</td></tr>
+<tr><td style="padding:18px 18px 6px;font-size:19px;font-weight:700;color:#1d2a33">{h(title)}</td></tr>
+<tr><td style="padding:4px 18px;font-size:15px;line-height:1.7;color:#1d2a33">{h(zh)}</td></tr>
+{f'<tr><td style="padding:8px 18px;font-size:14px;line-height:1.6;color:#5d6a74">{h(en)}</td></tr>' if en else ''}
+{f'<tr><td style="padding:8px 18px"><span style="display:inline-block;background:#fff8e6;color:#7a5200;border:1px solid #f0d9a0;border-radius:6px;padding:6px 10px;font-weight:700;font-size:14px">截止 Deadline：{h(due)}</span></td></tr>' if due else ''}
+<tr><td style="padding:14px 18px 18px"><a href="{h(url)}" style="display:inline-block;background:#0d7a6a;color:#fff;text-decoration:none;border-radius:6px;padding:9px 16px;font-size:14px">查看全文與附件 Full notice ›</a></td></tr>
+<tr><td style="padding:12px 18px;border-top:1px solid #dfe5e8;font-size:12px;line-height:1.6;color:#7a868f">{h(foot_zh)}<br>{h(foot_en)}</td></tr>
+</table></td></tr></table></body></html>"""
+    return text, html
+
+
 def send_email(a: dict, base_url: str) -> dict:
-    """同一則公告寄 Email。還沒接國際處的寄信帳號，demo 只記錄「模擬寄出」。"""
-    if os.getenv("ANNOUNCE_EMAIL", "off") != "on":
-        return {"mode": "demo", "text": "demo 模式：還沒接國際處寄信帳號，沒有實際寄出",
-                "subject": f"【國際處公告】{a.get('title') or a.get('subject')}"}
-    raise RuntimeError("寄信帳號尚未設定")
+    """同一則公告寄 Email。沒開 ANNOUNCE_EMAIL 時只記錄「模擬寄出」。失敗時丟 RuntimeError，訊息會顯示在後台。"""
+    cfg = email_config()
+    if not cfg["on"]:
+        return {"mode": "demo", "text": "demo 模式：還沒接寄信帳號，沒有實際寄出", "subject": email_subject(a)}
+    if not cfg["ready"]:
+        missing = [n for n, v in (("SMTP_USER", cfg["user"]), ("SMTP_PASSWORD", os.getenv("SMTP_PASSWORD")),
+                                  ("ANNOUNCE_EMAIL_TO", cfg["to"])) if not v]
+        raise RuntimeError(f"寄信設定不完整，Vercel 環境變數缺 {'、'.join(missing)}")
+    import smtplib
+    from email.message import EmailMessage
+    from email.utils import formataddr, make_msgid
+    text, html = email_bodies(a, base_url)
+    msg = EmailMessage()
+    msg["Subject"] = email_subject(a)
+    msg["From"] = formataddr((os.getenv("ANNOUNCE_EMAIL_FROM_NAME", "中央大學國際事務處"), cfg["user"]))
+    # 一個收件人就直接寄給他；多個收件人用密件副本，學生之間看不到彼此的信箱
+    msg["To"] = cfg["to"][0] if len(cfg["to"]) == 1 else cfg["user"]
+    if os.getenv("ANNOUNCE_EMAIL_REPLY_TO"):
+        msg["Reply-To"] = os.getenv("ANNOUNCE_EMAIL_REPLY_TO")
+    msg["Message-ID"] = make_msgid(domain=cfg["user"].partition("@")[2] or None)
+    msg.set_content(text)
+    msg.add_alternative(html, subtype="html")
+    host, port = os.getenv("SMTP_HOST", "smtp.gmail.com"), int(os.getenv("SMTP_PORT", "465"))
+    try:
+        if port == 465:
+            server = smtplib.SMTP_SSL(host, port, timeout=20)
+        else:
+            server = smtplib.SMTP(host, port, timeout=20)
+            server.starttls()
+        with server:
+            server.login(cfg["user"], os.getenv("SMTP_PASSWORD", "").replace(" ", ""))
+            server.send_message(msg, to_addrs=cfg["to"])
+    except smtplib.SMTPAuthenticationError:
+        raise RuntimeError("寄件信箱登入失敗：SMTP_PASSWORD 要用 Google 帳戶產生的 16 碼應用程式密碼") from None
+    except (smtplib.SMTPException, OSError) as e:
+        raise RuntimeError(f"寄信伺服器沒有接受（{type(e).__name__}）") from None
+    shown = "、".join(mask(x) for x in cfg["to"][:3]) + (f" 等 {len(cfg['to'])} 人" if len(cfg["to"]) > 3 else "")
+    return {"mode": "sent", "text": f"已寄給 {shown}", "subject": msg["Subject"], "to_count": len(cfg["to"])}
+
+
+def sent_today(items: list[dict]) -> int:
+    """今天（台灣時間）已經真的寄出幾則，用來擋每日上限。"""
+    today = config.today().isoformat()
+    tz = dt.timezone(dt.timedelta(hours=8))
+    n = 0
+    for x in items:
+        e = (x.get("channels") or {}).get("email") or {}
+        when = e.get("at") or x.get("published_at") or ""
+        if e.get("mode") == "sent" and when:
+            try:
+                d = dt.datetime.fromisoformat(when.replace("Z", "+00:00")).astimezone(tz).date().isoformat()
+            except ValueError:
+                continue
+            n += d == today
+    return n
+
+
+# ---------------------------------------------------------------- Instagram（還沒接 API：後台產生圖卡，承辦人下載後手動發文）
+IG_TEMPLATES = ("poster", "guide")
+IG_FIELDS = {"tpl": 20, "title": 80, "kicker": 40, "date": 60, "time": 60, "place": 80, "points": 400,
+             "theme": 20, "caption": 2200}
+
+
+def ig_card(raw) -> dict:
+    """前端送來的圖卡設定只留白名單欄位、限制長度，存進 channels.ig.card，之後在發布紀錄可以重新下載。"""
+    raw = raw if isinstance(raw, dict) else {}
+    card = {k: str(raw.get(k) or "")[:n] for k, n in IG_FIELDS.items()}
+    if card["tpl"] not in IG_TEMPLATES:
+        card["tpl"] = "poster"
+    return card
 
 
 TOPIC_WORDS = {"食": "餐|吃|飲食|美食|餐會", "住": "宿舍|住宿|租屋|留宿", "行": "交通|公車|機場|腳踏車",

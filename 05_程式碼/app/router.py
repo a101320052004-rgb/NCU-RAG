@@ -199,6 +199,11 @@ HEALTH_CENTER = {"zh": "衛生保健組（上班時間）：分機 57270／03-28
 COUNSELING = {"zh": "諮商中心（週一至週五 9:00–17:00）：03-422-7151 分機 57263／57264，或在 NCU Portal 的「個別諮商」預約",
               "en": "Counseling Center (Mon–Fri 9:00–17:00): +886-3-422-7151 ext. 57263 / 57264, "
                     "or book through NCU Portal > Student Consulting Service > Consult System"}
+# 附近有急診的醫院（衛福部醫院名單，2026-11-11 查核）；問警察或醫院時轉介訊息也要直接給號碼（11/11 實測：問報警電話沒給 110）
+HOSPITALS = {"zh": "附近有急診的醫院：天晟醫院（中壢區延平路155號，03-462-9292）、聯新國際醫院（平鎮區廣泰路77號，03-494-1234）",
+             "en": "Hospitals nearby with emergency rooms: Tian Sheng Hospital 天晟醫院 (155 Yanping Rd., Zhongli, 03-462-9292); "
+                   "Landseed International Hospital 聯新國際醫院 (77 Guangtai Rd., Pingzhen, 03-494-1234)"}
+POLICE = {"zh": "報警請撥 110；遇到詐騙可撥 165 反詐騙專線。", "en": "Police: call 110. For scams or fraud, call the 165 anti-fraud hotline."}
 
 
 def handoff_message(category: str, lang: str, identity: str | None = None, text: str = "") -> str:
@@ -214,6 +219,9 @@ def handoff_message(category: str, lang: str, identity: str | None = None, text:
             lines.append("・" + COUNSELING["zh"])
         if category == "受傷就醫":
             lines.append("・" + HEALTH_CENTER["zh"])
+            lines.append("・" + HOSPITALS["zh"])
+        if category == "糾紛安全":
+            lines.append("・" + POLICE["zh"])
         lines.append(f"・國際處承辦人：{contact}")
         return "\n".join(lines)
     lines = ["This matters, and a real person should help you with it rather than general information from me."]
@@ -226,6 +234,9 @@ def handoff_message(category: str, lang: str, identity: str | None = None, text:
         lines.append("- " + COUNSELING["en"])
     if category == "受傷就醫":
         lines.append("- " + HEALTH_CENTER["en"])
+        lines.append("- " + HOSPITALS["en"])
+    if category == "糾紛安全":
+        lines.append("- " + POLICE["en"])
     lines.append(f"- {contact}")
     return "\n".join(lines)
 

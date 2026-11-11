@@ -210,13 +210,37 @@ def _regulatory_payload_matches(question: str, text: str, md: dict) -> bool:
     return True
 
 
-def retrieve(question: str, identity: str | None, lang: str, topic: str | None = None) -> list[dict]:
+# 追問：用代名詞或「那…呢」接著上一題問，這一句單獨拿去檢索會找不到東西
+FOLLOW_UP = re.compile(r"\b(?:it|its|that|this|these|those|they|them|there|same|what about|how about|and for|also)\b"
+                       r"|那個|這個|那裡|這裡|它|他們|還有|一樣|那要|那如果|那.{0,12}呢|呢[？?]?\s*$", re.I)
+
+
+def is_follow_up(question: str) -> bool:
+    return bool(FOLLOW_UP.search(question))
+
+
+def follow_up_context(history: list[dict] | None) -> str:
+    """追問時拿來和這一句一起檢索：最近一則「完整的問題」（主題）加上上一題。
+    連續追問（What about B5? → Is that per semester? → How do I apply for it?）時，主題才不會接丟。"""
+    qs = [(t.get("question") or "").strip() for t in (history or []) if (t.get("question") or "").strip()]
+    if not qs:
+        return ""
+    anchor = next((q for q in reversed(qs) if not is_follow_up(q)), qs[0])
+    return " ".join(dict.fromkeys([anchor, qs[-1]]))
+
+
+def retrieve(question: str, identity: str | None, lang: str, topic: str | None = None,
+             context: str | None = None) -> list[dict]:
     exact = _partner_hits(question, identity, topic)
     search = expand_query(question)
     expanded = search != question
+    queries = [question, search] if expanded else [question]
+    # 追問時再用「前一題＋這一句」查一次，和原句的結果合併；原句的結果照樣保留
+    if context and is_follow_up(question):
+        queries.append(expand_query(f"{context} {question}"))
     # 補了英文的版本和原本的問題各查一次再合併：補字幫英文資料浮上來，但不能把剛好對題的中文資料（例如公告）擠掉
     rows, seen, original_rank = [], {}, {}
-    for q in ([question, search] if expanded else [question]):
+    for q in queries:
         qvec = embedder.embed_query(q)
         found = _query_supabase(qvec, identity, topic) if config.STORE == "supabase" else _query_local(qvec, identity, topic)
         for rank, (doc, md, dist) in enumerate(found, 1):
@@ -494,7 +518,8 @@ def answer(question: str, identity: str | None, lang: str | None = None,
     lang = lang or detect_lang(question)
     contact = contacts.contact_line(identity, lang, question)  # 依身分轉給負責的承辦人
     # 回答語言固定（預設英文），但檢索要看問題本身是哪種語言，中文問題才找得到中文資料
-    hits = retrieve(search or question, identity, detect_lang(question), topic)  # 選單用關鍵字檢索，比問句準
+    hits = retrieve(search or question, identity, detect_lang(question), topic,
+                    context=None if search else follow_up_context(history))  # 選單用關鍵字檢索，比問句準
     if not hits:
         return {"answer": no_data_answer(lang, contact), "route": "no_data", "sources": []}
     footer, used = source_footer(hits, lang)
@@ -513,7 +538,12 @@ def answer(question: str, identity: str | None, lang: str | None = None,
         return {"answer": CHAT_REPLY[lang], "route": "chat", "sources": []}
     if text.lstrip().startswith("[NOINFO]") or not plain_text(text):  # 資料答不了：固定說法＋去哪裡看＋找誰
         return no_info_answer(plain_text(text.lstrip().removeprefix("[NOINFO]")), hits, lang, contact)
-    return {"answer": f"{plain_text(text)}\n\n{footer}", "route": "rag", "sources": used}
+    reply = plain_text(text)
+    # 最後一道保險：AI 寫出已知的舊法規（例如入境後 15 天辦居留證）就不送出，改請學生找承辦人
+    if knowledge_policy.policy_claim(reply)[1]:
+        log_error("obsolete-policy-in-answer", RuntimeError(reply[:200]))
+        return no_info_answer("", hits, lang, contact)
+    return {"answer": f"{reply}\n\n{footer}", "route": "rag", "sources": used}
 
 
 CHAT_REPLY = {"zh": "可以問居留證、宿舍、獎學金、保險、選課、交通、飲食，直接打字或點下方選單。",

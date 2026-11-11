@@ -541,7 +541,8 @@
           <button type="button" data-act="import" aria-expanded="${importOpen}" aria-controls="bo-import">從 Email 帶入（${pending.length} 封待處理）</button>
         </div>
         <div class="bo-import" id="bo-import" ${importOpen ? "" : "hidden"}>
-          <p class="bo-small" style="margin:0">寄群發信時密件副本給小幫手信箱，信就會出現在這裡（demo 用範例信代替）。按「帶入」，AI 改寫好的內容會填進下面。</p>
+          <div class="bo-actions" style="margin:0;align-items:center"><p class="bo-small" style="margin:0;flex:1">寄群發信時密件副本給小幫手信箱${mail?.inbox ? `（${esc(mail.inbox)}）` : ""}，按「檢查信箱」就會帶進來。按「帶入」，AI 改寫好的內容會填進下面。</p>
+            <button type="button" data-act="fetchmail">檢查信箱</button></div>
           ${pending.length ? `<div class="bo-table"><table><thead><tr><th>收到</th><th>信件主旨</th><th>寄件人</th><th><span class="bo-sr">動作</span></th></tr></thead><tbody>${rows}</tbody></table></div>`
             : '<p class="bo-small" style="margin:0">目前沒有待處理的信。</p>'}
           <details><summary>或貼上信件內容</summary>
@@ -718,6 +719,10 @@
       on("[data-act=history]", () => opts.openHistory && opts.openHistory());
       const igDone = el.querySelector(".bo-igdone");
       if (igDone && done?.channels?.ig?.card) wireIgTools(igDone, done.channels.ig.card, done);
+      on("[data-act=fetchmail]", () => act(() => api("/api/admin/mail/fetch", {method: "POST"}),
+          async r => { await load(); importOpen = true;
+                       msg = r.imported ? `帶入 ${r.imported} 封新信，AI 已改寫好，按「帶入」檢查內容。` + (r.more ? `還有 ${r.more} 封，再按一次檢查信箱。` : "")
+                                        : `沒有新信（${esc(r.inbox)} 近 14 天有 ${r.matched} 封，都已帶入過）。`; }));
       on("[data-act=draft]", () => {
         const subject = el.querySelector("#bo-subject").value, raw_body = el.querySelector("#bo-raw").value;
         act(() => api("/api/admin/announce", {method: "POST", body: JSON.stringify({subject, raw_body})}),

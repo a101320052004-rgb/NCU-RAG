@@ -322,14 +322,40 @@ def _send_email(announce, key: str, a: dict, base: str) -> dict:
     return res
 
 
+@app.post("/api/admin/mail/fetch")
+def mail_fetch(x_admin_key: str = Header(default="")):
+    """檢查小幫手信箱：把密件副本寄來的新信帶進「待處理」，每封先由 AI 改寫好（一次最多 3 封）。"""
+    import announce
+    import inbox
+    key = _admin_key(x_admin_key)
+    known = {a.get("id") for a in (_admin_rpc("admin_announce_list", {"p_key": key}) or [])}
+    try:
+        r = inbox.fetch_inbox(known)
+    except RuntimeError as e:
+        raise HTTPException(400, str(e))
+    saved = []
+    for m in r["new"]:
+        if not m["raw_body"].strip():
+            continue
+        d = announce.draft(m["subject"], m["raw_body"])
+        d.pop("legal", None)
+        row = {**d, "id": m["id"], "subject": m["subject"] or d["title"], "raw_body": m["raw_body"],
+               "source": "email", "sender": m["sender"], "received_at": m["received_at"]}
+        saved.append(_admin_rpc("admin_announce_save", {"p_key": key, "p_row": row}))
+    return {"inbox": announce.mask(r["alias"]), "matched": r["matched"], "imported": len(saved),
+            "skipped": r["skipped"], "more": r["more"], "subjects": [x.get("subject") for x in saved]}
+
+
 @app.get("/api/admin/email-config")
 def email_config_view(x_admin_key: str = Header(default="")):
     """後台 Email 勾選說明和預覽用：只回遮住的信箱，不回密碼。"""
     import announce
+    import inbox
     _admin_key(x_admin_key)
     cfg = announce.email_config()
     return {"on": cfg["on"], "ready": cfg["ready"], "from": announce.mask(cfg["user"]) if cfg["user"] else "",
-            "to": [announce.mask(x) for x in cfg["to"][:3]], "to_count": len(cfg["to"]), "cap": cfg["cap"]}
+            "to": [announce.mask(x) for x in cfg["to"][:3]], "to_count": len(cfg["to"]), "cap": cfg["cap"],
+            "inbox": announce.mask(inbox.inbox_address())}
 
 
 @app.post("/api/admin/announce/{aid}/publish")

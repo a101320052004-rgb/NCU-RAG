@@ -1,46 +1,45 @@
-# 隔離回歸結果
-
-2026-11-10，本機 Clone 的 fix/rag-reliability 分支，基準 1640832。已驗證程式與診斷快照一致；此處不是正式系統驗收，也沒有覆寫原始問答。
+# 回歸驗證結果
 
 ## 已實際執行
 
-`python -m unittest discover -s tests -v`：23 個測試方法通過，含多組 subTest。無 Claude、Embedding 或資料庫呼叫。
+- Python：35 個測試方法通過，含多組 subTest；原始 H01–H08 均為 handoff，RAG／Claude 不被呼叫。
+- SQL：8 組測試在真實 PostgreSQL WASM 引擎執行，包含 migration 重跑、F05–F08、統一資格、secret／核准原子性、版本保存、隔離／回復、核准本文變更失效、ARC 殘片、FAQ 獨立性與 RLS。引擎為 PGlite 0.5.16 / PostgreSQL 18.6 / pgvector 0.8.7，**不是正式 17.11 / 0.8.2 或 PostgREST**。
+- 真實向量：既有 multilingual-e5-small ONNX，384 維、query/passage 前綴與正規化保持原程式。模型檔 hash、runtime、固定快照及原 Excel hash 記於 `repair_evidence/real_retrieval_results.json`。
+- 原始問答、評分、診斷成果都未覆寫。沒有 Claude 或正式資料庫呼叫。
 
-| 驗證 | 結果／界線 |
-|---|---|
-| H07/H08 原始題句 | router.handle → handoff，mock rag.answer 未被呼叫，故不會經此路線呼叫 Claude |
-| 安全反例 | 否定句、教育／翻譯引用、一般校務、第三人稱一般問句不新增自傷誤判；第三人稱實際危機與否定後轉折危機轉人工 |
-| F03/G15/G16 規則 | 舊期限字面陳述即使重新抓取或加 approved，仍不能進 Context；測試為明確標記的合成 fixture，不是新增實證問答 |
-| 審核與衝突 | 現行規定未經人工審核阻擋；正確 hash／日期核准通過，本文改動失效；混合新舊不能核准；不單憑年份判過期 |
-| 檢索資格 | 五種身分、全體適用、日期邊界、過期、待審核、封存、錯誤身分／主題均有測試；合法鄰段保留 |
-| 身分傳遞 | override 與已存身分進入 RAG；主 RPC、校名捷徑、鄰段帶資格參數 |
-| 工作同義問法 | 原問題保留、補相同中文詞；coursework 不誤匹配。未取得新查詢向量，不宣稱真實檢索已改善 |
-| 一般問題 | mock 固定候選下，OIA、退宿、學費、圖書館保留原排序、每文件兩段與距離限制；非原始 55 題端到端回歸 |
-| 來源日期 | Supabase ISO、本地整數及 date 型別均維持相同日期輸出 |
+## 指標與界線
 
-另有數字子字串反例、SQL 版本不符／RPC 缺失停止上傳，以及 answer → 最終生成上下文帶身分與過期鄰段排除的驗證。
+| 檢查 | 修復前 | 修復後 | 意義 |
+|---|---:|---:|---|
+| H01–H08 固定 handoff（初始 1640832 快照） | 2/8 | 8/8 | 原始題句的實際路由；不等於全部轉介內容評分 |
+| 工作許可相關來源覆蓋 | 9/24 | 24/24 | 四種問法 × None/五種身分；不是工作資格或完整答案正確率 |
+| 工作許可查詢入選無關段落 | 109 | 0 | 依明確工作許可詞與來源內容檢查；仍需生成驗收 |
+| 適用這份手冊的英文費率表完整覆蓋 | 0/8 | 8/8 | 四種英文問法 × None/外籍學位生，三段完整本文覆蓋 |
+| 同一手冊的中文費率表完整覆蓋 | 0/2 | 2/2 | 泛用中文費用問法使用同意圖英文擴充分支，原中文仍查詢 |
+| 非修復目標題主要段落 | 基準 | 41/41 相同 | 主要來源未退步；上下文因移除跨 FAQ／不合格鄰段而有 30 題縮減，需生成比對 |
+| 已知舊規則／ARC 殘片進入修復後上下文 | — | 0 | 按本次已知規則與指定殘片檢查，非所有法規的通用正確性保證 |
 
-## q2–q6 候選重播
+費率共跑 30 組。其餘 20 組身分的 metadata 不允許使用這份「外籍學位生」手冊 golden，因此不列入此指標分母，也沒有取消身分過濾。這不代表其餘身分的費率資訊已完整。
 
-執行 `python tests/replay_captured.py --package <私有診斷包目錄>`。原始包留在 Git 以外，不把測試回答或知識庫全文上傳。固定知識庫批次 `20261110171206`、捕獲的 SQL candidates、距離與原始／擴充字串；沿用診斷時身分 None。未重新計算向量或 SQL，不能稱為正式環境查詢成功。
+47 題非安全題及 8 題安全路由涵蓋原先 55 個已測題號，但**沒有重新生成／評分 55 份回答**。I01/I02 已取得工作許可相關官方段落；不同身分是否可申請，仍須來源與生成答案驗收。F03 在未核准完整現行期限資料時停止生成並轉介。
 
-Golden 定義：手冊 `8af182dee53384c3-32/-33/-34` 三個費率表段落的完整本文，在最終 Context 中覆蓋的比例；只忽略標題與空白。不是全部正確答案的 Recall，也不代表資料當期有效性已核實。
+q2–q6 捕獲候選重播仍各由 0/3 → 3/3；擴充字串凍結為原捕獲版本，只驗證候選融合／排序。新擴充分支以真實向量測試另行驗證，沒有捏造新 query vectors。
 
-| 題號 | 修改前 | 修改後 |
-|---|---:|---:|
-| q2 | 0/3 | 3/3 |
-| q3 | 0/3 | 3/3 |
-| q4 | 0/3 | 3/3 |
-| q5 | 0/3 | 3/3 |
-| q6 | 0/3 | 3/3 |
+## 重跑方式
 
-五組均以停用新費用排序的消融重現原本選中 IDs；Top-K=5、距離門檻 .30、每文件兩段不變。q3 原 Context 已有 FAQ 美元費用區間，0/3 僅表示指定手冊費率表未覆蓋，不能說原本完全沒有金額。詳見 `repair_evidence/captured_replay.json`。
+```text
+python -m unittest discover -s tests -v
+npm ci --prefix tests/sql_engine --ignore-scripts
+node tests/sql_engine/engine.mjs <repo> <私有診斷包目錄> checks
+python -m pip install -r tests/requirements-retrieval.txt
+python tests/real_retrieval_regression.py --package <私有診斷包目錄> --workbook <原始Excel> --cache-dir <repo外的私有快取>
+python tests/replay_captured.py --package <私有診斷包目錄>
+```
 
-## 未執行
+首次下載原模型；不換正式模型。原始包、Excel、模型／向量快取與 node_modules 均不上 Git。新向量由遮罩後快照重建，屬本次控制重跑，不能冒稱歷史正式檢索。沒有量測正式延遲或 Claude 答案通過率。
 
-- `sql/003_isolated_checks.sql`：此機器沒有 PostgreSQL／psql／pgvector 隔離環境，未執行原生 SQL；沒有宣稱 migration／PostgREST 已通過。
-- Vercel 預覽及正式系統驗收；Repository 未配置 GitHub Actions workflow。
-- 五種固定身分的真實中英文／fees/cost/charges/rates 向量與 Context Recall，以及 work permit 同義查詢的新向量對照。
-- 原本正常題的完整 55 題檢索回歸、少量核准後的生成比對；現有單元／候選重播不取代這些驗收。
+## 遠端平台檢查
 
-原始 ZIP、測試 Excel 與診斷包程式 hash 的保存檢查另見 `repair_evidence/validation.json`。
+後續 Draft PR：[PR #2](https://github.com/a101320052004-rgb/NCU-RAG/pull/2)。第一版 PR #1 由儲存庫擁有者合併；此後續 PR 未合併。
+
+已觀察到 Vercel 自動預覽連動。Vercel 檢查失敗，原因為 Git 作者 `b9600517-droid` 缺少該 Vercel 專案存取權；Supabase Preview 為 skipped。這不是已執行的程式 build 結果，需要專案擁有者在預覽驗收前處理授權。本次未變更平台權限、未執行正式部署，不能將本機測試通過當成遠端 CI 通過。

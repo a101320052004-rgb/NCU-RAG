@@ -201,13 +201,18 @@ class ContextAndRetrievalTests(unittest.TestCase):
             self.assertEqual(rag.expand_context([{'text':'BAD','meta':bad}],'交換生'),[])
             fetch.assert_called_once_with([], '交換生',None)
 
-    def test_synonyms_expand_but_preserve_original_question(self):
+    def test_synonyms_canonicalize_expansion_and_keep_original_retrieval_branch(self):
         rag=rag_module()
         for term in ['work permit','permission to work','employment authorization','authorisation to work']:
             question=f'How do I apply for {term} at NCU?'
-            self.assertTrue(rag.expand_query(question).startswith(question+' '))
+            self.assertIn('work permit',rag.expand_query(question))
+            with patch.object(rag,'_partner_hits',return_value=[]), patch.object(rag,'_query_supabase',return_value=[]), patch.object(rag.embedder,'embed_query') as embedding:
+                rag.retrieve(question,'交換生','en')
+                self.assertEqual(embedding.call_args_list[0].args[0],question)
             self.assertIn('工作證',rag.expand_query(question))
         self.assertEqual(rag.expand_query('How do I submit my coursework?'),'How do I submit my coursework?')
+        canonical=[rag.expand_query(f'How can I apply for {term} while studying at NCU?') for term in ['work permit','permission to work','employment authorization','authorisation to work']]
+        self.assertEqual(len(set(canonical)),1)
 
     def test_identity_not_removed_from_main_rpc_or_partner_shortcut(self):
         rag=rag_module();sb=SimpleNamespace(rpc=Mock(return_value=[]),vec=lambda x:str(x))
@@ -219,6 +224,27 @@ class ContextAndRetrievalTests(unittest.TestCase):
                     rag._partner_hits('exchange with Example University',ident,'育')
                 self.assertEqual(sb.rpc.call_args.args[1]['p_identity'],ident)
                 self.assertEqual(sb.rpc.call_args.args[0],'find_partner_chunks_v2')
+
+    def test_fee_rescue_preserves_payment_and_unpublished_future_intents(self):
+        rag=rag_module()
+        self.assertFalse(rag._dorm_fee_question('How do exchange students pay their dormitory fees?'))
+        self.assertFalse(rag._dorm_fee_question('What will the dormitory fees be for the next academic year if NCU has not announced them yet?'))
+        self.assertTrue(rag._dorm_fee_question('How much do exchange students pay for dormitory accommodation?'))
+
+    def test_query_expansion_keeps_specific_fee_and_permit_intents(self):
+        rag=rag_module()
+        self.assertIn('dormitory fees',rag.expand_query('宿舍費用是多少？'))
+        self.assertIn('student work permit application',rag.expand_query('How do I apply for permission to work?'))
+        self.assertNotIn('accommodation rates',rag.expand_query('How do exchange students pay their dormitory fees?'))
+
+    def test_regulatory_queries_reject_unrelated_authorizations_and_calendars(self):
+        rag=rag_module()
+        question='How can I apply for permission to work while studying at NCU?'
+        self.assertFalse(rag._regulatory_payload_matches(question,'Authorization for Emergency Treatment',{'title':'Medical care'}))
+        self.assertFalse(rag._regulatory_payload_matches(question,'Apply for a student loan',{'title':'Academic calendar'}))
+        self.assertTrue(rag._regulatory_payload_matches(question,'Step 3: Work Permit Application',{'title':'Documentation Process'}))
+        self.assertFalse(rag._regulatory_payload_matches('Is the 15-day ARC application deadline still valid?','Scholarship application dates',{'title':'Registration calendar'}))
+        self.assertTrue(rag._regulatory_payload_matches('Where is the library?','Opening times',{'title':'Library'}))
 
     def test_fee_rescue_is_scoped_and_threshold_and_k_unchanged(self):
         rag=rag_module()

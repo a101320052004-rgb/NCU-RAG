@@ -105,7 +105,18 @@ GLOSSARY_EN = [
 def expand_query(q: str) -> str:
     table = GLOSSARY if CJK.search(q) else GLOSSARY_EN
     extra = [w for pat, w in table if re.search(pat, q, re.I)]
-    return f"{q} {' '.join(extra)}" if extra else q
+    if _work_permit_question(q):
+        extra.append('student work permit application 工作許可申請')
+    if _dorm_fee_question(q):
+        extra.append('dormitory fees accommodation rates 宿舍費用 收費標準')
+    search = q
+    if _work_permit_question(q):
+        search = re.sub(r'\bwork permit\b|\bpermission\s+to\s+work\b|\b(?:work|employment)\s+authori[sz]ation\b|\bauthori[sz]ation\s+(?:to|for)\s+(?:work|employment)\b', 'work permit', search, flags=re.I)
+    # Only a generic Chinese fee question gets a canonical English expansion.
+    # Questions with room/year/payment conditions keep their original wording.
+    if re.fullmatch(r'(?:請問)?宿舍(?:費用|收費)(?:是多少|多少錢|多少)?[？?]?', q.strip()):
+        return 'What are the dormitory fees?'
+    return f"{search} {' '.join(extra)}" if extra else search
 
 
 # 姊妹校名單一個國家常有幾十所、切成好幾段，向量搜尋分不出是哪一段有「千葉大學」，所以學校名稱改用文字比對直接找
@@ -160,6 +171,14 @@ def _eligible(text: str, md: dict, identity: str | None, topic: str | None) -> b
 
 
 def _dorm_fee_question(question: str) -> bool:
+    # Payment procedure and unpublished future prices must keep their original
+    # ranking; a monetary table is not an answer to either question.
+    if re.search(r"not (?:yet )?(?:announced|published)|尚未公布|未公布", question, re.I):
+        return False
+    method = re.search(r"\b(?:how|where)\b.{0,70}\bpay\b|payment (?:method|process|procedure)|如何.{0,15}繳|怎麼.{0,15}繳", question, re.I)
+    amount = re.search(r"\bhow much\b|\b(?:costs?|charges?|rates?|prices?|amount)\b|多少錢|金額|收費標準", question, re.I)
+    if method and not amount:
+        return False
     return bool(re.search(r'dorm|housing|accommodation|宿舍|住宿', question, re.I)
                 and re.search(r'\b(?:fees?|cost|charges?|rates?|pay|price)\b|費用|收費|多少錢|住宿費', question, re.I))
 
@@ -171,6 +190,22 @@ def _dorm_fee_payload(text: str, md: dict) -> bool:
     unit = re.search(r'per person|per semester|每[人房學]|每學期|/每學期', t)
     fee_table = re.search(r'standard for dormitory fee|宿舍收費|住宿費', t)
     return bool(money and accommodation and (unit or fee_table))
+
+
+def _work_permit_question(question: str) -> bool:
+    return bool(re.search(r'work permit|permission\s+to\s+work|(?:work|employment)\s+authori[sz]ation|authori[sz]ation\s+(?:to|for)\s+(?:work|employment)|工作證|工作許可', question, re.I))
+
+
+def _regulatory_payload_matches(question: str, text: str, md: dict) -> bool:
+    payload = (md.get('title') or '') + '\n' + text
+    if _work_permit_question(question):
+        return bool(re.search(r'work permit|工作證|工作許可', payload, re.I))
+    arc = re.search(r'\barc\b|alien resident certificate|居留證', question, re.I)
+    deadline = re.search(r'deadline|within\s+\d+\s+days?|\d+[- ]day|申請期限', question, re.I)
+    if arc and deadline:
+        family, obsolete = knowledge_policy.policy_claim(payload)
+        return not obsolete and bool(family and 'arc_arrival_deadline' in family)
+    return True
 
 
 def retrieve(question: str, identity: str | None, lang: str, topic: str | None = None) -> list[dict]:
@@ -196,6 +231,8 @@ def retrieve(question: str, identity: str | None, lang: str, topic: str | None =
     hits = []
     for doc, md, dist in rows:
         if not _eligible(doc, md, identity, topic):
+            continue
+        if not _regulatory_payload_matches(question, doc, md):
             continue
         if topic is None and dist > config.MAX_DISTANCE:
             continue
@@ -232,6 +269,28 @@ def retrieve(question: str, identity: str | None, lang: str, topic: str | None =
     return picked
 
 
+def _local_policy_rows(rows: list[tuple]) -> list[tuple]:
+    wanted = list(dict.fromkeys(n for cid, text, md in rows
+                               for n in knowledge_policy.neighboring_policy_ids(cid, md)))
+    got = collection().get(ids=wanted) if wanted else {'ids':[], 'documents':[], 'metadatas':[]}
+    neighbors = {cid: text for cid, text, md in zip(got['ids'], got['documents'], got.get('metadatas') or [])
+                 if md and md.get('status') == 'active'}
+    out = []
+    for cid, text, md in rows:
+        ids = knowledge_policy.neighboring_policy_ids(cid, md)
+        if ids:
+            doc, _, n = cid.rpartition('-')
+            context = '\n'.join([neighbors.get(f'{doc}-{int(n)-1}', ''), text, neighbors.get(f'{doc}-{int(n)+1}', '')])
+        else:
+            context = text
+        family, obsolete = knowledge_policy.policy_claim(context)
+        own_family, own_obsolete = knowledge_policy.policy_claim(text)
+        fragment = re.search(r'(15|30|fifteen|thirty)\s*(days?\b|日|天)|(1|one)\s*year\b|一年|6\s*months?\b|6\s*個月', text, re.I)
+        rule = ('obsolete:' + family) if obsolete else ('review:regulated_claim' if own_family or (family and fragment) else None)
+        out.append((cid, text, {**md, 'id':cid, 'policy_context_rule':rule}))
+    return out
+
+
 def _query_local(qvec: list[float], identity: str | None, topic: str | None) -> list[tuple]:
     res = None
     for attempt in range(2):
@@ -244,8 +303,8 @@ def _query_local(qvec: list[float], identity: str | None, topic: str | None) -> 
             reset_cache()
     if res is None:
         return []
-    return [(doc, {**md, "id": cid}, dist)
-            for cid, doc, md, dist in zip(res["ids"][0], res["documents"][0], res["metadatas"][0], res["distances"][0])]
+    rows = _local_policy_rows(list(zip(res['ids'][0], res['documents'][0], res['metadatas'][0])))
+    return [(text, md, dist) for (cid, text, md), dist in zip(rows, res['distances'][0])]
 
 
 # ---------------------------------------------------------------- 補上下文
@@ -262,8 +321,8 @@ def _fetch_chunks(ids: list[str], identity: str | None = None, topic: str | None
                           'p_stale_before': config.stale_before().isoformat()}) or []
             return {r['id']: r['body'] for r in rows if _eligible(r['body'], r, identity, topic)}
         got = collection().get(ids=ids)
-        return {cid: text for cid, text, md in zip(got['ids'], got['documents'], got.get('metadatas') or [])
-                if _eligible(text, md, identity, topic)}
+        rows = _local_policy_rows(list(zip(got['ids'], got['documents'], got.get('metadatas') or [])))
+        return {cid: text for cid, text, md in rows if _eligible(text, md, identity, topic)}
     except Exception as e:  # noqa: BLE001  補不到就用原本的段落
         print("fetch neighbors failed:", e)
         return {}
@@ -276,7 +335,7 @@ def expand_context(hits: list[dict], identity: str | None = None, topic: str | N
     for h in hits[:NEIGHBOR_HITS]:
         doc, _, n = str(h["meta"].get("id", "")).rpartition("-")
         # 人工 FAQ、國際處給的資料表每一段各自獨立（一家餐廳、一題問答），不用補前後段
-        if not doc or not n.isdigit() or doc == "faq" or doc.startswith("sheet-"):
+        if not doc or not n.isdigit() or doc == "faq" or doc.startswith(("sheet-", "md")):
             plan.append(None)
             continue
         n = int(n)

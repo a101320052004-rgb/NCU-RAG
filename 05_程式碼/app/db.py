@@ -99,12 +99,24 @@ def log_message(user_hash, channel, question, answer, route, sources, latency_ms
                    json.dumps(sources, ensure_ascii=False), latency_ms))
 
 
+FOLLOW_UP_ROUTES = ("rag", "menu", "no_data")
+FOLLOW_UP_MINUTES = 30
+
+
 def recent_turns(user_hash: str, n: int = 3) -> list[dict]:
+    """追問用的前幾題。11/12 修正：只取 30 分鐘內的（隔天回來問「那 B5 呢？」不該接到昨天的主題），
+    也包含點選單和查無資料的題目（學生點「Scholarships」後再問「How do I apply?」，主題在選單那一題）。"""
     if _cloud():
-        return _rpc("recent_turns", p_user_hash=user_hash, p_n=n) or []
+        try:
+            return _rpc("recent_turns_v2", p_user_hash=user_hash, p_n=n, p_minutes=FOLLOW_UP_MINUTES) or []
+        except Exception as e:  # noqa: BLE001  資料庫還沒有 v2 時退回舊版
+            print("recent_turns_v2 failed:", e)
+            return _rpc("recent_turns", p_user_hash=user_hash, p_n=n) or []
     with conn() as c:
-        rows = c.execute("SELECT question, answer FROM messages WHERE user_hash=? AND route='rag' "
-                         "ORDER BY id DESC LIMIT ?", (user_hash, n)).fetchall()
+        rows = c.execute(f"SELECT question, answer FROM messages WHERE user_hash=? "
+                         f"AND route IN ({','.join('?' * len(FOLLOW_UP_ROUTES))}) "
+                         f"AND created_at > datetime('now','localtime',?) ORDER BY id DESC LIMIT ?",
+                         (user_hash, *FOLLOW_UP_ROUTES, f"-{FOLLOW_UP_MINUTES} minutes", n)).fetchall()
     return [dict(r) for r in reversed(rows)]
 
 

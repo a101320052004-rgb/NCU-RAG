@@ -167,6 +167,56 @@ def _partner_hits(question: str, identity: str | None = None, topic: str | None 
             for r in rows if _eligible(r['body'], r, identity, topic)]
 
 
+# 核心主題的官方頁面：問題明顯屬於這些主題時，這幾段一定放進候選。
+# 11/12 實測：保險、工作證、獎學金、就醫的官方頁面明明在知識庫裡，向量排名卻被手冊、行事曆擠掉，回答變成「沒有資料」。
+# 指定的段落照樣要通過時效與法規檢查（例如工作證效期那兩段待人工核准，核准前不會被放進來）。
+PINNED = [
+    ("insurance", re.compile(r"insurance|\bnhi\b|health card|cathay|保險|健保|國泰", re.I),
+     ["d56b81c706265a59-0", "d56b81c706265a59-2", "d56b81c706265a59-6"]),
+    ("work_permit", re.compile(r"work permit|permission to work|work while studying|part[- ]time (?:job|work)|"
+                               r"(?:work|employment) authori[sz]ation|工作證|工作許可|打工", re.I),
+     ["a20d7a7e9a628894-0", "a20d7a7e9a628894-1", "a20d7a7e9a628894-2", "a20d7a7e9a628894-3"]),
+    ("scholarship", re.compile(r"scholarship|financial aid|stipend|獎學金|獎助", re.I),
+     ["12b5e67f79afb723-2", "12b5e67f79afb723-3", "12b5e67f79afb723-0"]),
+    ("medical", re.compile(r"medical (?:help|assistance|care|service)|doctor|clinic|\bsick\b|health (?:center|centre|service)|"
+                           r"first aid|see a doctor|看醫生|生病|就醫|衛保|保健組", re.I),
+     ["163d19b21b0c6dca-0", "163d19b21b0c6dca-1"]),
+    ("counseling", re.compile(r"counsel|mental health|psycholog|therap|諮商|心理", re.I),
+     ["ebc593e9b9048487-2", "ebc593e9b9048487-3"]),
+    ("emergency", re.compile(r"emergenc|campus security|security (?:center|centre|office)|24[- ]hour|校安|緊急", re.I),
+     ["163d19b21b0c6dca-0", "163d19b21b0c6dca-1"]),
+]
+
+
+def pinned_ids(question: str) -> list[str]:
+    ids = []
+    for name, pat, chunk_ids in PINNED:
+        if pat.search(question):
+            if name == "medical" and PINNED[0][1].search(question):
+                continue  # 問醫療保險時不要把緊急電話表塞進來
+            ids += chunk_ids
+    return list(dict.fromkeys(ids))
+
+
+def _pinned_hits(question: str, topic: str | None = None) -> list[dict]:
+    ids = pinned_ids(question)
+    if config.STORE != "supabase" or not ids:
+        return []
+    try:
+        import sb
+        rows = sb.rpc("get_chunks_v2", {"p_ids": ids, "p_identity": None, "p_topic": topic,
+                                         "p_stale_before": config.stale_before().isoformat()}) or []
+    except Exception as e:  # noqa: BLE001  拿不到就照一般向量搜尋
+        print("pinned lookup failed:", e)
+        return []
+    rows = [r.get("get_chunks_v2", r) for r in rows]
+    order = {cid: i for i, cid in enumerate(ids)}
+    rows.sort(key=lambda r: order.get(r.get("id"), 99))
+    return [{"text": r["body"], "distance": 0.0, "score": -0.5,
+             "meta": {k: v for k, v in r.items() if k != "body"}}
+            for r in rows if _eligible(r["body"], r, None, topic)]
+
+
 def _eligible(text: str, md: dict, identity: str | None, topic: str | None) -> bool:
     return knowledge_policy.eligible(text, md, identity=identity, topic=topic,
                                      today=config.today(), stale_before=config.stale_before())
@@ -279,6 +329,10 @@ def retrieve(question: str, identity: str | None, lang: str, topic: str | None =
                                 original_rank.get(h['meta'].get('id'), 10**6)
                                 if _dorm_fee_payload(h['text'], h['meta']) else h['score'],
                                 h['score']))
+    pinned = _pinned_hits(question, topic)
+    if pinned:
+        ids = {h["meta"]["id"] for h in pinned}
+        hits = pinned + [h for h in hits if h["meta"].get("id") not in ids]
     if exact:
         ids = {h["meta"]["id"] for h in exact}
         hits = exact + [h for h in hits if h["meta"].get("id") not in ids]
@@ -485,6 +539,30 @@ def plain_text(t: str) -> str:
     return re.sub(r"\n{3,}", "\n\n", t).strip()
 
 
+WORD = re.compile(r"[A-Za-z][A-Za-z'-]{3,}|\d[\d,.:]*\d|\d|[一-鿿]{2,}")
+STOP = {"your", "with", "from", "that", "this", "they", "them", "there", "have", "will", "must", "need", "when",
+        "what", "which", "where", "about", "into", "also", "only", "then", "than", "each", "more", "contact",
+        "call", "email", "office", "check", "student", "students", "international", "please", "ncuoia"}
+
+
+def rank_by_answer(hits: list[dict], reply: str) -> list[dict]:
+    """來源要對應答案實際用到的頁面：用答案裡的關鍵字和數字比對每一段，重合越多越前面。
+    11/12 實測：答案明明出自工作證頁，來源卻列「住宿服務組在哪裡」，因為原本只照檢索排名列前兩名。"""
+    words = {w.lower() for w in WORD.findall(reply)} - STOP
+    if not words:
+        return hits
+    def overlap(h):
+        body = h["text"].lower()
+        return sum(1 for w in words if w in body)
+    scored = [(overlap(h), i, h) for i, h in enumerate(hits)]
+    best = max(s for s, _, _ in scored)
+    if best == 0:
+        return hits
+    # 重合太少的段落（不到最佳的三分之一）不列為來源
+    keep = [(s, i, h) for s, i, h in scored if s >= max(2, best / 3)]
+    return [h for s, i, h in sorted(keep, key=lambda x: (-x[0], x[1]))] or hits
+
+
 def source_footer(hits: list[dict], lang: str, n: int = 2) -> tuple[str, list[dict]]:
     seen, used = set(), []
     for h in hits:
@@ -517,8 +595,10 @@ def answer(question: str, identity: str | None, lang: str | None = None,
            search: str | None = None) -> dict:
     lang = lang or detect_lang(question)
     contact = contacts.contact_line(identity, lang, question)  # 依身分轉給負責的承辦人
-    # 回答語言固定（預設英文），但檢索要看問題本身是哪種語言，中文問題才找得到中文資料
-    hits = retrieve(search or question, identity, detect_lang(question), topic,
+    # 回答語言固定（預設英文），但檢索要看問題本身是哪種語言，中文問題才找得到中文資料。
+    # 檢索不分身分（國際處原則）：資料上的身分標籤是自動標的、不可靠（例如保險頁只標了交換生），
+    # 用身分篩選會讓學位生查不到保險頁。身分只拿來決定轉給哪位承辦人。
+    hits = retrieve(search or question, None, detect_lang(question), topic,
                     context=None if search else follow_up_context(history))  # 選單用關鍵字檢索，比問句準
     if not hits:
         return {"answer": no_data_answer(lang, contact), "route": "no_data", "sources": []}
@@ -528,7 +608,7 @@ def answer(question: str, identity: str | None, lang: str | None = None,
         route = "ai_off" if allow == "off" else "limited"
         return {"answer": f"{quota_answer(allow, lang, contact)}\n\n{footer}", "route": route, "sources": used}
     try:
-        context = expand_context(hits, identity, topic)
+        context = expand_context(hits, None, topic)
         text = call_llm(system_prompt(identity, lang),
                         build_user_message(question, context, history or [], lang, contact), context)
     except Exception as e:  # noqa: BLE001  API 金鑰錯、沒餘額、額度用完、網路斷線
@@ -536,14 +616,49 @@ def answer(question: str, identity: str | None, lang: str | None = None,
         return {"answer": f"{llm_down_answer(lang, contact)}\n\n{footer}", "route": "llm_error", "sources": used}
     if text.lstrip().startswith("[CHAT]"):  # 閒聊或無關的問題：不閒聊，只回「可以問什麼」
         return {"answer": CHAT_REPLY[lang], "route": "chat", "sources": []}
+    if text.lstrip().startswith("[OUTSIDE]"):  # 即時或校外資訊（電影場次、即時車資）：說明不在服務範圍，不附承辦人
+        note = english_only(plain_text(text.lstrip().removeprefix("[OUTSIDE]")), lang)
+        return {"answer": f"{OUTSIDE_REPLY[lang]}{(chr(10) + note) if note else ''}", "route": "chat", "sources": []}
     if text.lstrip().startswith("[NOINFO]") or not plain_text(text):  # 資料答不了：固定說法＋去哪裡看＋找誰
-        return no_info_answer(plain_text(text.lstrip().removeprefix("[NOINFO]")), hits, lang, contact)
-    reply = plain_text(text)
+        return no_info_answer(english_only(plain_text(text.lstrip().removeprefix("[NOINFO]")), lang), hits, lang, contact)
+    reply = english_only(plain_text(text), lang)
     # 最後一道保險：AI 寫出已知的舊法規（例如入境後 15 天辦居留證）就不送出，改請學生找承辦人
     if knowledge_policy.policy_claim(reply)[1]:
         log_error("obsolete-policy-in-answer", RuntimeError(reply[:200]))
         return no_info_answer("", hits, lang, contact)
+    if REGULATED_Q.search(question) or REGULATED_Q.search(reply):
+        reply += "\n\n" + REGULATED_NOTE[lang]
+    footer, used = source_footer(rank_by_answer(context, reply), lang)
     return {"answer": f"{reply}\n\n{footer}", "route": "rag", "sources": used}
+
+
+# 居留證、簽證、工作證類的提醒句：由程式固定加上（原本叫 AI 寫，英文回答裡會冒出中文那句）
+REGULATED_Q = re.compile(r"\barc\b|resident certificate|residence permit|\bvisa\b|work permit|permission to work|"
+                         r"居留|簽證|工作證|工作許可|打工|入出境", re.I)
+REGULATED_NOTE = {"zh": "以移民署／勞動部最新公告為準。",
+                  "en": "Always follow the latest announcements from the National Immigration Agency / Ministry of Labor."}
+OUTSIDE_REPLY = {"zh": "這個問題超出我能協助的範圍（我只回答中大學生事務與校園生活）。",
+                 "en": "That's outside what I can help with. I only answer questions about NCU student services and campus life."}
+_DISCLAIMER = re.compile(r"[（(]?\s*以(?:內政部)?(?:移民署|勞動部)[^。\n]{0,20}最新公告為準[^\n]*|"
+                         r"^.*(?:latest|most recent) (?:announcements?|regulations?|guidelines?) (?:of|from) "
+                         r"(?:the |taiwan's )?(?:national )?(?:immigration|ministry of labor).*$", re.I | re.M)
+_SYSTEM_TALK = re.compile(r"[^。\n]*系統會自動[^。\n]*[。]?")
+
+
+def english_only(t: str, lang: str) -> str:
+    """英文回答裡不該出現整句中文（單位或文件的中文原名放在括號裡可以）。
+    11/12 實測：答不出來時 AI 用中文寫了「可以先看…」「系統會自動附上聯絡方式」。"""
+    t = _SYSTEM_TALK.sub("", _DISCLAIMER.sub("", t))
+    if lang != "en":
+        return t.strip()
+    out = []
+    for line in t.split("\n"):
+        letters = re.findall(r"[A-Za-z]", line)
+        cjk = CJK.findall(line)
+        if cjk and len(cjk) > len(letters) * 0.6 and len(cjk) >= 6:
+            continue  # 這一行主要是中文，整行拿掉
+        out.append(line)
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(out)).strip()
 
 
 CHAT_REPLY = {"zh": "可以問居留證、宿舍、獎學金、保險、選課、交通、飲食，直接打字或點下方選單。",

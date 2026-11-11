@@ -18,7 +18,7 @@ def policy_claim(text: str) -> tuple[str | None, bool]:
     t = re.sub(r'\s+', ' ', text).lower()
     families = []
     arc = bool(re.search(r'\barc\b|alien resident certificate|外僑居留證|居留證', t))
-    arrival = r'(?:arrival|arriv(?:al|ing|e)|receiving (?:a )?resident visa|入[境國])'
+    arrival = r'(?:arrival|arriv(?:al|ing|e)|receiving (?:a )?resident visa|resident visa holders?|holders? of (?:a )?resident visa|持居留簽證|入[境國])'
     if arc:
         for days, old in [(r'(?:15|十五)', True), (r'(?:30|三十)', False)]:
             duration = r'(?<![0-9])' + days + r'\s*(?:days?\b|日|天)'

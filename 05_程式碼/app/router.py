@@ -178,21 +178,53 @@ def parse_identity(text: str) -> str | None:
     return next((i for i in config.IDENTITIES if i in rest or ID_EN[i].lower() in rest), None)
 
 
+# 依情況補上的求助管道（來源：住宿服務組「學生安全與緊急聯絡」頁、中大電子報「心理資源求助專區」，2026-11 查核）
+HEALTH_CENTER = {"zh": "衛生保健組（上班時間）：分機 57270／03-280-4814",
+                 "en": "Health Center (office hours): ext. 57270 or 03-280-4814"}
+COUNSELING = {"zh": "諮商中心（週一至週五 9:00–17:00）：03-422-7151 分機 57263／57264，或在 NCU Portal 的「個別諮商」預約",
+              "en": "Counseling Center (Mon–Fri 9:00–17:00): +886-3-422-7151 ext. 57263 / 57264, "
+                    "or book through NCU Portal > Student Consulting Service > Consult System"}
+
+
 def handoff_message(category: str, lang: str, identity: str | None = None, text: str = "") -> str:
     contact = contacts.contact_line(identity, lang, text)
     if lang == "zh":
-        msg = ("這件事很重要，需要由真人協助，我不想只給你一般資訊。\n"
-               f"・緊急狀況請立刻撥校安中心 24 小時電話：{config.SECURITY_PHONE}\n"
-               f"・國際處承辦人：{contact}")
+        lines = ["這件事很重要，需要由真人協助，我不想只給你一般資訊。"]
+        if category in ("自我傷害", "受傷就醫"):
+            lines.append("・有生命危險或傷勢嚴重：立刻撥 119 叫救護車。")
+        lines.append(f"・緊急狀況請立刻撥校安中心 24 小時電話：{config.SECURITY_PHONE}")
         if category == "自我傷害":
-            msg += "\n・如果你現在很難受，也可以撥 1925 安心專線（24 小時、免付費），有人可以陪你聊。"
-        return msg
-    msg = ("This matters, and a real person should help you with it rather than general information from me.\n"
-           f"- In an emergency, call the Campus Security 24-hour line now: {config.SECURITY_PHONE}\n"
-           f"- {contact}")
+            lines.append("・如果你現在很難受，可以撥 1925 安心專線（24 小時、免付費），有人可以陪你聊。")
+        if category in ("自我傷害", "心理困擾"):
+            lines.append("・" + COUNSELING["zh"])
+        if category == "受傷就醫":
+            lines.append("・" + HEALTH_CENTER["zh"])
+        lines.append(f"・國際處承辦人：{contact}")
+        return "\n".join(lines)
+    lines = ["This matters, and a real person should help you with it rather than general information from me."]
+    if category in ("自我傷害", "受傷就醫"):
+        lines.append("- If your life is in danger or the injury is serious, call 119 (ambulance) now.")
+    lines.append(f"- In an emergency, call the Campus Security 24-hour line now: {config.SECURITY_PHONE}")
     if category == "自我傷害":
-        msg += "\n- If you're struggling right now, you can call 1925 (Taiwan's 24-hour free support line)."
-    return msg
+        lines.append("- If you're struggling right now, call 1925 (Taiwan's 24-hour free support line). Someone will talk with you.")
+    if category in ("自我傷害", "心理困擾"):
+        lines.append("- " + COUNSELING["en"])
+    if category == "受傷就醫":
+        lines.append("- " + HEALTH_CENTER["en"])
+    lines.append(f"- {contact}")
+    return "\n".join(lines)
+
+
+# 問別人的個資（學號、房號、電話、地址…）：不查、不回答，固定說明（11/12 實測 U05 原本回成選單提示）
+OTHERS = (r"(?:\b(?:another (?:student|person|classmate)|other (?:students?|people|person)|someone else|somebody else|"
+          r"(?:a|my) (?:classmate|roommate|friend)'s|(?:classmate|roommate|friend)'s)\b|別人|其他同學|同學|室友)")
+PERSONAL = (r"(?:\b(?:student (?:id|number)|id (?:number|no)|room (?:number|no)|phone (?:number|no)|address|e-?mail|passport (?:number|no)|arc number)\b|"
+            r"學號|房號|寢室號|電話|地址|信箱|護照號碼|居留證號)")
+ASK = r"(?:\b(?:tell|give|share|find|look up|send|what(?:'s| is| are))\b|查|給我|告訴我|是多少|是什麼)"
+PRIVACY_ASK = re.compile(ASK + r".{0,40}" + OTHERS + r".{0,60}" + PERSONAL + "|" + OTHERS + r"的?" + PERSONAL + r".{0,10}(?:是多少|是什麼|多少|[?？])", re.I)
+PRIVACY_REPLY = {"zh": "我不能提供或查詢其他同學的個人資料（學號、房號、聯絡方式等）。需要聯絡對方的話，可以請住宿服務組或國際處協助轉達。",
+                 "en": "I can't share or look up other students' personal information (student ID, room number, contact details). "
+                       "If you need to reach someone, the Student Housing Service Division or OIA can pass on a message."}
 
 
 def handle(user_id: str, text: str, channel: str = "line", identity_override: str | None = None,
@@ -235,6 +267,12 @@ def handle(user_id: str, text: str, channel: str = "line", identity_override: st
                            contacts.call_button(identity, lang, text)]
         if cat == "自我傷害":
             result["calls"].insert(0, {"label": contacts.CRISIS_CALL[lang], "tel": contacts.CRISIS_CALL["tel"]})
+        if cat in ("自我傷害", "受傷就醫"):
+            result["calls"].insert(0, {"label": contacts.AMBULANCE_CALL[lang], "tel": contacts.AMBULANCE_CALL["tel"]})
+        if cat in ("自我傷害", "心理困擾"):
+            result["calls"].append({"label": contacts.COUNSELING_CALL[lang], "tel": contacts.COUNSELING_CALL["tel"]})
+    elif PRIVACY_ASK.search(text):
+        result.update(answer=PRIVACY_REPLY[lang], route="privacy", sources=[])
     elif detect_smalltalk(text):
         kind = detect_smalltalk(text)
         zh, en = SMALLTALK_REPLY[kind]

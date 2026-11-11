@@ -35,6 +35,7 @@ STAFF = {
 
 ADMISSION_WORDS = ("申請入學", "招生", "報考", "入學申請", "admission", "apply to ncu", "application for admission")
 SCHOLARSHIP_WORDS = ("獎學金", "獎助", "助學金", "scholarship")
+DEGREE_TOPIC_WORDS = ("保險", "健保", "工作證", "工作許可", "打工", "insurance", "nhi", "work permit", "permission to work", "part-time")
 
 
 # 學生還沒選身分、但問題裡自己講了（「我是外籍學位生…」），就照問題裡的身分轉接
@@ -67,6 +68,12 @@ def pick(identity: str | None, text: str = "", today: dt.date | None = None) -> 
     if identity == "交換生":
         month = (today or dt.date.today()).month
         return "徐心荷" if 2 <= month <= 7 else "張雪蓮"   # 春季班 / 秋季班
+    if identity is None:
+        # 身分不明時看主題（11/12 實測：保險、工作證問題都被轉到一般行政窗口）
+        if any(w in low for w in SCHOLARSHIP_WORDS):
+            return "阮塔尼"
+        if any(w in low for w in DEGREE_TOPIC_WORDS):
+            return "羅如華"
     return "簡君怡"  # 身分不明或訪問研修生：國際行政事務組，可再轉接
 
 
@@ -80,6 +87,8 @@ def call_button(identity: str | None, lang: str, text: str = "") -> dict:
 
 SECURITY_CALL = {"zh": "校安中心 24 小時", "en": "Campus Security 24h", "tel": "tel:+88632805666"}
 CRISIS_CALL = {"zh": "1925 安心專線", "en": "1925 support line", "tel": "tel:1925"}
+AMBULANCE_CALL = {"zh": "119 救護車", "en": "119 Ambulance", "tel": "tel:119"}
+COUNSELING_CALL = {"zh": "諮商中心", "en": "Counseling Center", "tel": "tel:+88634227151,57263"}
 
 
 def contact_line(identity: str | None, lang: str, text: str = "") -> str:

@@ -130,6 +130,22 @@ def detect_high_risk(text: str) -> str | None:
                 if re.search(r"(?:不想|不會|沒有|不打算)\s*$", clause[:match.start()]) and word != '不想活':
                     continue
                 return '自我傷害'
+    # Distress requests and serious dorm conflicts in the evaluation set need
+    # a person too. Require personal context, not a broad keyword alone.
+    personal = re.compile(r"\b(?:i|my|we|our)\b")
+    support = re.compile(r"talk to (?:someone|somebody)|someone to talk to|who (?:at ncu )?can help|(?:need|want|would like).{0,40}(?:support|counsel|help)")
+    for clause in clauses:
+        if educational.search(clause) or not personal.search(clause):
+            continue
+        for match in re.finditer(r"\b(?:anxious|overwhelmed)\b", clause):
+            if support.search(low) and not re.search(r"\b(?:not|never|no longer)\s+(?:feeling\s+)?$", clause[:match.start()]):
+                return '心理困擾'
+        conflict = re.search(r"\bserious\s+(?:dispute|conflict)\b", clause)
+        if conflict and re.search(r"roommate|dormitor|\bdorm\b", clause):
+            negative = re.search(r"\b(?:not|never|no longer)\s+(?:(?:having|experiencing|in)\s+)?(?:(?:a|any)\s+)?$", clause[:conflict.start()])
+            resolved = re.search(r"\b(?:i|we) (?:have |already )?(?:resolved|settled)\b", clause)
+            if not negative and not resolved:
+                return '糾紛安全'
     for cat, words in HIGH_RISK.items():
         if cat != '自我傷害' and any(word in low for word in words):
             return cat

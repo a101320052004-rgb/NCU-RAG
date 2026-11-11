@@ -140,7 +140,7 @@ def selftest(q: str = "宿舍怎麼申請？", topic: str | None = None):
             q = router.MENU_SEARCH[topic]
         hits = rag.retrieve(q, None, rag.detect_lang(q), topic if topic in config.MENU_TOPICS else None)
         out["retrieve_ms"] = round((time.perf_counter() - t) * 1000)
-        ctx = rag.expand_context(hits)
+        ctx = rag.expand_context(hits, None, topic if topic in config.MENU_TOPICS else None)
         out["hits"] = [{"title": h["meta"]["title"], "distance": round(h["distance"], 3),
                         "chars": len(h["text"]), "with_context": len(c["text"])} for h, c in zip(hits, ctx)]
     except Exception as e:  # noqa: BLE001

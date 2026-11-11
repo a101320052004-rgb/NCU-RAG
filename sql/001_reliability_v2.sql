@@ -64,6 +64,31 @@ BEGIN
  RETURN NULL;
 END $fn$;
 
+-- Evaluate neighboring crawler fragments too. A split-off "15 days" must
+-- not survive simply because the preceding ARC/arrival sentence was excluded.
+CREATE OR REPLACE FUNCTION public.policy_effective_rule(c public.chunks) RETURNS text
+LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO '' AS $fn$
+DECLARE doc text; part integer; before_body text; after_body text; own_rule text; context_rule text;
+BEGIN
+ IF c.source='manual' OR c.id ~ '^(md|faq-|sheet-)' OR c.id !~ '-[0-9]+$' THEN
+  RETURN public.policy_claim_rule(c.body);
+ END IF;
+ doc:=regexp_replace(c.id,'-[0-9]+$','');
+ part:=substring(c.id FROM '-([0-9]+)$')::integer;
+ SELECT body INTO before_body FROM public.chunks WHERE id=doc||'-'||(part-1)::text AND status='active';
+ SELECT body INTO after_body FROM public.chunks WHERE id=doc||'-'||(part+1)::text AND status='active';
+ own_rule:=public.policy_claim_rule(c.body);
+ context_rule:=public.policy_claim_rule(concat_ws(E'\n',before_body,c.body,after_body));
+ IF context_rule LIKE 'obsolete:%' THEN RETURN context_rule; END IF;
+ IF own_rule IS NOT NULL THEN RETURN own_rule; END IF;
+ -- An index/contact chunk does not inherit review of the next complete claim.
+ -- A date fragment does, and must be curated into a self-contained claim.
+ IF context_rule LIKE 'review:%' AND lower(c.body) ~ '(15|30|fifteen|thirty)\s*(days?\y|日|天)|(1|one)\s*year\y|一年|6\s*months?\y|6\s*個月' THEN
+  RETURN context_rule;
+ END IF;
+ RETURN NULL;
+END $fn$;
+
 CREATE OR REPLACE FUNCTION public.policy_review_metadata(p_id text, p_body text) RETURNS jsonb
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO '' AS $fn$
  SELECT coalesce((SELECT jsonb_build_object(
@@ -82,9 +107,9 @@ RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO '' AS $f
  AND (p_identity IS NULL OR p_identity=ANY(c.identities) OR '全體境外生'=ANY(c.identities))
  AND (p_topic IS NULL OR p_topic=ANY(c.topics))
  AND CASE
-  WHEN public.policy_claim_rule(c.body) LIKE 'obsolete:%' THEN false
-  WHEN public.policy_claim_rule(c.body) LIKE 'review:%' THEN
-   coalesce(public.policy_review_metadata(c.id,c.body)->>'policy_review_status'='approved'
+  WHEN public.policy_effective_rule(c) LIKE 'obsolete:%' THEN false
+  WHEN public.policy_effective_rule(c) LIKE 'review:%' THEN
+   public.policy_claim_rule(c.body) LIKE 'review:%' AND coalesce(public.policy_review_metadata(c.id,c.body)->>'policy_review_status'='approved'
     AND (public.policy_review_metadata(c.id,c.body)->>'policy_reviewed_at')::date BETWEEN p_stale_before AND (now() AT TIME ZONE 'Asia/Taipei')::date,false)
   ELSE true END;
 $fn$;
@@ -92,7 +117,8 @@ $fn$;
 CREATE OR REPLACE FUNCTION public.retrieval_chunk_payload(c public.chunks) RETURNS jsonb
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO '' AS $fn$
  SELECT jsonb_build_object('id',c.id,'title',c.title,'url',c.url,'lang',c.lang,'body',c.body,
-   'topics',c.topics,'identities',c.identities,'status',c.status,
+   'topics',c.topics,'identities',c.identities,'status',c.status,'source',c.source,
+   'policy_context_rule',public.policy_effective_rule(c),
    'valid_until',c.valid_until,'last_verified',c.last_verified)
    || public.policy_review_metadata(c.id,c.body);
 $fn$;

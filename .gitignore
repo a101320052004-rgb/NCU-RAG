@@ -24,3 +24,6 @@ __pycache__/
 Thumbs.db
 desktop.ini
 ~$*
+
+# Isolated SQL test dependencies
+node_modules/

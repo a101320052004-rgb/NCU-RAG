@@ -142,7 +142,7 @@ CREATE OR REPLACE FUNCTION public.find_partner_chunks_v2(p_terms text[],p_identi
  p_stale_before date DEFAULT (CURRENT_DATE - interval '1 year')::date)
 RETURNS SETOF jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO '' AS $fn$
  SELECT public.retrieval_chunk_payload(c) FROM public.chunks c
- WHERE c.id LIKE 'sheet-partners-%'
+ WHERE (c.id LIKE 'sheet-partners-%' OR (c.source='manual' AND c.title LIKE '姊妹校名單%'))
  AND public.chunk_is_eligible(c,p_identity,p_topic,p_stale_before)
  AND EXISTS (SELECT 1 FROM unnest(p_terms[1:12]) t WHERE length(t)>=4 AND c.body ILIKE '%'||t||'%')
  LIMIT 3;

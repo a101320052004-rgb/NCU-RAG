@@ -154,8 +154,12 @@ def detect_high_risk(text: str) -> str | None:
 
 ID_EN = {"外籍學位生": "Degree student", "交換生": "Exchange student", "僑生": "Overseas Chinese",
          "陸生": "Mainland China", "訪問研修生": "Visiting student"}
-# 國際處決定：不先問學生身分，一律預設用英文回答；學生打「中文」可以切換成中文
+# 國際處決定：不先問學生身分，回答一律用英文；學生用中文或英文問都可以（檢索會看問題本身的語言）
 DEFAULT_LANG = "en"
+
+# 只打「fee」「費用」這種一兩個字，檢索分不出是哪一種費用，先請學生選
+VAGUE_FEE = re.compile(r"^\s*(?:the\s+|any\s+)?(?:fees?|costs?|prices?|charges?|payments?|expenses?|how much|費用|收費|多少錢|繳費|要繳什麼錢)\s*[?？!！.。]*\s*$", re.I)
+FEE_CHOICES = ["Dorm fees", "Tuition fees", "ARC fee", "Health insurance fee"]
 
 
 SWITCH_ID = {"身分", "身份", "切換身分", "切換身份", "更改身分", "identity", "change identity", "切換身分 change id"}
@@ -199,7 +203,7 @@ def handle(user_id: str, text: str, channel: str = "line", identity_override: st
     user = db.get_user(uh)
     text = text.strip()
     known = identity_override or user.get("identity")
-    lang = user.get("lang") or DEFAULT_LANG  # 不看學生用哪種語言打字，只有打「中文」/「English」才切換
+    lang = DEFAULT_LANG  # 一律英文回答，不看資料庫裡舊的語言設定
     result = {"quick_replies": []}
 
     # 1. 設定指令（按鈕是中文，不拿來判斷語言）
@@ -217,9 +221,8 @@ def handle(user_id: str, text: str, channel: str = "line", identity_override: st
                       route="setting", sources=[], quick_replies=identity_chips())
         return result
     if text.lower() in {"english", "language", "切換語言", "中文"}:
-        new = "zh" if text in {"中文"} else "en"
-        db.set_user(uh, lang=new)
-        result.update(answer="已切換為中文。" if new == "zh" else "Switched to English.", route="setting", sources=[])
+        result.update(answer="Replies are in English. You can ask your question in English or Chinese.",
+                      route="setting", sources=[])
         return result
     identity = known  # 沒選身分也沒關係：承辦人會從問題內容判斷（contacts.guess_identity）
 
@@ -259,7 +262,12 @@ def handle(user_id: str, text: str, channel: str = "line", identity_override: st
         if result["route"] in {"rag", "menu"}:
             result["quick_replies"] = zh_q if lang == "zh" else en_q
         result["route"] = "menu" if result["route"] == "rag" else result["route"]
-    # 4. 一般問題
+    # 4. 問得太籠統的費用問題：先請學生選是哪一種費用
+    elif VAGUE_FEE.match(text):
+        result.update(answer="Which fee do you mean? Tap one below, or type your question in full "
+                             "(for example: How much is the dorm fee?).",
+                      route="menu", sources=[], quick_replies=FEE_CHOICES)
+    # 5. 一般問題
     else:
         result.update(rag.answer(text, identity, lang, history=db.recent_turns(uh), quota_key=limit_key or uh))
     result.pop("answered", None)

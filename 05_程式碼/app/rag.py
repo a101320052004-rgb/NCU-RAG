@@ -172,7 +172,8 @@ def _partner_hits(question: str, identity: str | None = None, topic: str | None 
 # 指定的段落照樣要通過時效與法規檢查（例如工作證效期那兩段待人工核准，核准前不會被放進來）。
 PINNED = [
     ("insurance", re.compile(r"insurance|\bnhi\b|health card|cathay|保險|健保|國泰", re.I),
-     ["d56b81c706265a59-0", "d56b81c706265a59-2", "d56b81c706265a59-6"]),
+     # 11/11 補：健保怎麼用與自付額、健保資格與保費（人工整理 sheet-rights-1111）、國際處保險頁
+     ["sheet-rights-1111-2", "sheet-rights-1111-1", "d56b81c706265a59-0", "d56b81c706265a59-2", "sheet-rights-1111-3"]),
     ("work_permit", re.compile(r"work permit|permission to work|work while studying|part[- ]time (?:job|work)|"
                                r"(?:work|employment) authori[sz]ation|工作證|工作許可|打工", re.I),
      ["a20d7a7e9a628894-0", "a20d7a7e9a628894-1", "a20d7a7e9a628894-2", "a20d7a7e9a628894-3"]),
@@ -180,7 +181,8 @@ PINNED = [
      ["12b5e67f79afb723-2", "12b5e67f79afb723-3", "12b5e67f79afb723-0"]),
     ("medical", re.compile(r"medical (?:help|assistance|care|service)|doctor|clinic|\bsick\b|health (?:center|centre|service)|"
                            r"first aid|see a doctor|看醫生|生病|就醫|衛保|保健組", re.I),
-     ["8af182dee53384c3-57", "163d19b21b0c6dca-0", "163d19b21b0c6dca-1"]),
+     # 衛保組（sheet-rights-1111-3）、附近急診醫院（sheet-guide-1111-2）、新生手冊衛保組段落、緊急電話表
+     ["sheet-rights-1111-3", "sheet-guide-1111-2", "8af182dee53384c3-57", "163d19b21b0c6dca-0"]),
     ("counseling", re.compile(r"counsel|mental health|psycholog|therap|諮商|心理", re.I),
      ["ebc593e9b9048487-2", "ebc593e9b9048487-3"]),
     # 繳費：學雜費繳費單從 Portal 下載，ATM／信用卡／超商／第一銀行都能繳（Registration Calendar），出納組在行政大樓一樓（新生手冊）

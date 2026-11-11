@@ -511,6 +511,11 @@ WEB_ASSETS = {"backoffice.js": "application/javascript", "backoffice.css": "text
 def web_asset(name: str):
     if name not in WEB_ASSETS:
         raise HTTPException(404)
+    if name == "backoffice.js":  # 後台「檢查信箱」放在 backoffice-inbox.js，接在後面一起送
+        from fastapi.responses import Response
+        d = config.APP_DIR / "web"
+        js = (d / name).read_text(encoding="utf-8") + "\n" + (d / "backoffice-inbox.js").read_text(encoding="utf-8")
+        return Response(js, media_type=WEB_ASSETS[name], headers={"Cache-Control": "no-cache"})
     return FileResponse(config.APP_DIR / "web" / name, media_type=WEB_ASSETS[name])
 
 

@@ -27,6 +27,16 @@ def inbox_address() -> str:
     return f"{local.split('+')[0]}+oia@{dom}"
 
 
+def mask_alias(addr: str) -> str:
+    """遮住信箱但保留 +標籤，承辦人才知道要寄到哪個地址（例如 a10***+oia@gmail.com）。"""
+    if "@" not in addr:
+        return mask(addr)
+    local, dom = addr.split("@", 1)
+    base, _, tag = local.partition("+")
+    m = mask(f"{base}@{dom}")
+    return m.replace("@", f"+{tag}@", 1) if tag else m
+
+
 MAIL_NS = uuid.UUID("6b1f0c52-6f1a-4a0e-9d1c-2c0e5f3a7a10")
 
 
@@ -91,7 +101,8 @@ def fetch_inbox(known_ids: set[str], days: int = 14, limit: int = 3) -> dict:
         except imaplib.IMAP4.error as e:
             raise RuntimeError("Gmail 拒絕登入：請確認應用程式密碼正確") from e
         m.select("INBOX", readonly=True)
-        typ, data = m.search(None, "X-GM-RAW", f'"deliveredto:{alias} newer_than:{days}d"')
+        # 寄給自己的 +oia 測試信沒有 Delivered-To；to: 在 Gmail 也包含副本與密件副本
+        typ, data = m.search(None, "X-GM-RAW", f'"{{to:{alias} deliveredto:{alias}}} newer_than:{days}d"')
         if typ != "OK":
             since = (dt.date.today() - dt.timedelta(days=days)).strftime("%d-%b-%Y")
             typ, data = m.search(None, "SINCE", since, "TO", f'"{alias}"')

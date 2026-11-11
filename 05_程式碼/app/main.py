@@ -342,7 +342,7 @@ def mail_fetch(x_admin_key: str = Header(default="")):
         row = {**d, "id": m["id"], "subject": m["subject"] or d["title"], "raw_body": m["raw_body"],
                "source": "email", "sender": m["sender"], "received_at": m["received_at"]}
         saved.append(_admin_rpc("admin_announce_save", {"p_key": key, "p_row": row}))
-    return {"inbox": announce.mask(r["alias"]), "matched": r["matched"], "imported": len(saved),
+    return {"inbox": inbox.mask_alias(r["alias"]), "matched": r["matched"], "imported": len(saved),
             "skipped": r["skipped"], "more": r["more"], "subjects": [x.get("subject") for x in saved]}
 
 
@@ -355,7 +355,7 @@ def email_config_view(x_admin_key: str = Header(default="")):
     cfg = announce.email_config()
     return {"on": cfg["on"], "ready": cfg["ready"], "from": announce.mask(cfg["user"]) if cfg["user"] else "",
             "to": [announce.mask(x) for x in cfg["to"][:3]], "to_count": len(cfg["to"]), "cap": cfg["cap"],
-            "inbox": announce.mask(inbox.inbox_address())}
+            "inbox": inbox.mask_alias(inbox.inbox_address())}
 
 
 @app.post("/api/admin/announce/{aid}/publish")

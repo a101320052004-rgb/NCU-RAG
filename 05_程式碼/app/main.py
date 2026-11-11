@@ -511,11 +511,6 @@ WEB_ASSETS = {"backoffice.js": "application/javascript", "backoffice.css": "text
 def web_asset(name: str):
     if name not in WEB_ASSETS:
         raise HTTPException(404)
-    if name == "backoffice.js":  # 後台「檢查信箱」放在 backoffice-inbox.js，接在後面一起送
-        from fastapi.responses import Response
-        d = config.APP_DIR / "web"
-        js = (d / name).read_text(encoding="utf-8") + "\n" + (d / "backoffice-inbox.js").read_text(encoding="utf-8")
-        return Response(js, media_type=WEB_ASSETS[name], headers={"Cache-Control": "no-cache"})
     return FileResponse(config.APP_DIR / "web" / name, media_type=WEB_ASSETS[name])
 
 
@@ -531,7 +526,12 @@ def admin_setting(body: AdminSet, x_admin_key: str = Header(default="")):
 
 @app.get("/")
 def demo_page():
-    return FileResponse(config.APP_DIR / "web" / "index.html")
+    """demo 頁：在 backoffice.js 後面多載入 backoffice-inbox.js（後台「檢查信箱」按鈕）。
+    web/ 底下的檔案在 Vercel 是直接當靜態檔送出，所以加在這裡，不改 index.html。"""
+    from fastapi.responses import HTMLResponse
+    tag = '<script src="/web/backoffice.js"></script>'
+    page = (config.APP_DIR / "web" / "index.html").read_text(encoding="utf-8")
+    return HTMLResponse(page.replace(tag, tag + '\n<script src="/web/backoffice-inbox.js"></script>', 1))
 
 
 @app.get("/health")

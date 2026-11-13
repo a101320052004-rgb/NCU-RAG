@@ -1,0 +1,4 @@
+-- 新公告取代舊資料（2026-11-13 已套用到 Supabase；只新增物件，不改現有檢索函式）
+-- 表 chunk_superseded：承辦人勾選被取代的舊段落；以內文 md5 比對，官網內容真的更新後自動恢復。
+-- 函式：superseded_ids(p_app_secret)、admin_kb_similar、admin_kb_supersede、admin_kb_restore
+-- 檢索端由 rag._eligible 依 superseded_ids() 排除（快取 60 秒）。完整 SQL 見 Supabase migration「chunk_superseded_additive」。

@@ -25,6 +25,10 @@ LINE_CHANNEL_ACCESS_TOKEN = _get("LINE_CHANNEL_ACCESS_TOKEN")
 # openai_compat：任何 OpenAI 相容介面（Gemini 免費額度、本機 Ollama 等），填下面三個 COMPAT_ 設定
 # fake：不呼叫 API，直接把找到的資料列出來（測試用）
 LLM_PROVIDER = _get("LLM_PROVIDER", "claude")
+# 英文問題先翻成中文再多查一次（知識庫很多資料只有中文）；設 off 可關掉
+QUERY_TRANSLATE = _get("QUERY_TRANSLATE", "on").lower()
+# 中文版查詢的距離要加多少再和英文結果比（中文查中文的距離天生比較小）
+ZH_QUERY_OFFSET = float(_get("ZH_QUERY_OFFSET", "0.03"))
 COMPAT_BASE_URL = _get("COMPAT_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai/")
 COMPAT_API_KEY = _get("COMPAT_API_KEY")
 COMPAT_MODEL = _get("COMPAT_MODEL", "gemini-3.6-flash")

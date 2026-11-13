@@ -45,10 +45,15 @@ def build_where(identity: str | None, topic: str | None) -> dict:
 
 def _query_supabase(qvec: list[float], identity: str | None, topic: str | None) -> list[tuple]:
     import sb
-    rows = sb.rpc("match_chunks_v2", {
-        "query_embedding": sb.vec(qvec), "match_count": config.TOP_K * 3,
-        "p_identity": identity if identity in config.IDENTITIES else None, "p_topic": topic,
-        "p_stale_before": config.stale_before().isoformat()}) or []
+    params = {"query_embedding": sb.vec(qvec), "match_count": config.TOP_K * 3,
+              "p_identity": identity if identity in config.IDENTITIES else None, "p_topic": topic,
+              "p_stale_before": config.stale_before().isoformat()}
+    # v3 先取向量最近的候選再做法規檢查（約 45 ms，v2 每次檢查全部段落約 1 秒，幾個人同時問就逾時）；結果和 v2 相同
+    try:
+        rows = sb.rpc("match_chunks_v3", params) or []
+    except Exception as e:  # noqa: BLE001  v3 有問題就退回 v2
+        print("match_chunks_v3 failed, fallback v2:", str(e)[:120])
+        rows = sb.rpc("match_chunks_v2", params) or []
     return [(r['body'], {k: v for k, v in r.items() if k not in ('body', 'distance')}, r['distance']) for r in rows]
 
 
@@ -326,12 +331,63 @@ def follow_up_context(history: list[dict] | None) -> str:
     return " ".join(dict.fromkeys([anchor, qs[-1]]))
 
 
+_ZH_CACHE: dict[str, str] = {}
+TRANSLATE_PROMPT = ("You rewrite an international student's English question about National Central University (Taiwan) "
+                    "into a short Traditional Chinese search query, using the terms Taiwanese university offices use "
+                    "(e.g. leave of absence → 休學, reduce credits → 減修, oral defense → 學位考試). "
+                    "Output only the Chinese query, no explanation.")
+
+
+def translate_query(question: str) -> str:
+    """英文問題翻成繁中查詢字串：知識庫裡很多只有中文的資料（註冊組、學位考試、宿舍 FAQ），英文問句的向量找不到。
+    失敗或逾時就回空字串，照原本方式檢索。只翻問題本身，學生看到的回答語言不變。"""
+    q = question.strip()[:300]
+    provider = getattr(config, "LLM_PROVIDER", "fake")
+    if not q or CJK.search(q) or provider == "fake" or getattr(config, "QUERY_TRANSLATE", "off") != "on":
+        return ""
+    if q in _ZH_CACHE:
+        return _ZH_CACHE[q]
+    try:
+        if provider == "openai_compat":
+            from openai import OpenAI
+            client = OpenAI(base_url=config.COMPAT_BASE_URL, api_key=config.COMPAT_API_KEY or "none", timeout=5, max_retries=0)
+            r = client.chat.completions.create(model=config.COMPAT_MODEL, max_tokens=200, temperature=0,
+                                               messages=[{"role": "system", "content": TRANSLATE_PROMPT},
+                                                         {"role": "user", "content": q}])
+            zh = (r.choices[0].message.content or "").strip()
+        else:
+            import anthropic
+            client = anthropic.Anthropic(api_key=config.ANTHROPIC_API_KEY, timeout=5, max_retries=0)
+            msg = client.messages.create(model=config.CLAUDE_MODEL, max_tokens=80, system=TRANSLATE_PROMPT,
+                                         messages=[{"role": "user", "content": q}])
+            zh = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text").strip()
+    except Exception as e:  # noqa: BLE001  翻不出來不影響回答
+        print("translate_query failed:", type(e).__name__, str(e)[:120])
+        return ""
+    zh = zh.splitlines()[0].strip(" 「」\"'") if zh else ""
+    zh = zh if CJK.search(zh) and len(zh) <= 80 else ""
+    if len(_ZH_CACHE) > 500:
+        _ZH_CACHE.clear()
+    _ZH_CACHE[q] = zh
+    return zh
+
+
 def retrieve(question: str, identity: str | None, lang: str, topic: str | None = None,
-             context: str | None = None, identity_hint: str | None = None) -> list[dict]:
+             context: str | None = None, identity_hint: str | None = None, translate: bool = False) -> list[dict]:
     exact = _partner_hits(question, identity, topic)
     search = expand_query(question)
     expanded = search != question
     queries = [question, search] if expanded else [question]
+    # 英文問題另外用中文查一次（只有 answer() 會開；selftest 不呼叫 AI）
+    zh = translate_query(question) if translate else ""
+    zh_query = expand_query(zh) if zh else None
+    if zh_query:
+        queries.append(zh_query)
+        expanded = True  # 有中文版查詢時，不再替英文資料加同語言分數，免得把對題的中文資料壓下去
+    # 中文查中文的距離整體比英文查詢小（11/13 實測：對題段落中文約 0.07～0.08、英文約 0.15～0.17），
+    # 加一點距離讓不太相關的中文段落不要全部排在前面；加太多（0.07）又會把「減修」這類只有中文的資料擠掉，
+    # 所以只加 0.03，另外保留英文原句查到的第一名（見下方 picked）
+    zh_offset = float(getattr(config, "ZH_QUERY_OFFSET", 0.03))
     # 追問時再用「前一題＋這一句」查一次，和原句的結果合併；原句的結果照樣保留
     if context and is_follow_up(question):
         queries.append(expand_query(f"{context} {question}"))
@@ -343,6 +399,8 @@ def retrieve(question: str, identity: str | None, lang: str, topic: str | None =
         qvec = embedder.embed_query(q)
         found = _query_supabase(qvec, identity, topic) if config.STORE == "supabase" else _query_local(qvec, identity, topic)
         for rank, (doc, md, dist) in enumerate(found, 1):
+            if q == zh_query and q != question:
+                dist += zh_offset
             key = md.get("id") or (md.get("url"), doc[:50])
             if q == question:
                 original_rank[key] = rank
@@ -395,6 +453,22 @@ def retrieve(question: str, identity: str | None, lang: str, topic: str | None =
         picked.append(h)
         if len(picked) >= config.TOP_K:
             break
+    # 有中文版查詢時，英文原句查到的第一名一定留著：11/13 實測「lose a library book」中文結果排滿前五名，
+    # 把寫得最清楚的英文整理段（Library: borrowing...）擠掉，回答變得含糊
+    if zh_query and original_rank:
+        ranked = sorted((h for h in hits if h["meta"].get("id") in original_rank),
+                        key=lambda h: original_rank[h["meta"]["id"]])
+        best = ranked[0] if ranked else None
+        if best is not None and all(p["meta"].get("id") != best["meta"].get("id") for p in picked):
+            if len(picked) >= config.TOP_K:
+                picked[-1] = best
+            else:
+                picked.append(best)
+    # 中文段落和問題（中文版）有幾個相同的兩字詞：英文回答比不出中文段落的重合，列來源時用這個判斷是否對題
+    qzh = zh or (question if CJK.search(question) else "")
+    if qzh:
+        grams = {g for g in (qzh[i:i + 2] for i in range(len(qzh) - 1)) if len(CJK.findall(g)) == 2}
+        picked = [{**h, "zh_match": sum(1 for g in grams if g in h["text"])} for h in picked]
     return picked
 
 
@@ -594,6 +668,11 @@ STOP = {"your", "with", "from", "that", "this", "they", "them", "there", "have",
         "call", "email", "office", "check", "student", "students", "international", "please", "ncuoia"}
 
 
+def _mostly_cjk(text: str) -> bool:
+    body = re.sub(r"^【[^】]*】", "", text)
+    return len(CJK.findall(body)) > len(re.findall(r"[A-Za-z]", body))
+
+
 def rank_by_answer(hits: list[dict], reply: str) -> list[dict]:
     """來源要對應答案實際用到的頁面：用答案裡的關鍵字和數字比對每一段，重合越多越前面。
     11/12 實測：答案明明出自工作證頁，來源卻列「住宿服務組在哪裡」，因為原本只照檢索排名列前兩名。"""
@@ -607,6 +686,11 @@ def rank_by_answer(hits: list[dict], reply: str) -> list[dict]:
     best = max(s for s, _, _ in scored)
     if best == 0:
         return hits
+    # 英文回答對中文段落比不出重合（11/13：休學答案出自註冊組中文頁，來源卻列獎學金頁）：
+    # 檢索排前兩名、而且和問題（中文版）至少有 2 個相同兩字詞的中文段落，視為和最佳一樣
+    # （只看排名會把加了公告分數、但不對題的範例公告也列成來源）
+    scored = [(best if i < 2 and _mostly_cjk(h["text"]) and h.get("zh_match", 0) >= 2 else s, i, h)
+              for s, i, h in scored]
     # 重合太少的段落（不到最佳的三分之一）不列為來源
     keep = [(s, i, h) for s, i, h in scored if s >= max(2, best / 3)]
     return [h for s, i, h in sorted(keep, key=lambda x: (-x[0], x[1]))] or hits
@@ -651,7 +735,7 @@ def answer(question: str, identity: str | None, lang: str | None = None,
     # 用身分篩選會讓學位生查不到保險頁。身分只拿來決定轉給哪位承辦人。
     hits = retrieve(search or question, None, detect_lang(question), topic,
                     context=None if search else follow_up_context(history),  # 選單用關鍵字檢索，比問句準
-                    identity_hint=identity)
+                    identity_hint=identity, translate=search is None)
     if not hits:
         return {"answer": no_data_answer(lang, contact), "route": "no_data", "sources": []}
     footer, used = source_footer(hits, lang)

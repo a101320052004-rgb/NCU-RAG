@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import re
+import time
 
 import config
 import contacts
@@ -239,7 +240,31 @@ def _pinned_hits(question: str, topic: str | None = None, identity: str | None =
             for r in rows if _eligible(r["body"], r, None, topic)]
 
 
+_SUPERSEDED: tuple[float, frozenset] = (0.0, frozenset())
+
+
+def superseded_ids() -> frozenset:
+    """承辦人發新公告時勾選「被取代」的舊段落（資料庫 chunk_superseded），快取 60 秒。
+    內文之後真的更新（例如官網改版後重新爬到新內容），資料庫端就不會再列出，自動恢復可用。"""
+    global _SUPERSEDED
+    if config.STORE != "supabase":
+        return frozenset()
+    now = time.monotonic()
+    if now - _SUPERSEDED[0] < 60:
+        return _SUPERSEDED[1]
+    try:
+        import db
+        ids = frozenset(db._rpc("superseded_ids") or [])
+    except Exception as e:  # noqa: BLE001  查不到就沿用上一次的清單
+        print("superseded lookup failed:", e)
+        ids = _SUPERSEDED[1]
+    _SUPERSEDED = (now, ids)
+    return ids
+
+
 def _eligible(text: str, md: dict, identity: str | None, topic: str | None) -> bool:
+    if str(md.get("id", "")) in superseded_ids():  # 已被新公告取代：一般檢索、指定段落、前後段都不用
+        return False
     return knowledge_policy.eligible(text, md, identity=identity, topic=topic,
                                      today=config.today(), stale_before=config.stale_before())
 
@@ -339,8 +364,8 @@ def retrieve(question: str, identity: str | None, lang: str, topic: str | None =
         # 同語言的資料稍微優先；補了英文關鍵字的問題不加，避免英文的官方日程被擠下去
         score = dist - (0.03 if md.get("lang") == lang and not expanded else 0)
         cid = str(md.get("id", ""))
-        if cid.startswith("ann-"):  # 國際處發的公告是最新、最直接的資料，稍微優先
-            score -= 0.01
+        if cid.startswith("ann-"):  # 國際處發的公告是最新、最直接的資料，排在人工整理資料前面
+            score -= 0.03
         elif cid.startswith(("sheet-", "md")):  # 國際處提供、人工整理的資料，排在爬蟲網頁前面
             score -= 0.015
         hits.append({"text": doc, "meta": md, "distance": dist, "score": score})

@@ -390,6 +390,39 @@ def announce_publish(aid: str, body: AnnounceEdit, request: Request, x_admin_key
     return a
 
 
+class IdsIn(BaseModel):
+    ids: list[str]
+
+
+@app.get("/api/admin/announce/{aid}/similar")
+def announce_similar(aid: str, x_admin_key: str = Header(default="")):
+    """發布後找出跟這則公告意思最接近的舊資料，讓承辦人勾選哪些已被取代。"""
+    import embedder
+    key = _admin_key(x_admin_key)
+    a = next((x for x in _admin_rpc("admin_announce_list", {"p_key": key}) if x["id"] == aid), None)
+    if not a:
+        raise HTTPException(404)
+    import sb
+    text = "\n".join(x for x in (a.get("title"), a.get("summary_zh"), a.get("summary_en")) if x) or a.get("raw_body", "")
+    vec = embedder.embed_query(text[:1500])
+    return _admin_rpc("admin_kb_similar", {"p_key": key, "p_announcement": aid, "p_embedding": sb.vec(vec), "p_limit": 8})
+
+
+@app.post("/api/admin/announce/{aid}/supersede")
+def announce_supersede(aid: str, body: IdsIn, x_admin_key: str = Header(default="")):
+    """勾選的舊資料下架：小幫手之後不會再用它們回答（可以還原）。"""
+    if not body.ids:
+        raise HTTPException(400, "沒有勾選任何資料")
+    return _admin_rpc("admin_kb_supersede", {"p_key": _admin_key(x_admin_key), "p_announcement": aid, "p_ids": body.ids[:30]})
+
+
+@app.post("/api/admin/kb-restore")
+def kb_restore(body: IdsIn, x_admin_key: str = Header(default="")):
+    if not body.ids:
+        raise HTTPException(400, "沒有勾選任何資料")
+    return _admin_rpc("admin_kb_restore", {"p_key": _admin_key(x_admin_key), "p_ids": body.ids[:30]})
+
+
 @app.post("/api/admin/announce/{aid}/retry-email")
 def announce_retry_email(aid: str, request: Request, x_admin_key: str = Header(default="")):
     import announce
@@ -531,7 +564,8 @@ def demo_page():
     from fastapi.responses import HTMLResponse
     tag = '<script src="/web/backoffice.js"></script>'
     page = (config.APP_DIR / "web" / "index.html").read_text(encoding="utf-8")
-    return HTMLResponse(page.replace(tag, tag + '\n<script src="/web/backoffice-inbox.js"></script>', 1))
+    extra = '\n<script src="/web/backoffice-inbox.js"></script>\n<script src="/web/backoffice-supersede.js"></script>'
+    return HTMLResponse(page.replace(tag, tag + extra, 1))
 
 
 @app.get("/health")

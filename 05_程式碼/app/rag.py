@@ -200,6 +200,14 @@ PINNED = [
      ["694ddc8efa604d15-7", "694ddc8efa604d15-11", "8af182dee53384c3-56"]),
     ("emergency", re.compile(r"emergenc|campus security|security (?:center|centre|office)|24[- ]hour|校安|緊急", re.I),
      ["163d19b21b0c6dca-0", "163d19b21b0c6dca-1"]),
+    # 11/14 實測：「可不可以喝酒」這種短句檢索不到飲酒規定（宿舍辦法原文只有「酗酒」），改成指定 sheet-life-1114-3
+    ("alcohol", re.compile(r"alcohol|\bbeers?\b|\bwine\b|liquor|\bdrunk\b|\bdrink(?:ing)? (?:alcohol|beer|wine)|"
+                           r"喝酒|飲酒|酒精|啤酒|喝醉|酗酒|酒駕", re.I),
+     ["sheet-life-1114-3"]),
+    # 清真飲食、祈禱室、清真寺（sheet-life-1114-1、-2）
+    ("halal", re.compile(r"halal|muslim|islam|mosque|prayer (?:room|space)|musholla|\bpray\b|"
+                         r"清真|穆斯林|回教|伊斯蘭|祈禱室|禮拜", re.I),
+     ["sheet-life-1114-1", "sheet-life-1114-2"]),
 ]
 
 

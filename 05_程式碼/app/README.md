@@ -21,7 +21,7 @@
 | `db.py` | SQLite：使用者設定、對話紀錄、轉人工清單 |
 | `test_ui.py` | 小組內部測試頁 |
 | `setup_richmenu.py` | 建立 LINE 圖文選單（食衣住行育樂） |
-| `../prompts/system_prompt.md` | 回答語氣與規則，要調整語氣就改這個檔 |
+| `prompts/system_prompt.md` | 回答語氣與規則，要調整語氣就改這個檔 |
 
 ## 一、安裝（Windows，只做一次）
 
@@ -30,7 +30,7 @@
 ```powershell
 py -m venv .venv
 .venv\Scripts\activate
-pip install -r requirements.txt
+pip install -r requirements-local.txt   # 本機完整版；requirements.txt 是 Vercel 用的精簡版
 copy .env.example .env
 notepad .env
 ```
@@ -134,7 +134,7 @@ ngrok 免費版每次重開，網址都會變，要回到第 4 步重新填 Webh
 
 | 想調整的 | 改哪裡 |
 | --- | --- |
-| 回答語氣、長度 | `../prompts/system_prompt.md` |
+| 回答語氣、長度 | `prompts/system_prompt.md` |
 | 「太久以前」的標準 | `.env` 的 `STALE_MONTHS`（目前 12 個月）、`CURRENT_ACADEMIC_YEAR`（目前 115） |
 | 轉人工的關鍵字 | `router.py` 的 `HIGH_RISK` |
 | 回答太常說「查不到」 | `.env` 的 `MAX_DISTANCE` 調大一點（例如 0.35）；太常答非所問就調小 |

@@ -9,7 +9,7 @@ if not exist .venv %PY% -m venv .venv
 call .venv\Scripts\activate
 python -m pip install --upgrade pip
 echo [3/3] Installing packages (first time takes 5-15 minutes)...
-pip install -r crawler\requirements.txt -r app\requirements.txt
+pip install -r crawler\requirements.txt -r app\requirements-local.txt
 if not exist app\.env copy app\.env.example app\.env
 echo.
 echo Done. Next:
